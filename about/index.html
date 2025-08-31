@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/placeholder?v=4">
 <meta property="article:published_time" content="2025-08-31T03:16:28.000Z">
-<meta property="article:modified_time" content="2025-08-31T03:17:53.901Z">
+<meta property="article:modified_time" content="2025-08-31T03:19:46.586Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
 <meta name="twitter:card" content="summary">
@@ -583,6 +583,70 @@
 <noscript>
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 检查是否在首页
+  if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+    // 创建英雄区域
+    const heroSection = document.createElement('div');
+    heroSection.className = 'hero-section';
+    heroSection.innerHTML = `
+      <div class="hero-background">
+        <div class="astronaut-container">
+          <div class="astronaut"></div>
+        </div>
+        <div class="earth-container">
+          <div class="earth"></div>
+        </div>
+        <div class="black-hole"></div>
+        <div class="stars"></div>
+        <div class="cosmic-dust"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Life Oriented Programming</h1>
+          <p class="hero-subtitle">探索代码的宇宙，编织生活的程序</p>
+          <div class="hero-buttons">
+            <a href="/about/" class="hero-btn primary">了解我</a>
+            <a href="/archives/" class="hero-btn secondary">查看文章</a>
+          </div>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-arrow"></div>
+        </div>
+      </div>
+    `;
+    
+    // 插入到页面顶部
+    const mainContent = document.querySelector('.main-inner') || document.querySelector('.main');
+    if (mainContent) {
+      mainContent.insertBefore(heroSection, mainContent.firstChild);
+    }
+    
+    // 添加首页标识
+    document.body.classList.add('home');
+  }
+  
+  // 导航栏滚动效果
+  const header = document.querySelector('.header');
+  if (header) {
+    let lastScrollY = window.scrollY;
+    
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      
+      if (scrollY > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+      
+      lastScrollY = scrollY;
+    });
+  }
+});
+</script>
 
 </body>
 </html>

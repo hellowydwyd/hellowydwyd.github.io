@@ -298,7 +298,7 @@
 </ul>
 <h2 id="📞-联系方式"><a href="#📞-联系方式" class="headerlink" title="📞 联系方式"></a>📞 联系方式</h2><ul>
 <li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/hellowydwyd">hellowydwyd</a></li>
-<li><strong>邮箱</strong>: <a href="mailto:&#104;&#101;&#x6c;&#x6c;&#x6f;&#119;&#121;&#100;&#x77;&#121;&#100;&#x40;&#x31;&#54;&#x33;&#46;&#99;&#x6f;&#x6d;">hellowydwyd@163.com</a></li>
+<li><strong>邮箱</strong>: <a href="mailto:&#x68;&#101;&#108;&#108;&#x6f;&#x77;&#x79;&#100;&#x77;&#x79;&#100;&#64;&#x31;&#x36;&#x33;&#46;&#x63;&#x6f;&#109;">hellowydwyd@163.com</a></li>
 </ul>
 <hr>
 <p>感谢你的阅读！如果你有任何问题或建议，欢迎通过上述方式联系我。</p>
@@ -374,6 +374,70 @@
 <noscript>
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 检查是否在首页
+  if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+    // 创建英雄区域
+    const heroSection = document.createElement('div');
+    heroSection.className = 'hero-section';
+    heroSection.innerHTML = `
+      <div class="hero-background">
+        <div class="astronaut-container">
+          <div class="astronaut"></div>
+        </div>
+        <div class="earth-container">
+          <div class="earth"></div>
+        </div>
+        <div class="black-hole"></div>
+        <div class="stars"></div>
+        <div class="cosmic-dust"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Life Oriented Programming</h1>
+          <p class="hero-subtitle">探索代码的宇宙，编织生活的程序</p>
+          <div class="hero-buttons">
+            <a href="/about/" class="hero-btn primary">了解我</a>
+            <a href="/archives/" class="hero-btn secondary">查看文章</a>
+          </div>
+        </div>
+        <div class="scroll-indicator">
+          <div class="scroll-arrow"></div>
+        </div>
+      </div>
+    `;
+    
+    // 插入到页面顶部
+    const mainContent = document.querySelector('.main-inner') || document.querySelector('.main');
+    if (mainContent) {
+      mainContent.insertBefore(heroSection, mainContent.firstChild);
+    }
+    
+    // 添加首页标识
+    document.body.classList.add('home');
+  }
+  
+  // 导航栏滚动效果
+  const header = document.querySelector('.header');
+  if (header) {
+    let lastScrollY = window.scrollY;
+    
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      
+      if (scrollY > 100) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+      
+      lastScrollY = scrollY;
+    });
+  }
+});
+</script>
 
 </body>
 </html>
