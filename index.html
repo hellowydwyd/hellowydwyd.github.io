@@ -412,8 +412,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 检查是否在首页
-  if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+  // 检查是否在首页 - 更宽松的检测条件
+  const isHomePage = window.location.pathname === '/' || 
+                     window.location.pathname === '/index.html' || 
+                     window.location.pathname.endsWith('/') ||
+                     document.querySelector('.home') !== null ||
+                     document.querySelector('.posts-expand') !== null;
+  
+  console.log('Current pathname:', window.location.pathname);
+  console.log('Is home page:', isHomePage);
+  
+  if (isHomePage) {
     // 创建英雄区域
     const heroSection = document.createElement('div');
     heroSection.className = 'hero-section';
@@ -449,9 +458,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 添加首页标识
     document.body.classList.add('home');
+    document.documentElement.classList.add('home');
     
     // 确保页面不会滚动到英雄区域
     window.scrollTo(0, 0);
+    
+    console.log('Hero section created and inserted');
+  } else {
+    console.log('Not on home page, hero section not created');
   }
   
   // 导航栏滚动效果

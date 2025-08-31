@@ -1379,7 +1379,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #bfffff;
+    background: #34c8b3;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -3018,6 +3018,38 @@ header.header {
   z-index: 1;
   margin: 0 !important;
 }
+.posts-expand::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
+  z-index: -1;
+}
+.posts-expand::after {
+  content: 'Life Oriented Programming';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 4rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #fff 0%, #64b5f6 50%, #42a5f5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  z-index: 2;
+  pointer-events: none;
+}
 .hero-background {
   position: absolute;
   top: 0;
@@ -3411,11 +3443,21 @@ header.header {
 .main {
   padding-top: 80px;
 }
-.home .main {
+.home .main,
+body.home .main,
+html.home .main,
+.posts-expand .main {
   padding-top: 0 !important;
   position: relative;
   z-index: 10;
   margin-top: 100vh;
+}
+body:has(.posts-expand) .main {
+  margin-top: 100vh;
+}
+.posts-expand {
+  position: relative;
+  z-index: 10;
 }
 .home .sidebar {
   display: none !important;
