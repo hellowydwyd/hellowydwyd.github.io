@@ -1379,7 +1379,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #fff;
+    background: #f4ffff;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -3043,44 +3043,21 @@ body {
   border-bottom: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
-  padding: 0 !important;
+  padding: 0 2rem !important;
   height: 70px !important;
   display: flex !important;
   align-items: center !important;
+  justify-content: space-between !important;
 }
 .header.scrolled {
   background: rgba(255,255,255,0.98) !important;
   box-shadow: var(--shadow-md);
 }
-.header .site-brand-container,
-.header .site-nav {
-  display: inline-flex !important;
-  align-items: center !important;
-  height: 70px !important;
-}
-.header .site-brand-container {
-  position: absolute !important;
-  left: 2rem !important;
-  top: 0 !important;
-  height: 70px !important;
-  display: flex !important;
-  align-items: center !important;
-  z-index: 1001;
-}
-.header .site-nav {
-  position: absolute !important;
-  right: 2rem !important;
-  top: 0 !important;
-  height: 70px !important;
-  display: flex !important;
-  align-items: center !important;
-  z-index: 1001;
-}
 .site-brand-container {
   display: flex !important;
   align-items: center !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  order: 1 !important;
+  flex-shrink: 0 !important;
 }
 .site-brand-container .site-nav-toggle {
   display: none !important;
@@ -3091,30 +3068,26 @@ body {
 .site-meta {
   display: flex !important;
   align-items: center !important;
-  height: 70px !important;
-  visibility: visible !important;
 }
 .site-meta .brand {
   font-size: 1.5rem !important;
   font-weight: 700 !important;
   color: var(--text-primary) !important;
   text-decoration: none !important;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease !important;
   display: flex !important;
   align-items: center !important;
-  height: 70px !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  white-space: nowrap !important;
 }
 .site-meta .brand:hover {
   color: var(--primary-color) !important;
 }
 .site-meta .brand .site-title {
   margin: 0 !important;
-  line-height: 1 !important;
-  font-size: 1.5rem !important;
-  display: block !important;
-  visibility: visible !important;
+  line-height: 1.2 !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
 }
 .site-meta .brand .logo-line {
   display: none !important;
@@ -3125,8 +3098,7 @@ body {
 .site-nav {
   display: flex !important;
   align-items: center !important;
-  visibility: visible !important;
-  opacity: 1 !important;
+  order: 2 !important;
 }
 .site-nav .main-menu {
   display: flex !important;
@@ -3135,12 +3107,8 @@ body {
   margin: 0 !important;
   padding: 0 !important;
   gap: 1.5rem !important;
-  height: 70px !important;
 }
 .site-nav .main-menu .menu-item {
-  position: relative !important;
-  white-space: nowrap !important;
-  height: 70px !important;
   display: flex !important;
   align-items: center !important;
 }
@@ -3151,10 +3119,10 @@ body {
   font-size: 0.9rem !important;
   padding: 0.5rem 0.75rem !important;
   transition: color 0.3s ease !important;
-  position: relative !important;
   display: flex !important;
   align-items: center !important;
-  height: 70px !important;
+  white-space: nowrap !important;
+  position: relative !important;
 }
 .site-nav .main-menu .menu-item .menu-item-link:hover {
   color: var(--primary-color) !important;
@@ -3162,7 +3130,7 @@ body {
 .site-nav .main-menu .menu-item .menu-item-link::after {
   content: '' !important;
   position: absolute !important;
-  bottom: 0 !important;
+  bottom: -5px !important;
   left: 0.75rem !important;
   right: 0.75rem !important;
   height: 2px !important;
