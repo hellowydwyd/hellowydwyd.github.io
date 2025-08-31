@@ -412,15 +412,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // 检查是否在首页 - 更宽松的检测条件
+  // 检查是否在首页
   const isHomePage = window.location.pathname === '/' || 
                      window.location.pathname === '/index.html' || 
-                     window.location.pathname.endsWith('/') ||
-                     document.querySelector('.home') !== null ||
-                     document.querySelector('.posts-expand') !== null;
-  
-  console.log('Current pathname:', window.location.pathname);
-  console.log('Is home page:', isHomePage);
+                     window.location.pathname.endsWith('/');
   
   if (isHomePage) {
     // 创建英雄区域
@@ -428,15 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
     heroSection.className = 'hero-section';
     heroSection.innerHTML = `
       <div class="hero-background">
-        <div class="astronaut-container">
-          <div class="astronaut"></div>
-        </div>
-        <div class="earth-container">
-          <div class="earth"></div>
-        </div>
-        <div class="black-hole"></div>
         <div class="stars"></div>
-        <div class="cosmic-dust"></div>
       </div>
       <div class="hero-content">
         <div class="hero-text">
@@ -453,26 +440,20 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
     
-    // 插入到body顶部，而不是main内部
-    document.body.insertBefore(heroSection, document.body.firstChild);
+    // 插入到main元素之前
+    const main = document.querySelector('.main');
+    if (main) {
+      main.parentNode.insertBefore(heroSection, main);
+    }
     
     // 添加首页标识
     document.body.classList.add('home');
     document.documentElement.classList.add('home');
-    
-    // 确保页面不会滚动到英雄区域
-    window.scrollTo(0, 0);
-    
-    console.log('Hero section created and inserted');
-  } else {
-    console.log('Not on home page, hero section not created');
   }
   
   // 导航栏滚动效果
   const header = document.querySelector('.header');
-  if (header) {
-    let lastScrollY = window.scrollY;
-    
+  if (header && document.body.classList.contains('home')) {
     window.addEventListener('scroll', () => {
       const scrollY = window.scrollY;
       
@@ -481,8 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         header.classList.remove('scrolled');
       }
-      
-      lastScrollY = scrollY;
     });
   }
 });
