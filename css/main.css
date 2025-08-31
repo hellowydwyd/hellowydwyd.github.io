@@ -1379,7 +1379,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #2d7491;
+    background: #5bc144;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -3001,5 +3001,143 @@ header.header {
   }
   .comments {
     padding: 10px 12px;
+  }
+}
+.page-post-detail .post-body,
+.about-page {
+  position: relative;
+}
+.page-post-detail .post-body::before,
+.about-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -2;
+}
+.page-post-detail .post-body::after,
+.about-page::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(2px 2px at 20px 30px, #eee, transparent), radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent), radial-gradient(1px 1px at 90px 40px, #fff, transparent), radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent), radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: twinkle 4s ease-in-out infinite alternate;
+  z-index: -1;
+}
+.astronaut {
+  animation: float 6s ease-in-out infinite;
+}
+.about-page {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.about-page .about-avatar .avatar-image {
+  border: 4px solid rgba(255,255,255,0.3);
+  box-shadow: 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(100,149,237,0.3), 0 0 60px rgba(100,149,237,0.1);
+  animation: float 4s ease-in-out infinite;
+}
+.about-page .about-avatar .avatar-image:hover {
+  box-shadow: 0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(100,149,237,0.5), 0 0 90px rgba(100,149,237,0.2);
+}
+.about-page .about-name {
+  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 25%, #2196f3 50%, #1e88e5 75%, #1976d2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(33,150,243,0.5);
+}
+.about-page .about-quote {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  border-left: 4px solid #64b5f6;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.about-page .about-sections section {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+.about-page .about-sections section h2 {
+  color: #64b5f6;
+  text-shadow: 0 0 10px rgba(100,181,246,0.3);
+}
+.about-page .contact-btn {
+  background: linear-gradient(135deg, #64b5f6 0%, #2196f3 50%, #1976d2 100%);
+  box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+}
+.about-page .contact-btn:hover {
+  box-shadow: 0 8px 25px rgba(33,150,243,0.5);
+}
+.use-motion .post-block,
+.use-motion .pagination,
+.use-motion .comments {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.sidebar {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  backdrop-filter: blur(15px);
+  border-right: 1px solid rgba(255,255,255,0.2);
+}
+.header {
+  background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+@media (max-width: 768px) {
+  .about-page {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+@keyframes twinkle {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
