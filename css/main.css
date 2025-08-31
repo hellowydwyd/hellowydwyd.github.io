@@ -1379,7 +1379,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #ff45e2;
+    background: #b675ff;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -3269,50 +3269,10 @@ body {
 }
 .hero-subtitle {
   font-size: 1.25rem;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   opacity: 0.9;
   font-weight: 400;
   color: rgba(255,255,255,0.9);
-}
-.hero-buttons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.hero-btn {
-  padding: 1rem 2rem;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.hero-btn.primary {
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  border: 2px solid rgba(255,255,255,0.3);
-}
-.hero-btn.primary:hover {
-  background: rgba(255,255,255,0.3);
-  border-color: rgba(255,255,255,0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-.hero-btn.secondary {
-  background: transparent;
-  color: #fff;
-  border: 2px solid rgba(255,255,255,0.5);
-}
-.hero-btn.secondary:hover {
-  background: rgba(255,255,255,0.1);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 .scroll-indicator {
   position: absolute;
