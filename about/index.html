@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://avatars.githubusercontent.com/u/placeholder?v=4">
 <meta property="article:published_time" content="2025-08-31T03:16:28.000Z">
-<meta property="article:modified_time" content="2025-08-31T03:19:46.586Z">
+<meta property="article:modified_time" content="2025-08-31T03:26:48.185Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
 <meta name="twitter:card" content="summary">
@@ -618,14 +618,14 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
     
-    // 插入到页面顶部
-    const mainContent = document.querySelector('.main-inner') || document.querySelector('.main');
-    if (mainContent) {
-      mainContent.insertBefore(heroSection, mainContent.firstChild);
-    }
+    // 插入到body顶部，而不是main内部
+    document.body.insertBefore(heroSection, document.body.firstChild);
     
     // 添加首页标识
     document.body.classList.add('home');
+    
+    // 确保页面不会滚动到英雄区域
+    window.scrollTo(0, 0);
   }
   
   // 导航栏滚动效果

@@ -319,14 +319,14 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
     
-    // 插入到页面顶部
-    const mainContent = document.querySelector('.main-inner') || document.querySelector('.main');
-    if (mainContent) {
-      mainContent.insertBefore(heroSection, mainContent.firstChild);
-    }
+    // 插入到body顶部，而不是main内部
+    document.body.insertBefore(heroSection, document.body.firstChild);
     
     // 添加首页标识
     document.body.classList.add('home');
+    
+    // 确保页面不会滚动到英雄区域
+    window.scrollTo(0, 0);
   }
   
   // 导航栏滚动效果
