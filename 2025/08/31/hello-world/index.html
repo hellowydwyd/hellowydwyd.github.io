@@ -339,6 +339,28 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  // 修复头部结构
+  const header = document.querySelector('.header');
+  if (header) {
+    // 创建统一的头部内容容器
+    const headerContent = document.createElement('div');
+    headerContent.className = 'header-content';
+    
+    // 获取品牌标志和导航菜单
+    const brandContainer = header.querySelector('.site-brand-container');
+    const siteNav = header.querySelector('.site-nav');
+    
+    if (brandContainer && siteNav) {
+      // 将它们移动到新的容器中
+      headerContent.appendChild(brandContainer);
+      headerContent.appendChild(siteNav);
+      
+      // 清空header并添加新容器
+      header.innerHTML = '';
+      header.appendChild(headerContent);
+    }
+  }
+  
   // 检查是否在首页
   const isHomePage = window.location.pathname === '/' || 
                      window.location.pathname === '/index.html' || 
@@ -381,15 +403,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // 导航栏滚动效果 - 适用于所有页面
-  const header = document.querySelector('.header');
-  if (header) {
+  const headerElement = document.querySelector('.header');
+  if (headerElement) {
     window.addEventListener('scroll', () => {
       const scrollY = window.scrollY;
       
       if (scrollY > 50) {
-        header.classList.add('scrolled');
+        headerElement.classList.add('scrolled');
       } else {
-        header.classList.remove('scrolled');
+        headerElement.classList.remove('scrolled');
       }
     });
   }
