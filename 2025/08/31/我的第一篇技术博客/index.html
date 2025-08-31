@@ -298,7 +298,7 @@
 </ul>
 <h2 id="📞-联系方式"><a href="#📞-联系方式" class="headerlink" title="📞 联系方式"></a>📞 联系方式</h2><ul>
 <li><strong>GitHub</strong>: <a target="_blank" rel="noopener" href="https://github.com/hellowydwyd">hellowydwyd</a></li>
-<li><strong>邮箱</strong>: <a href="mailto:&#x68;&#101;&#x6c;&#x6c;&#111;&#x77;&#x79;&#100;&#x77;&#121;&#x64;&#64;&#49;&#54;&#51;&#46;&#x63;&#x6f;&#109;">hellowydwyd@163.com</a></li>
+<li><strong>邮箱</strong>: <a href="mailto:&#104;&#101;&#x6c;&#x6c;&#x6f;&#119;&#121;&#100;&#x77;&#x79;&#100;&#x40;&#49;&#54;&#51;&#x2e;&#x63;&#111;&#109;">hellowydwyd@163.com</a></li>
 </ul>
 <hr>
 <p>感谢你的阅读！如果你有任何问题或建议，欢迎通过上述方式联系我。</p>
@@ -383,21 +383,23 @@ document.addEventListener('DOMContentLoaded', function() {
                      window.location.pathname.endsWith('/');
   
   if (isHomePage) {
-    // 创建英雄区域
+    // 创建现代化英雄区域
     const heroSection = document.createElement('div');
     heroSection.className = 'hero-section';
     heroSection.innerHTML = `
-      <div class="hero-background">
-        <div class="stars"></div>
-      </div>
+      <div class="hero-background"></div>
       <div class="hero-content">
-        <div class="hero-text">
-          <h1 class="hero-title">Life Oriented Programming</h1>
-          <p class="hero-subtitle">探索代码的宇宙，编织生活的程序</p>
-          <div class="hero-buttons">
-            <a href="/about/" class="hero-btn primary">了解我</a>
-            <a href="/archives/" class="hero-btn secondary">查看文章</a>
-          </div>
+        <h1 class="hero-title">Life Oriented Programming</h1>
+        <p class="hero-subtitle">探索代码的宇宙，编织生活的程序</p>
+        <div class="hero-buttons">
+          <a href="/about/" class="hero-btn primary">
+            <i class="fa fa-user"></i>
+            了解我
+          </a>
+          <a href="/archives/" class="hero-btn secondary">
+            <i class="fa fa-archive"></i>
+            查看文章
+          </a>
         </div>
         <div class="scroll-indicator">
           <div class="scroll-arrow"></div>
@@ -416,19 +418,77 @@ document.addEventListener('DOMContentLoaded', function() {
     document.documentElement.classList.add('home');
   }
   
-  // 导航栏滚动效果
+  // 导航栏滚动效果 - 适用于所有页面
   const header = document.querySelector('.header');
-  if (header && document.body.classList.contains('home')) {
+  if (header) {
     window.addEventListener('scroll', () => {
       const scrollY = window.scrollY;
       
-      if (scrollY > 100) {
+      if (scrollY > 50) {
         header.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
       }
     });
   }
+  
+  // 移动端导航切换
+  const navToggle = document.querySelector('.site-nav-toggle');
+  const nav = document.querySelector('.site-nav');
+  
+  if (navToggle && nav) {
+    navToggle.addEventListener('click', function() {
+      nav.classList.toggle('show');
+      
+      // 切换汉堡菜单动画
+      const toggleLines = navToggle.querySelectorAll('.toggle-line');
+      toggleLines.forEach((line, index) => {
+        if (nav.classList.contains('show')) {
+          if (index === 0) line.style.transform = 'rotate(45deg) translate(5px, 5px)';
+          if (index === 1) line.style.opacity = '0';
+          if (index === 2) line.style.transform = 'rotate(-45deg) translate(7px, -6px)';
+        } else {
+          line.style.transform = '';
+          line.style.opacity = '';
+        }
+      });
+    });
+    
+    // 点击菜单项时关闭移动端菜单
+    const menuItems = nav.querySelectorAll('.menu-item-link');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        nav.classList.remove('show');
+        const toggleLines = navToggle.querySelectorAll('.toggle-line');
+        toggleLines.forEach(line => {
+          line.style.transform = '';
+          line.style.opacity = '';
+        });
+      });
+    });
+  }
+  
+  // 平滑滚动到内容区域
+  const scrollIndicator = document.querySelector('.scroll-indicator');
+  if (scrollIndicator) {
+    scrollIndicator.addEventListener('click', () => {
+      const mainContent = document.querySelector('.home .main-inner');
+      if (mainContent) {
+        mainContent.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+  
+  // 为当前页面的导航项添加激活状态
+  const currentPath = window.location.pathname;
+  const menuItems = document.querySelectorAll('.menu-item');
+  
+  menuItems.forEach(item => {
+    const link = item.querySelector('.menu-item-link');
+    if (link && link.getAttribute('href') === currentPath) {
+      item.classList.add('menu-item-active');
+    }
+  });
 });
 </script>
 
