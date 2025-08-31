@@ -1379,7 +1379,7 @@ pre code {
     vertical-align: middle;
   }
   .links-of-author a::before {
-    background: #c62f08;
+    background: #ff45e2;
     display: inline-block;
     margin-right: 3px;
     transform: translateY(-2px);
@@ -3316,12 +3316,13 @@ body {
 }
 .scroll-indicator {
   position: absolute;
-  bottom: 1.5rem;
+  bottom: 0.5rem;
   left: 50%;
   transform: translateX(-50%);
   color: rgba(255,255,255,0.7);
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 10;
 }
 .scroll-indicator:hover {
   color: rgba(255,255,255,0.9);
