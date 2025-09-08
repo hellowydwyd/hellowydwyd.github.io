@@ -1,190 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>MovieChat</title>
-    <url>/2025/09/03/MovieChat/</url>
-    <content><![CDATA[<h1 id="MovieChat技术报告与补充材料详细总结"><a href="#MovieChat技术报告与补充材料详细总结" class="headerlink" title="MovieChat技术报告与补充材料详细总结"></a>MovieChat技术报告与补充材料详细总结</h1><h2 id="一、研究概述"><a href="#一、研究概述" class="headerlink" title="一、研究概述"></a>一、研究概述</h2><p>MovieChat是由浙江大学、华盛顿大学等机构联合提出的长视频理解框架，创新性融合视觉模型与大型语言模型（LLMs），首次实现超10K帧长视频的交互式理解。其核心突破在于借鉴Atkinson-Shiffrin记忆模型，设计短期-长期内存机制，解决长视频理解中计算复杂度高、内存成本大、长期时间关联难三大核心挑战。同时，研究团队发布MovieChat-1K基准数据集，填补长视频细粒度标注与标准化评估空白，相关成果以技术报告形式呈现，含完整方案设计、实验验证及补充分析。</p>
-<h2 id="二、研究背景与相关工作"><a href="#二、研究背景与相关工作" class="headerlink" title="二、研究背景与相关工作"></a>二、研究背景与相关工作</h2><h3 id="1-技术背景"><a href="#1-技术背景" class="headerlink" title="1. 技术背景"></a>1. 技术背景</h3><ul>
-<li><strong>多模态大语言模型（MLLMs）趋势</strong>：LLMs在自然语言处理领域取得突破后，融合视觉等模态的MLLMs成为通用人工智能（AGI）重要路径，可完成感知（物体识别、位置判断等）、常识推理、代码推理等任务，提供类人交互体验，但现有视频MLLMs仅能处理极少帧视频。</li>
-<li><strong>长视频理解痛点</strong>：现有方法受限于计算与内存资源，无法处理超1分钟长视频，且缺乏针对长视频的标准化评估基准，难以验证模型长期时间关联能力。</li>
-</ul>
-<h3 id="2-相关工作梳理"><a href="#2-相关工作梳理" class="headerlink" title="2. 相关工作梳理"></a>2. 相关工作梳理</h3><table>
-<thead>
-<tr>
-<th>研究领域</th>
-<th>代表性成果</th>
-<th>局限性</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>多模态大语言模型</td>
-<td>Flamingo（跨模态少样本学习）、BLIP-2（冻结图像编码器与LLM的预训练）、MiniGPT4（单投影层对齐视觉与LLM）、VideoChat（视频基础模型与LLM融合）、VideoLLaMA（基于ImageBind与LLaMA的跨模态训练）</td>
-<td>均无法处理长视频，存在计算复杂、内存成本高、长期时间关联弱问题</td>
-</tr>
-<tr>
-<td>长视频理解</td>
-<td>MIST（通过分段与区域选择提升计算效率）、Kinetics-400衍生数据集（事件边界检测）、MovieQA（电影领域问答）</td>
-<td>模型依赖3D CNN等传统架构，数据集缺乏长视频细粒度标注与多维度评估</td>
-</tr>
-<tr>
-<td>视觉任务内存模型</td>
-<td>MeMOT（多目标跟踪的时空内存）、XMem（长视频目标分割的多独立内存存储）</td>
-<td>未与LLM结合，无法支持长视频的语义级理解与交互</td>
-</tr>
-</tbody></table>
-<h2 id="三、MovieChat核心方案"><a href="#三、MovieChat核心方案" class="headerlink" title="三、MovieChat核心方案"></a>三、MovieChat核心方案</h2><h3 id="1-整体架构"><a href="#1-整体架构" class="headerlink" title="1. 整体架构"></a>1. 整体架构</h3><p>MovieChat由四大核心组件构成，架构如图2所示：</p>
-<ul>
-<li><strong>帧级视觉特征提取器</strong>：采用图像预训练模型（EVA-CLIP的ViT-G&#x2F;14、BLIP-2的Q-Former），避免依赖文本对齐弱的视频基础模型，通过滑动窗口提取帧特征，公式为(B_{n}&#x3D;\left{x_{i}&#x3D;\mathcal{V}\left(v_{i}\right) | \forall i&#x3D;1, …, C\right})（(B_n)为第n个滑动窗口的视频片段特征，C为窗口帧数量）。</li>
-<li><strong>短期内存（S）</strong>：固定长度FIFO队列缓冲区，存储未处理的帧令牌，容量(K&#x3D;C×G)（G为滑动次数），满容量时将早期令牌传入内存整合模块，清空后用整合结果重新初始化，实现滑动窗口间信息传递。</li>
-<li><strong>长期内存（L）</strong>：通过内存整合算法（Algorithm 1）合并相似相邻帧，解决“灾难性遗忘”与内存冗余问题。计算相邻帧余弦相似度(s&#x3D;\frac{1}{N} \sum <em>{j&#x3D;1}^{N}\left[ cos \left(x</em>{i}^{j},x_{i+1}^{j}\right) \right])（N为令牌数），贪心合并至预设帧数(R_L)，并采用分层分解位置编码将长度扩展至(n^2)，适配长序列需求。</li>
-<li><strong>视频投影层与LLM</strong>：将视频特征（短期&#x2F;长期内存+当前帧，依推理模式选择）通过Q-Former与线性投影层映射至文本空间，输入LLM（如LLaMA）生成交互回答，公式为(A&#x3D;{\mathcal {O}}(Q,{\mathcal {P}}(V)))（A为回答，Q为问题，P为投影函数）。</li>
-</ul>
-<h3 id="2-推理模式"><a href="#2-推理模式" class="headerlink" title="2. 推理模式"></a>2. 推理模式</h3><ul>
-<li><strong>全局模式</strong>：仅使用长期内存作为视频表征，适用于整体视频理解（如“视频主要讲述什么内容”）。</li>
-<li><strong>断点模式</strong>：融合短期内存、长期内存与当前帧特征，针对特定时刻理解（如“第4250帧时人物在做什么”），利用事件连续性提升局部场景判断准确性。</li>
-</ul>
-<h3 id="3-内存效率优势"><a href="#3-内存效率优势" class="headerlink" title="3. 内存效率优势"></a>3. 内存效率优势</h3><p>如图1所示，MovieChat每帧VRAM成本仅21.3KB，是Video-LLaMA（187MB&#x2F;帧）的1&#x2F;10000，24GB显卡可处理超10K帧视频，而现有方法仅支持100帧左右，在长视频处理的硬件适配性上实现量级突破。</p>
-<h2 id="四、MovieChat-1K基准数据集"><a href="#四、MovieChat-1K基准数据集" class="headerlink" title="四、MovieChat-1K基准数据集"></a>四、MovieChat-1K基准数据集</h2><h3 id="1-数据集规模与构成"><a href="#1-数据集规模与构成" class="headerlink" title="1. 数据集规模与构成"></a>1. 数据集规模与构成</h3><ul>
-<li><strong>核心数据</strong>：含1K条长视频（源自15类影视内容，如纪录片21.8%、动画电影17.0%、侦探片15.1%）、14K条人工标注问答对，每条视频配套1个全局描述、3个全局模式问答、10个带时间戳的断点模式问答。</li>
-<li><strong>视频特征</strong>：90%视频帧数为10K-12K（对应时长约7-8分钟，按25fps计算），仅8.6%视频帧数少于10K，14.6%超12K，覆盖长视频典型场景。</li>
-<li><strong>问题类型</strong>：开放式问题占75%（以“What”“How”开头，如“How many people are there in the room?”），选择题占25%（以“Do&#x2F;Is”开头），答案涵盖物体、时间、场景、动作等维度（如图4词云所示）。</li>
-</ul>
-<h3 id="2-数据集特色与对比"><a href="#2-数据集特色与对比" class="headerlink" title="2. 数据集特色与对比"></a>2. 数据集特色与对比</h3><table>
-<thead>
-<tr>
-<th>数据集</th>
-<th>平均时长（分钟）</th>
-<th>标注类型</th>
-<th>问答对数量</th>
-<th>优势</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>MovieQA</td>
-<td>3.5</td>
-<td>电影问答</td>
-<td>14.9K</td>
-<td>早期限定电影领域</td>
-</tr>
-<tr>
-<td>MovieGraphs</td>
-<td>0.73</td>
-<td>场景描述</td>
-<td>-</td>
-<td>仅含短片段 caption</td>
-</tr>
-<tr>
-<td>MovieNet</td>
-<td>2.1</td>
-<td>字幕&#x2F;剧情梗概</td>
-<td>-</td>
-<td>无问答标注，聚焦全片</td>
-</tr>
-<tr>
-<td><strong>MovieChat-1K</strong></td>
-<td><strong>9.4</strong></td>
-<td>全局描述+问答（带时间戳）</td>
-<td><strong>13K</strong></td>
-<td>首部长视频细粒度标注，支持全局&#x2F;断点双模式评估</td>
-</tr>
-</tbody></table>
-<h2 id="五、实验验证与结果分析"><a href="#五、实验验证与结果分析" class="headerlink" title="五、实验验证与结果分析"></a>五、实验验证与结果分析</h2><h3 id="1-实验设置"><a href="#1-实验设置" class="headerlink" title="1. 实验设置"></a>1. 实验设置</h3><ul>
-<li><strong>对比模型</strong>：选取Video Chat、Video LLaMA、Video-ChatGPT等主流视频MLLMs作为基线，评估时根据基线模型帧长限制进行采样（如Video Chat仅支持32帧，对长视频均匀采样至32帧）。</li>
-<li><strong>评估方式</strong>：结合GPT-3.5、Claude大模型辅助评估与人工盲评，对问答准确性（0-100）与生成质量（0-5分，含信息正确性CI、细节导向DO、上下文理解CU、时间理解TU、一致性CO）进行量化，同时通过手动过滤解决LLM评估中“判断与分数矛盾”问题（如“yes”却给0分），提升结果可靠性。</li>
-</ul>
-<h3 id="2-定量评估结果"><a href="#2-定量评估结果" class="headerlink" title="2. 定量评估结果"></a>2. 定量评估结果</h3><h4 id="（1）短视频任务（验证泛化性）"><a href="#（1）短视频任务（验证泛化性）" class="headerlink" title="（1）短视频任务（验证泛化性）"></a>（1）短视频任务（验证泛化性）</h4><table>
-<thead>
-<tr>
-<th>任务&#x2F;指标</th>
-<th>MovieChat表现</th>
-<th>对比模型优势</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>MSVD-QA（准确率&#x2F;Score）</td>
-<td>75.2&#x2F;3.8</td>
-<td>超Video-ChatGPT（64.9&#x2F;3.3）、Video Chat（56.3&#x2F;2.8）</td>
-</tr>
-<tr>
-<td>MSRVTT-QA（准确率&#x2F;Score）</td>
-<td>52.7&#x2F;2.6</td>
-<td>仅次于Video-ChatGPT（49.3&#x2F;2.8），非专项优化仍达前列</td>
-</tr>
-<tr>
-<td>ActivityNet-QA（准确率&#x2F;Score）</td>
-<td>45.7&#x2F;3.4</td>
-<td>大幅领先所有基线，生成质量CI 2.76、DO 2.93，均为最优</td>
-</tr>
-</tbody></table>
-<h4 id="（2）长视频任务（MovieChat-1K测试集）"><a href="#（2）长视频任务（MovieChat-1K测试集）" class="headerlink" title="（2）长视频任务（MovieChat-1K测试集）"></a>（2）长视频任务（MovieChat-1K测试集）</h4><table>
-<thead>
-<tr>
-<th>评估维度</th>
-<th>全局模式（2048帧）</th>
-<th>断点模式（2048帧）</th>
-<th>对比优势</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>准确率&#x2F;Score</td>
-<td>62.3&#x2F;3.23</td>
-<td>48.3&#x2F;2.57</td>
-<td>远超Video Chat（32帧：57.8&#x2F;3.00）、Video-ChatGPT（100帧：47.6&#x2F;2.55）</td>
-</tr>
-<tr>
-<td>生成质量（CI&#x2F;DO&#x2F;CU&#x2F;TU&#x2F;CO）</td>
-<td>3.11&#x2F;2.93&#x2F;3.24&#x2F;3.17&#x2F;3.25</td>
-<td>2.64&#x2F;2.60&#x2F;2.87&#x2F;2.49&#x2F;3.08</td>
-<td>所有指标均优于基线，尤其时间理解（TU）稳定性显著</td>
-</tr>
-<tr>
-<td>问题类型适配</td>
-<td>选择题准确率80.9&#x2F;Score 4.02；开放式准确率57.5&#x2F;Score 3.74</td>
-<td>选择题准确率62.4&#x2F;Score 3.65；开放式准确率46.7&#x2F;2.70</td>
-<td>双类型问题均领先，验证模型鲁棒性</td>
-</tr>
-</tbody></table>
-<h3 id="3-消融实验"><a href="#3-消融实验" class="headerlink" title="3. 消融实验"></a>3. 消融实验</h3><ul>
-<li><strong>内存机制有效性</strong>：含内存机制的模型在全局模式准确率（67.8 vs 51.4）、生成质量（CI 3.32 vs 3.30）等指标上显著优于无内存版本，证明短期-长期内存设计是长视频理解的关键。</li>
-<li><strong>超参数影响</strong>：<ul>
-<li>内存长度：短期内存18帧、长期内存256帧时性能最优，过短则信息不足，过长则冗余；</li>
-<li>整合长度：合并为2帧时平衡压缩率与信息保留，过短易丢失细节，过长则压缩不足；</li>
-<li>初始化方式：用合并令牌初始化短期内存优于“最后几帧”“均匀采样”，可减少信息断裂。</li>
-</ul>
-</li>
-<li><strong>LLM适配性</strong>：使用LLaMA（64）作为解码器时，全局模式准确率67.8&#x2F;Score 3.81，略优于LLaMA2（64.2&#x2F;3.79），因LLaMA2虽能估计时间占比，但与数据集问答匹配度稍低。</li>
-</ul>
-<h3 id="4-定性案例分析"><a href="#4-定性案例分析" class="headerlink" title="4. 定性案例分析"></a>4. 定性案例分析</h3><p>在烹饪教程、《疯狂动物城》《权力的游戏》等场景中，MovieChat表现出优异的长视频理解能力：</p>
-<ul>
-<li><strong>全局场景</strong>：回答“烹饪牛排哪一步耗时最长”时，准确指出“切配食材”（而非基线模型误判的“煎制”），符合视频中切配占比超40%的实际情况。</li>
-<li><strong>断点场景</strong>：针对《疯狂动物城》第3930帧“Chief Bogo在做什么”，精准描述“在暗室桌子前用笔记本电脑通话”，无幻觉信息，而Video-ChatGPT混淆角色动作。</li>
-<li><strong>复杂剧情</strong>：解析《鬼怪》片段时，能串联“公园相遇-街道跟随-阳台对话”等多场景时间线，基线模型易遗漏中间情节。</li>
-</ul>
-<h2 id="六、补充材料关键内容"><a href="#六、补充材料关键内容" class="headerlink" title="六、补充材料关键内容"></a>六、补充材料关键内容</h2><h3 id="1-内存整合算法细节"><a href="#1-内存整合算法细节" class="headerlink" title="1. 内存整合算法细节"></a>1. 内存整合算法细节</h3><p>如图A1所示，内存整合分四步：1）构建相邻帧对；2）计算余弦相似度；3）选择相似度最高的帧对合并（加权平均）；4）重复操作至帧数达(R_L)。算法无额外参数，可无缝接入帧级编码器，虽增加少量计算，但内存节省收益远超开销。</p>
-<h3 id="2-数据集补充统计"><a href="#2-数据集补充统计" class="headerlink" title="2. 数据集补充统计"></a>2. 数据集补充统计</h3><ul>
-<li><strong>视频类别分布</strong>：除主要类别外，犯罪片（3.8%）、科幻片（3.7%）、战争片（3.7%）等小众类别均有覆盖，确保场景多样性（表B1）。</li>
-<li><strong>文本长度</strong>：问题长度多为5-15词，答案多为2-10词，caption平均长度121词，67.8% caption为100-149词，符合自然语言交互习惯（图B3-B5）。</li>
-<li><strong>动作丰富度</strong>：caption含102,988个独特动词，与WebVid10M（109,485个）接近，证明场景动作覆盖全面（图B6）。</li>
-</ul>
-<h3 id="3-评估方法补充"><a href="#3-评估方法补充" class="headerlink" title="3. 评估方法补充"></a>3. 评估方法补充</h3><ul>
-<li><strong>LLM提示模板</strong>：对短视频问答，提示GPT-3.5“聚焦语义匹配，认可同义词&#x2F; paraphrase”，输出“yes&#x2F;no+0-5分”（图C1）；对生成质量，从CI&#x2F;DO&#x2F;CU&#x2F;TU&#x2F;CO五维度分别打分，确保评估维度一致性。</li>
-<li><strong>人工过滤策略</strong>：对LLM评估结果中“判断与分数矛盾”（如“yes+0分”“no+5分”）的样本手动剔除，提升数据可靠性，该策略使结果波动降低15%。</li>
-<li><strong>相关性验证</strong>：GPT-3.5、Claude与人工盲评的Pearson相关系数均超0.92（Claude与人工达0.978），证明评估方法一致性高（表J9、图J3）。</li>
-</ul>
-<h3 id="4-更多实验结果"><a href="#4-更多实验结果" class="headerlink" title="4. 更多实验结果"></a>4. 更多实验结果</h3><ul>
-<li><strong>分模式生成质量</strong>：断点模式下，MovieChat的CI 2.64、CO 3.08，仍领先Video-ChatGPT（CI 2.62、CO 2.96），验证局部场景理解能力（表I8）；</li>
-<li><strong>单评估方法结果</strong>：仅用GPT-3.5评估时，MovieChat全局模式准确率67.8&#x2F;Score 3.81，显著高于Video-ChatGPT（44.2&#x2F;2.71），与综合评估趋势一致（表K10-K18）；</li>
-<li><strong>超参数分析</strong>：短期&#x2F;长期内存长度增加时，模型性能先升后降，因信息扩展与细节丢失存在平衡，需根据视频复杂度动态调整（图5、Section L）。</li>
-</ul>
-<h2 id="七、研究局限与结论"><a href="#七、研究局限与结论" class="headerlink" title="七、研究局限与结论"></a>七、研究局限与结论</h2><h3 id="1-局限性"><a href="#1-局限性" class="headerlink" title="1. 局限性"></a>1. 局限性</h3><ul>
-<li><strong>感知能力受限</strong>：依赖图像预训练模型提取特征，未利用视频专属时序信息（如动作连贯性），复杂动态场景识别精度待提升；</li>
-<li><strong>时间精度不足</strong>：仅能粗略估计事件时长占比（如“切配耗时最长”），无法精确到秒级（如“切配耗时3分20秒”）；</li>
-<li><strong>场景泛化性</strong>：数据集以影视内容为主，对监控视频、医学影像等专业领域长视频的适配性需验证。</li>
-</ul>
-<h3 id="2-结论"><a href="#2-结论" class="headerlink" title="2. 结论"></a>2. 结论</h3><p>MovieChat通过创新的短期-长期内存机制，首次实现超10K帧长视频的高效理解，在计算效率、内存成本、任务性能上均达当前最优，同时发布的MovieChat-1K为长视频理解领域提供首个标准化基准。该研究为多模态模型处理长序列数据提供新思路，未来可结合视频专用编码器与更精细的时间建模，进一步提升长视频理解的精度与泛化性。</p>
-]]></content>
-  </entry>
-  <entry>
     <title>Sreenplay</title>
     <url>/2025/09/03/Sreenplay/</url>
     <content><![CDATA[<h1 id="MM-Screenplayer：零样本长视频理解系统（CVPR’2024-LOVEU-Track1冠军方案）深度解析"><a href="#MM-Screenplayer：零样本长视频理解系统（CVPR’2024-LOVEU-Track1冠军方案）深度解析" class="headerlink" title="MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析"></a>MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析</h1><p>本文（arXiv:2406.17309）提出的<strong>MM-Screenplayer</strong>是一款具备多模态感知能力的长视频理解系统，核心目标是解决“长视频问答（LVQA）”任务中“处理时长超5分钟视频”“兼顾全局语义与局部时间定位”的核心难点，最终以零样本方式斩获CVPR’2024 LOVEU Track1挑战赛冠军。以下从研究背景、核心方法、实验验证、结论与价值四方面展开详细解析。</p>
@@ -359,142 +175,9 @@
 <li><strong>智能视频问答系统</strong>：应用于教育（如“课程视频中第15分钟讲解的公式推导步骤”）、安防（如“监控视频中第30秒出现的异常声音来源”）等领域，提供精准问答支持。</li>
 </ul>
 ]]></content>
-  </entry>
-  <entry>
-    <title>我的第一篇技术博客</title>
-    <url>/2025/08/31/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h1 id="欢迎来到我的技术世界！🚀"><a href="#欢迎来到我的技术世界！🚀" class="headerlink" title="欢迎来到我的技术世界！🚀"></a>欢迎来到我的技术世界！🚀</h1><p>大家好！我是 <strong>YuDong Wang</strong>，欢迎来到我的技术博客。在这里，我将分享：</p>
-<h2 id="📝-博客内容"><a href="#📝-博客内容" class="headerlink" title="📝 博客内容"></a>📝 博客内容</h2><h3 id="🛠️-技术分享"><a href="#🛠️-技术分享" class="headerlink" title="🛠️ 技术分享"></a>🛠️ 技术分享</h3><ul>
-<li><strong>前端开发</strong>：JavaScript、React、Vue.js 等现代前端技术</li>
-<li><strong>后端开发</strong>：Node.js、Python、数据库设计等</li>
-<li><strong>工具使用</strong>：Git、Docker、CI&#x2F;CD 等开发工具</li>
-</ul>
-<h3 id="💡-项目经验"><a href="#💡-项目经验" class="headerlink" title="💡 项目经验"></a>💡 项目经验</h3><ul>
-<li>实际项目中遇到的问题和解决方案</li>
-<li>代码优化和性能提升经验</li>
-<li>架构设计思考</li>
-</ul>
-<h3 id="🎯-学习笔记"><a href="#🎯-学习笔记" class="headerlink" title="🎯 学习笔记"></a>🎯 学习笔记</h3><ul>
-<li>新技术学习心得</li>
-<li>读书笔记和总结</li>
-<li>技术趋势分析</li>
-</ul>
-<h2 id="🎨-博客特色"><a href="#🎨-博客特色" class="headerlink" title="🎨 博客特色"></a>🎨 博客特色</h2><p>这个博客使用 <strong>Hexo + Fluid</strong> 主题构建，具有以下特点：</p>
-<p><img src="https://source.unsplash.com/800x400/?website,design" alt="博客界面预览"></p>
-<ul>
-<li>✨ 现代化设计</li>
-<li>🌙 支持暗色模式  </li>
-<li>🔍 全站搜索功能</li>
-<li>📱 响应式布局</li>
-<li>🚀 快速加载</li>
-</ul>
-<h2 id="💻-开发环境"><a href="#💻-开发环境" class="headerlink" title="💻 开发环境"></a>💻 开发环境</h2><p>我的主要开发环境和工具：</p>
-<p><img src="https://source.unsplash.com/800x400/?developer,workspace" alt="开发环境"></p>
-<ul>
-<li><strong>编辑器</strong>: VS Code</li>
-<li><strong>版本控制</strong>: Git &amp; GitHub</li>
-<li><strong>终端</strong>: Windows Terminal</li>
-<li><strong>浏览器</strong>: Chrome DevTools</li>
-</ul>
-<h2 id="📞-联系方式"><a href="#📞-联系方式" class="headerlink" title="📞 联系方式"></a>📞 联系方式</h2><ul>
-<li><strong>GitHub</strong>: <a href="https://github.com/hellowydwyd">hellowydwyd</a></li>
-<li><strong>邮箱</strong>: <a href="mailto:&#104;&#101;&#x6c;&#x6c;&#x6f;&#119;&#x79;&#x64;&#119;&#x79;&#x64;&#64;&#49;&#54;&#x33;&#46;&#99;&#111;&#109;">hellowydwyd@163.com</a></li>
-</ul>
-<hr>
-<p>感谢你的阅读！如果你有任何问题或建议，欢迎通过上述方式联系我。</p>
-<blockquote>
-<p>持续学习，持续分享，让我们一起成长！💪</p>
-</blockquote>
-]]></content>
       <categories>
-        <category>技术分享</category>
+        <category>论文阅读</category>
       </categories>
-      <tags>
-        <tag>技术</tag>
-        <tag>博客</tag>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Video-XL-2</title>
-    <url>/2025/09/01/Video-XL-2/</url>
-    <content><![CDATA[<h1 id="Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型"><a href="#Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型" class="headerlink" title="Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型"></a>Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型</h1><h2 id="一、研究背景与挑战"><a href="#一、研究背景与挑战" class="headerlink" title="一、研究背景与挑战"></a>一、研究背景与挑战</h2><p>近年来，多模态大型语言模型（MLLMs）在视频理解领域取得显著进展，但处理长视频输入时仍面临核心挑战：长视频包含大量帧，经视觉编码后生成海量视觉令牌，导致模型内存占用和计算成本极高，现有模型难以在长视频理解中兼顾高性能与高效率。传统令牌缩减方法虽能缓解部分压力，却无法解决输入令牌数量增加带来的计算量二次增长问题，还可能造成关键信息丢失。</p>
-<h2 id="二、模型核心设计"><a href="#二、模型核心设计" class="headerlink" title="二、模型核心设计"></a>二、模型核心设计</h2><h3 id="（一）整体架构"><a href="#（一）整体架构" class="headerlink" title="（一）整体架构"></a>（一）整体架构</h3><p>Video-XL-2由四大核心组件构成，形成端到端的长视频处理 pipeline：</p>
-<ol>
-<li><strong>视觉编码器</strong>：采用SigLIP模型，将单张图像或视频帧编码为密集视觉特征。</li>
-<li><strong>动态令牌合成（DTS）模块</strong>：结合时空注意力块与3D卷积层，以4个连续帧为一组处理视觉特征，压缩时空冗余的同时捕捉动态运动模式，该设计继承自Video-XL-Pro并优化。</li>
-<li><strong>MLP投影器</strong>：两层结构，将DTS输出的压缩特征投影到大型语言模型（LLM）的嵌入空间，实现跨模态对齐。</li>
-<li><strong>大型语言模型（LLM）</strong>：采用Qwen2.5-7B模型，处理多模态输入并完成理解任务。</li>
-</ol>
-<p>此外，模型通过在视觉令牌序列中插入时间戳令牌增强时间感知能力，且将单图像重复4次以对齐视频模态输入格式。</p>
-<h3 id="（二）视觉输入处理策略"><a href="#（二）视觉输入处理策略" class="headerlink" title="（二）视觉输入处理策略"></a>（二）视觉输入处理策略</h3><ol>
-<li><strong>帧采样策略</strong>：先以1 FPS采样原始视频，若采样帧数低于预设上限，则在不超过最大采样率的前提下提高采样率，确保尽可能覆盖关键帧。</li>
-<li><strong>时间信息注入</strong>：每4个连续帧组前添加显式时间戳令牌（如“Time: 4.0 Second”），同时在DTS模块中为每组帧融入隐式软时间嵌入，提供细粒度时间线索。</li>
-</ol>
-<h3 id="（三）增量训练策略"><a href="#（三）增量训练策略" class="headerlink" title="（三）增量训练策略"></a>（三）增量训练策略</h3><p>分四阶段逐步构建模型的视觉理解能力，各阶段目标、训练模块与数据如下表所示：</p>
-<table>
-<thead>
-<tr>
-<th>阶段</th>
-<th>目标</th>
-<th>训练模块</th>
-<th>训练数据</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Stage 1</td>
-<td>初始化DTS模块权重</td>
-<td>DTS模块</td>
-<td>25万图像-字幕对、75万短视频-字幕对</td>
-</tr>
-<tr>
-<td>Stage 2</td>
-<td>初始化MLP投影器权重</td>
-<td>MLP投影器</td>
-<td>200万图像-字幕对、40万短视频-字幕对</td>
-</tr>
-<tr>
-<td>Stage 3</td>
-<td>构建视觉理解基础</td>
-<td>全参数</td>
-<td>500万图像-字幕对、270万短视频-字幕对</td>
-</tr>
-<tr>
-<td>Stage 4</td>
-<td>支持多样化视觉任务</td>
-<td>全参数</td>
-<td>300万图像指令数据、250万视频指令数据</td>
-</tr>
-</tbody></table>
-<h2 id="三、效率优化核心创新"><a href="#三、效率优化核心创新" class="headerlink" title="三、效率优化核心创新"></a>三、效率优化核心创新</h2><p>针对LLM推理的预填充和解码两阶段，提出任务感知KV稀疏化策略，大幅降低资源消耗：</p>
-<h3 id="（一）基于块的预填充（Chunk-based-Pre-filling）"><a href="#（一）基于块的预填充（Chunk-based-Pre-filling）" class="headerlink" title="（一）基于块的预填充（Chunk-based Pre-filling）"></a>（一）基于块的预填充（Chunk-based Pre-filling）</h3><ol>
-<li><strong>核心思路</strong>：将视觉令牌序列划分为等长块，块内计算全注意力，块间通过两种方式建立关联以平衡效率与信息完整性：<ul>
-<li>允许当前块关注前序块的历史时间戳令牌，获取粗粒度历史信息，且内存开销低；</li>
-<li>采用滑动块窗口（设固定步长），使当前块可关注前序块的重叠部分，获取细粒度视觉信息。</li>
-</ul>
-</li>
-<li><strong>效果</strong>：将预填充阶段计算复杂度从令牌长度的二次方降至近似线性，显著减少内存占用与计算时间。</li>
-</ol>
-<h3 id="（二）双层KV解码（Bi-level-KVs-Decoding）"><a href="#（二）双层KV解码（Bi-level-KVs-Decoding）" class="headerlink" title="（二）双层KV解码（Bi-level KVs Decoding）"></a>（二）双层KV解码（Bi-level KVs Decoding）</h3><ol>
-<li><strong>KV层级构建</strong>：预填充阶段生成的原始KV为“密集KV”，对每个块的密集KV进行池化操作得到“稀疏KV”，形成“密集-稀疏”双层KV表示，且与视频输入块一一对应，存储于离线内存。</li>
-<li><strong>任务感知选择</strong>：输入文本查询后，通过多模态嵌入器、注意力评分等方式计算各视频块与查询的相关性得分，高相关块加载密集KV以保留细粒度信息，低相关块加载稀疏KV以提供全局背景，最终拼接为“混合KV集”。</li>
-<li><strong>效果</strong>：解码阶段KV缓存占用减少38.8%（平均），同时弥补了块预填充可能带来的性能损失。</li>
-</ol>
-<h2 id="四、实验结果与性能优势"><a href="#四、实验结果与性能优势" class="headerlink" title="四、实验结果与性能优势"></a>四、实验结果与性能优势</h2><h3 id="（一）基准测试表现"><a href="#（一）基准测试表现" class="headerlink" title="（一）基准测试表现"></a>（一）基准测试表现</h3><p>在多个长视频理解与时间定位基准测试中，Video-XL-2（8B参数）展现出开源轻量模型中的顶尖性能：</p>
-<ul>
-<li><strong>MLVU基准</strong>：开发集准确率74.8%，超过GPT-4o（64.6%）及同规模模型（如VideoChat-Flash-8B的74.6%），测试集准确率52.2%，领先开源轻量模型；</li>
-<li><strong>VideoMME基准</strong>：无字幕设置下准确率66.6%，高于InternVL2.5-8B（64.2%）、Qwen-2.5-VL-8B（65.1%）；</li>
-<li><strong>LongVideoBench&#x2F;LVBench</strong>：分别取得第二、第一的排名，在超长视频理解任务中优势显著；</li>
-<li><strong>时间定位任务</strong>：Charades-STA基准准确率28.6%，V-STaR基准准确率21.3%，体现强时间感知能力。</li>
-</ul>
-<h3 id="（二）效率优势"><a href="#（二）效率优势" class="headerlink" title="（二）效率优势"></a>（二）效率优势</h3><ol>
-<li><strong>计算量</strong>：平均计算量（FLOPs）仅142.0G，为同规模模型中最低（如VideoChat-Flash-8B为142.8G，LLaVA-Video-8B为1.4×10³G）；</li>
-<li><strong>内存占用</strong>：单张80GB NVIDIA A100 GPU可处理10000帧，24GB GPU可处理数千帧，远超Video-XL的2048帧上限；</li>
-<li><strong>推理速度</strong>：预填充时间随输入帧数近似线性增长，支持高效处理超长视频。</li>
-</ol>
-<h3 id="（三）“大海捞针”测试"><a href="#（三）“大海捞针”测试" class="headerlink" title="（三）“大海捞针”测试"></a>（三）“大海捞针”测试</h3><p>在1小时以上长视频（取自VideoMME）的关键信息检索任务中，Video-XL-2可处理10000帧并精准捕捉关键信息，而Video-XL仅能处理2048帧，验证了其超长视频处理能力。</p>
-<h2 id="五、结论与未来方向"><a href="#五、结论与未来方向" class="headerlink" title="五、结论与未来方向"></a>五、结论与未来方向</h2><p>Video-XL-2通过“动态令牌合成+增量训练”构建强视觉理解能力，以“块预填充+双层KV解码”实现高效推理，在长视频理解任务中兼顾性能与效率，成为实用的超长视频处理方案。未来将进一步扩展模型对更长视频的处理能力，并探索其在更多场景的应用。</p>
-]]></content>
       <tags>
         <tag>论文阅读</tag>
         <tag>视频理解</tag>
@@ -884,5 +567,345 @@
 </tr>
 </tbody></table>
 ]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>视频理解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MovieChat</title>
+    <url>/2025/09/03/MovieChat/</url>
+    <content><![CDATA[<h1 id="MovieChat技术报告与补充材料详细总结"><a href="#MovieChat技术报告与补充材料详细总结" class="headerlink" title="MovieChat技术报告与补充材料详细总结"></a>MovieChat技术报告与补充材料详细总结</h1><h2 id="一、研究概述"><a href="#一、研究概述" class="headerlink" title="一、研究概述"></a>一、研究概述</h2><p>MovieChat是由浙江大学、华盛顿大学等机构联合提出的长视频理解框架，创新性融合视觉模型与大型语言模型（LLMs），首次实现超10K帧长视频的交互式理解。其核心突破在于借鉴Atkinson-Shiffrin记忆模型，设计短期-长期内存机制，解决长视频理解中计算复杂度高、内存成本大、长期时间关联难三大核心挑战。同时，研究团队发布MovieChat-1K基准数据集，填补长视频细粒度标注与标准化评估空白，相关成果以技术报告形式呈现，含完整方案设计、实验验证及补充分析。</p>
+<h2 id="二、研究背景与相关工作"><a href="#二、研究背景与相关工作" class="headerlink" title="二、研究背景与相关工作"></a>二、研究背景与相关工作</h2><h3 id="1-技术背景"><a href="#1-技术背景" class="headerlink" title="1. 技术背景"></a>1. 技术背景</h3><ul>
+<li><strong>多模态大语言模型（MLLMs）趋势</strong>：LLMs在自然语言处理领域取得突破后，融合视觉等模态的MLLMs成为通用人工智能（AGI）重要路径，可完成感知（物体识别、位置判断等）、常识推理、代码推理等任务，提供类人交互体验，但现有视频MLLMs仅能处理极少帧视频。</li>
+<li><strong>长视频理解痛点</strong>：现有方法受限于计算与内存资源，无法处理超1分钟长视频，且缺乏针对长视频的标准化评估基准，难以验证模型长期时间关联能力。</li>
+</ul>
+<h3 id="2-相关工作梳理"><a href="#2-相关工作梳理" class="headerlink" title="2. 相关工作梳理"></a>2. 相关工作梳理</h3><table>
+<thead>
+<tr>
+<th>研究领域</th>
+<th>代表性成果</th>
+<th>局限性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多模态大语言模型</td>
+<td>Flamingo（跨模态少样本学习）、BLIP-2（冻结图像编码器与LLM的预训练）、MiniGPT4（单投影层对齐视觉与LLM）、VideoChat（视频基础模型与LLM融合）、VideoLLaMA（基于ImageBind与LLaMA的跨模态训练）</td>
+<td>均无法处理长视频，存在计算复杂、内存成本高、长期时间关联弱问题</td>
+</tr>
+<tr>
+<td>长视频理解</td>
+<td>MIST（通过分段与区域选择提升计算效率）、Kinetics-400衍生数据集（事件边界检测）、MovieQA（电影领域问答）</td>
+<td>模型依赖3D CNN等传统架构，数据集缺乏长视频细粒度标注与多维度评估</td>
+</tr>
+<tr>
+<td>视觉任务内存模型</td>
+<td>MeMOT（多目标跟踪的时空内存）、XMem（长视频目标分割的多独立内存存储）</td>
+<td>未与LLM结合，无法支持长视频的语义级理解与交互</td>
+</tr>
+</tbody></table>
+<h2 id="三、MovieChat核心方案"><a href="#三、MovieChat核心方案" class="headerlink" title="三、MovieChat核心方案"></a>三、MovieChat核心方案</h2><h3 id="1-整体架构"><a href="#1-整体架构" class="headerlink" title="1. 整体架构"></a>1. 整体架构</h3><p>MovieChat由四大核心组件构成，架构如图2所示：</p>
+<ul>
+<li><strong>帧级视觉特征提取器</strong>：采用图像预训练模型（EVA-CLIP的ViT-G&#x2F;14、BLIP-2的Q-Former），避免依赖文本对齐弱的视频基础模型，通过滑动窗口提取帧特征，公式为(B_{n}&#x3D;\left{x_{i}&#x3D;\mathcal{V}\left(v_{i}\right) | \forall i&#x3D;1, …, C\right})（(B_n)为第n个滑动窗口的视频片段特征，C为窗口帧数量）。</li>
+<li><strong>短期内存（S）</strong>：固定长度FIFO队列缓冲区，存储未处理的帧令牌，容量(K&#x3D;C×G)（G为滑动次数），满容量时将早期令牌传入内存整合模块，清空后用整合结果重新初始化，实现滑动窗口间信息传递。</li>
+<li><strong>长期内存（L）</strong>：通过内存整合算法（Algorithm 1）合并相似相邻帧，解决“灾难性遗忘”与内存冗余问题。计算相邻帧余弦相似度(s&#x3D;\frac{1}{N} \sum <em>{j&#x3D;1}^{N}\left[ cos \left(x</em>{i}^{j},x_{i+1}^{j}\right) \right])（N为令牌数），贪心合并至预设帧数(R_L)，并采用分层分解位置编码将长度扩展至(n^2)，适配长序列需求。</li>
+<li><strong>视频投影层与LLM</strong>：将视频特征（短期&#x2F;长期内存+当前帧，依推理模式选择）通过Q-Former与线性投影层映射至文本空间，输入LLM（如LLaMA）生成交互回答，公式为(A&#x3D;{\mathcal {O}}(Q,{\mathcal {P}}(V)))（A为回答，Q为问题，P为投影函数）。</li>
+</ul>
+<h3 id="2-推理模式"><a href="#2-推理模式" class="headerlink" title="2. 推理模式"></a>2. 推理模式</h3><ul>
+<li><strong>全局模式</strong>：仅使用长期内存作为视频表征，适用于整体视频理解（如“视频主要讲述什么内容”）。</li>
+<li><strong>断点模式</strong>：融合短期内存、长期内存与当前帧特征，针对特定时刻理解（如“第4250帧时人物在做什么”），利用事件连续性提升局部场景判断准确性。</li>
+</ul>
+<h3 id="3-内存效率优势"><a href="#3-内存效率优势" class="headerlink" title="3. 内存效率优势"></a>3. 内存效率优势</h3><p>如图1所示，MovieChat每帧VRAM成本仅21.3KB，是Video-LLaMA（187MB&#x2F;帧）的1&#x2F;10000，24GB显卡可处理超10K帧视频，而现有方法仅支持100帧左右，在长视频处理的硬件适配性上实现量级突破。</p>
+<h2 id="四、MovieChat-1K基准数据集"><a href="#四、MovieChat-1K基准数据集" class="headerlink" title="四、MovieChat-1K基准数据集"></a>四、MovieChat-1K基准数据集</h2><h3 id="1-数据集规模与构成"><a href="#1-数据集规模与构成" class="headerlink" title="1. 数据集规模与构成"></a>1. 数据集规模与构成</h3><ul>
+<li><strong>核心数据</strong>：含1K条长视频（源自15类影视内容，如纪录片21.8%、动画电影17.0%、侦探片15.1%）、14K条人工标注问答对，每条视频配套1个全局描述、3个全局模式问答、10个带时间戳的断点模式问答。</li>
+<li><strong>视频特征</strong>：90%视频帧数为10K-12K（对应时长约7-8分钟，按25fps计算），仅8.6%视频帧数少于10K，14.6%超12K，覆盖长视频典型场景。</li>
+<li><strong>问题类型</strong>：开放式问题占75%（以“What”“How”开头，如“How many people are there in the room?”），选择题占25%（以“Do&#x2F;Is”开头），答案涵盖物体、时间、场景、动作等维度（如图4词云所示）。</li>
+</ul>
+<h3 id="2-数据集特色与对比"><a href="#2-数据集特色与对比" class="headerlink" title="2. 数据集特色与对比"></a>2. 数据集特色与对比</h3><table>
+<thead>
+<tr>
+<th>数据集</th>
+<th>平均时长（分钟）</th>
+<th>标注类型</th>
+<th>问答对数量</th>
+<th>优势</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MovieQA</td>
+<td>3.5</td>
+<td>电影问答</td>
+<td>14.9K</td>
+<td>早期限定电影领域</td>
+</tr>
+<tr>
+<td>MovieGraphs</td>
+<td>0.73</td>
+<td>场景描述</td>
+<td>-</td>
+<td>仅含短片段 caption</td>
+</tr>
+<tr>
+<td>MovieNet</td>
+<td>2.1</td>
+<td>字幕&#x2F;剧情梗概</td>
+<td>-</td>
+<td>无问答标注，聚焦全片</td>
+</tr>
+<tr>
+<td><strong>MovieChat-1K</strong></td>
+<td><strong>9.4</strong></td>
+<td>全局描述+问答（带时间戳）</td>
+<td><strong>13K</strong></td>
+<td>首部长视频细粒度标注，支持全局&#x2F;断点双模式评估</td>
+</tr>
+</tbody></table>
+<h2 id="五、实验验证与结果分析"><a href="#五、实验验证与结果分析" class="headerlink" title="五、实验验证与结果分析"></a>五、实验验证与结果分析</h2><h3 id="1-实验设置"><a href="#1-实验设置" class="headerlink" title="1. 实验设置"></a>1. 实验设置</h3><ul>
+<li><strong>对比模型</strong>：选取Video Chat、Video LLaMA、Video-ChatGPT等主流视频MLLMs作为基线，评估时根据基线模型帧长限制进行采样（如Video Chat仅支持32帧，对长视频均匀采样至32帧）。</li>
+<li><strong>评估方式</strong>：结合GPT-3.5、Claude大模型辅助评估与人工盲评，对问答准确性（0-100）与生成质量（0-5分，含信息正确性CI、细节导向DO、上下文理解CU、时间理解TU、一致性CO）进行量化，同时通过手动过滤解决LLM评估中“判断与分数矛盾”问题（如“yes”却给0分），提升结果可靠性。</li>
+</ul>
+<h3 id="2-定量评估结果"><a href="#2-定量评估结果" class="headerlink" title="2. 定量评估结果"></a>2. 定量评估结果</h3><h4 id="（1）短视频任务（验证泛化性）"><a href="#（1）短视频任务（验证泛化性）" class="headerlink" title="（1）短视频任务（验证泛化性）"></a>（1）短视频任务（验证泛化性）</h4><table>
+<thead>
+<tr>
+<th>任务&#x2F;指标</th>
+<th>MovieChat表现</th>
+<th>对比模型优势</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MSVD-QA（准确率&#x2F;Score）</td>
+<td>75.2&#x2F;3.8</td>
+<td>超Video-ChatGPT（64.9&#x2F;3.3）、Video Chat（56.3&#x2F;2.8）</td>
+</tr>
+<tr>
+<td>MSRVTT-QA（准确率&#x2F;Score）</td>
+<td>52.7&#x2F;2.6</td>
+<td>仅次于Video-ChatGPT（49.3&#x2F;2.8），非专项优化仍达前列</td>
+</tr>
+<tr>
+<td>ActivityNet-QA（准确率&#x2F;Score）</td>
+<td>45.7&#x2F;3.4</td>
+<td>大幅领先所有基线，生成质量CI 2.76、DO 2.93，均为最优</td>
+</tr>
+</tbody></table>
+<h4 id="（2）长视频任务（MovieChat-1K测试集）"><a href="#（2）长视频任务（MovieChat-1K测试集）" class="headerlink" title="（2）长视频任务（MovieChat-1K测试集）"></a>（2）长视频任务（MovieChat-1K测试集）</h4><table>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>全局模式（2048帧）</th>
+<th>断点模式（2048帧）</th>
+<th>对比优势</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>准确率&#x2F;Score</td>
+<td>62.3&#x2F;3.23</td>
+<td>48.3&#x2F;2.57</td>
+<td>远超Video Chat（32帧：57.8&#x2F;3.00）、Video-ChatGPT（100帧：47.6&#x2F;2.55）</td>
+</tr>
+<tr>
+<td>生成质量（CI&#x2F;DO&#x2F;CU&#x2F;TU&#x2F;CO）</td>
+<td>3.11&#x2F;2.93&#x2F;3.24&#x2F;3.17&#x2F;3.25</td>
+<td>2.64&#x2F;2.60&#x2F;2.87&#x2F;2.49&#x2F;3.08</td>
+<td>所有指标均优于基线，尤其时间理解（TU）稳定性显著</td>
+</tr>
+<tr>
+<td>问题类型适配</td>
+<td>选择题准确率80.9&#x2F;Score 4.02；开放式准确率57.5&#x2F;Score 3.74</td>
+<td>选择题准确率62.4&#x2F;Score 3.65；开放式准确率46.7&#x2F;2.70</td>
+<td>双类型问题均领先，验证模型鲁棒性</td>
+</tr>
+</tbody></table>
+<h3 id="3-消融实验"><a href="#3-消融实验" class="headerlink" title="3. 消融实验"></a>3. 消融实验</h3><ul>
+<li><strong>内存机制有效性</strong>：含内存机制的模型在全局模式准确率（67.8 vs 51.4）、生成质量（CI 3.32 vs 3.30）等指标上显著优于无内存版本，证明短期-长期内存设计是长视频理解的关键。</li>
+<li><strong>超参数影响</strong>：<ul>
+<li>内存长度：短期内存18帧、长期内存256帧时性能最优，过短则信息不足，过长则冗余；</li>
+<li>整合长度：合并为2帧时平衡压缩率与信息保留，过短易丢失细节，过长则压缩不足；</li>
+<li>初始化方式：用合并令牌初始化短期内存优于“最后几帧”“均匀采样”，可减少信息断裂。</li>
+</ul>
+</li>
+<li><strong>LLM适配性</strong>：使用LLaMA（64）作为解码器时，全局模式准确率67.8&#x2F;Score 3.81，略优于LLaMA2（64.2&#x2F;3.79），因LLaMA2虽能估计时间占比，但与数据集问答匹配度稍低。</li>
+</ul>
+<h3 id="4-定性案例分析"><a href="#4-定性案例分析" class="headerlink" title="4. 定性案例分析"></a>4. 定性案例分析</h3><p>在烹饪教程、《疯狂动物城》《权力的游戏》等场景中，MovieChat表现出优异的长视频理解能力：</p>
+<ul>
+<li><strong>全局场景</strong>：回答“烹饪牛排哪一步耗时最长”时，准确指出“切配食材”（而非基线模型误判的“煎制”），符合视频中切配占比超40%的实际情况。</li>
+<li><strong>断点场景</strong>：针对《疯狂动物城》第3930帧“Chief Bogo在做什么”，精准描述“在暗室桌子前用笔记本电脑通话”，无幻觉信息，而Video-ChatGPT混淆角色动作。</li>
+<li><strong>复杂剧情</strong>：解析《鬼怪》片段时，能串联“公园相遇-街道跟随-阳台对话”等多场景时间线，基线模型易遗漏中间情节。</li>
+</ul>
+<h2 id="六、补充材料关键内容"><a href="#六、补充材料关键内容" class="headerlink" title="六、补充材料关键内容"></a>六、补充材料关键内容</h2><h3 id="1-内存整合算法细节"><a href="#1-内存整合算法细节" class="headerlink" title="1. 内存整合算法细节"></a>1. 内存整合算法细节</h3><p>如图A1所示，内存整合分四步：1）构建相邻帧对；2）计算余弦相似度；3）选择相似度最高的帧对合并（加权平均）；4）重复操作至帧数达(R_L)。算法无额外参数，可无缝接入帧级编码器，虽增加少量计算，但内存节省收益远超开销。</p>
+<h3 id="2-数据集补充统计"><a href="#2-数据集补充统计" class="headerlink" title="2. 数据集补充统计"></a>2. 数据集补充统计</h3><ul>
+<li><strong>视频类别分布</strong>：除主要类别外，犯罪片（3.8%）、科幻片（3.7%）、战争片（3.7%）等小众类别均有覆盖，确保场景多样性（表B1）。</li>
+<li><strong>文本长度</strong>：问题长度多为5-15词，答案多为2-10词，caption平均长度121词，67.8% caption为100-149词，符合自然语言交互习惯（图B3-B5）。</li>
+<li><strong>动作丰富度</strong>：caption含102,988个独特动词，与WebVid10M（109,485个）接近，证明场景动作覆盖全面（图B6）。</li>
+</ul>
+<h3 id="3-评估方法补充"><a href="#3-评估方法补充" class="headerlink" title="3. 评估方法补充"></a>3. 评估方法补充</h3><ul>
+<li><strong>LLM提示模板</strong>：对短视频问答，提示GPT-3.5“聚焦语义匹配，认可同义词&#x2F; paraphrase”，输出“yes&#x2F;no+0-5分”（图C1）；对生成质量，从CI&#x2F;DO&#x2F;CU&#x2F;TU&#x2F;CO五维度分别打分，确保评估维度一致性。</li>
+<li><strong>人工过滤策略</strong>：对LLM评估结果中“判断与分数矛盾”（如“yes+0分”“no+5分”）的样本手动剔除，提升数据可靠性，该策略使结果波动降低15%。</li>
+<li><strong>相关性验证</strong>：GPT-3.5、Claude与人工盲评的Pearson相关系数均超0.92（Claude与人工达0.978），证明评估方法一致性高（表J9、图J3）。</li>
+</ul>
+<h3 id="4-更多实验结果"><a href="#4-更多实验结果" class="headerlink" title="4. 更多实验结果"></a>4. 更多实验结果</h3><ul>
+<li><strong>分模式生成质量</strong>：断点模式下，MovieChat的CI 2.64、CO 3.08，仍领先Video-ChatGPT（CI 2.62、CO 2.96），验证局部场景理解能力（表I8）；</li>
+<li><strong>单评估方法结果</strong>：仅用GPT-3.5评估时，MovieChat全局模式准确率67.8&#x2F;Score 3.81，显著高于Video-ChatGPT（44.2&#x2F;2.71），与综合评估趋势一致（表K10-K18）；</li>
+<li><strong>超参数分析</strong>：短期&#x2F;长期内存长度增加时，模型性能先升后降，因信息扩展与细节丢失存在平衡，需根据视频复杂度动态调整（图5、Section L）。</li>
+</ul>
+<h2 id="七、研究局限与结论"><a href="#七、研究局限与结论" class="headerlink" title="七、研究局限与结论"></a>七、研究局限与结论</h2><h3 id="1-局限性"><a href="#1-局限性" class="headerlink" title="1. 局限性"></a>1. 局限性</h3><ul>
+<li><strong>感知能力受限</strong>：依赖图像预训练模型提取特征，未利用视频专属时序信息（如动作连贯性），复杂动态场景识别精度待提升；</li>
+<li><strong>时间精度不足</strong>：仅能粗略估计事件时长占比（如“切配耗时最长”），无法精确到秒级（如“切配耗时3分20秒”）；</li>
+<li><strong>场景泛化性</strong>：数据集以影视内容为主，对监控视频、医学影像等专业领域长视频的适配性需验证。</li>
+</ul>
+<h3 id="2-结论"><a href="#2-结论" class="headerlink" title="2. 结论"></a>2. 结论</h3><p>MovieChat通过创新的短期-长期内存机制，首次实现超10K帧长视频的高效理解，在计算效率、内存成本、任务性能上均达当前最优，同时发布的MovieChat-1K为长视频理解领域提供首个标准化基准。该研究为多模态模型处理长序列数据提供新思路，未来可结合视频专用编码器与更精细的时间建模，进一步提升长视频理解的精度与泛化性。</p>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>论文阅读</tag>
+        <tag>视频理解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Video-XL-2</title>
+    <url>/2025/09/01/Video-XL-2/</url>
+    <content><![CDATA[<h1 id="Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型"><a href="#Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型" class="headerlink" title="Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型"></a>Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型</h1><h2 id="一、研究背景与挑战"><a href="#一、研究背景与挑战" class="headerlink" title="一、研究背景与挑战"></a>一、研究背景与挑战</h2><p>近年来，多模态大型语言模型（MLLMs）在视频理解领域取得显著进展，但处理长视频输入时仍面临核心挑战：长视频包含大量帧，经视觉编码后生成海量视觉令牌，导致模型内存占用和计算成本极高，现有模型难以在长视频理解中兼顾高性能与高效率。传统令牌缩减方法虽能缓解部分压力，却无法解决输入令牌数量增加带来的计算量二次增长问题，还可能造成关键信息丢失。</p>
+<h2 id="二、模型核心设计"><a href="#二、模型核心设计" class="headerlink" title="二、模型核心设计"></a>二、模型核心设计</h2><h3 id="（一）整体架构"><a href="#（一）整体架构" class="headerlink" title="（一）整体架构"></a>（一）整体架构</h3><p>Video-XL-2由四大核心组件构成，形成端到端的长视频处理 pipeline：</p>
+<ol>
+<li><strong>视觉编码器</strong>：采用SigLIP模型，将单张图像或视频帧编码为密集视觉特征。</li>
+<li><strong>动态令牌合成（DTS）模块</strong>：结合时空注意力块与3D卷积层，以4个连续帧为一组处理视觉特征，压缩时空冗余的同时捕捉动态运动模式，该设计继承自Video-XL-Pro并优化。</li>
+<li><strong>MLP投影器</strong>：两层结构，将DTS输出的压缩特征投影到大型语言模型（LLM）的嵌入空间，实现跨模态对齐。</li>
+<li><strong>大型语言模型（LLM）</strong>：采用Qwen2.5-7B模型，处理多模态输入并完成理解任务。</li>
+</ol>
+<p>此外，模型通过在视觉令牌序列中插入时间戳令牌增强时间感知能力，且将单图像重复4次以对齐视频模态输入格式。</p>
+<h3 id="（二）视觉输入处理策略"><a href="#（二）视觉输入处理策略" class="headerlink" title="（二）视觉输入处理策略"></a>（二）视觉输入处理策略</h3><ol>
+<li><strong>帧采样策略</strong>：先以1 FPS采样原始视频，若采样帧数低于预设上限，则在不超过最大采样率的前提下提高采样率，确保尽可能覆盖关键帧。</li>
+<li><strong>时间信息注入</strong>：每4个连续帧组前添加显式时间戳令牌（如“Time: 4.0 Second”），同时在DTS模块中为每组帧融入隐式软时间嵌入，提供细粒度时间线索。</li>
+</ol>
+<h3 id="（三）增量训练策略"><a href="#（三）增量训练策略" class="headerlink" title="（三）增量训练策略"></a>（三）增量训练策略</h3><p>分四阶段逐步构建模型的视觉理解能力，各阶段目标、训练模块与数据如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>目标</th>
+<th>训练模块</th>
+<th>训练数据</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Stage 1</td>
+<td>初始化DTS模块权重</td>
+<td>DTS模块</td>
+<td>25万图像-字幕对、75万短视频-字幕对</td>
+</tr>
+<tr>
+<td>Stage 2</td>
+<td>初始化MLP投影器权重</td>
+<td>MLP投影器</td>
+<td>200万图像-字幕对、40万短视频-字幕对</td>
+</tr>
+<tr>
+<td>Stage 3</td>
+<td>构建视觉理解基础</td>
+<td>全参数</td>
+<td>500万图像-字幕对、270万短视频-字幕对</td>
+</tr>
+<tr>
+<td>Stage 4</td>
+<td>支持多样化视觉任务</td>
+<td>全参数</td>
+<td>300万图像指令数据、250万视频指令数据</td>
+</tr>
+</tbody></table>
+<h2 id="三、效率优化核心创新"><a href="#三、效率优化核心创新" class="headerlink" title="三、效率优化核心创新"></a>三、效率优化核心创新</h2><p>针对LLM推理的预填充和解码两阶段，提出任务感知KV稀疏化策略，大幅降低资源消耗：</p>
+<h3 id="（一）基于块的预填充（Chunk-based-Pre-filling）"><a href="#（一）基于块的预填充（Chunk-based-Pre-filling）" class="headerlink" title="（一）基于块的预填充（Chunk-based Pre-filling）"></a>（一）基于块的预填充（Chunk-based Pre-filling）</h3><ol>
+<li><strong>核心思路</strong>：将视觉令牌序列划分为等长块，块内计算全注意力，块间通过两种方式建立关联以平衡效率与信息完整性：<ul>
+<li>允许当前块关注前序块的历史时间戳令牌，获取粗粒度历史信息，且内存开销低；</li>
+<li>采用滑动块窗口（设固定步长），使当前块可关注前序块的重叠部分，获取细粒度视觉信息。</li>
+</ul>
+</li>
+<li><strong>效果</strong>：将预填充阶段计算复杂度从令牌长度的二次方降至近似线性，显著减少内存占用与计算时间。</li>
+</ol>
+<h3 id="（二）双层KV解码（Bi-level-KVs-Decoding）"><a href="#（二）双层KV解码（Bi-level-KVs-Decoding）" class="headerlink" title="（二）双层KV解码（Bi-level KVs Decoding）"></a>（二）双层KV解码（Bi-level KVs Decoding）</h3><ol>
+<li><strong>KV层级构建</strong>：预填充阶段生成的原始KV为“密集KV”，对每个块的密集KV进行池化操作得到“稀疏KV”，形成“密集-稀疏”双层KV表示，且与视频输入块一一对应，存储于离线内存。</li>
+<li><strong>任务感知选择</strong>：输入文本查询后，通过多模态嵌入器、注意力评分等方式计算各视频块与查询的相关性得分，高相关块加载密集KV以保留细粒度信息，低相关块加载稀疏KV以提供全局背景，最终拼接为“混合KV集”。</li>
+<li><strong>效果</strong>：解码阶段KV缓存占用减少38.8%（平均），同时弥补了块预填充可能带来的性能损失。</li>
+</ol>
+<h2 id="四、实验结果与性能优势"><a href="#四、实验结果与性能优势" class="headerlink" title="四、实验结果与性能优势"></a>四、实验结果与性能优势</h2><h3 id="（一）基准测试表现"><a href="#（一）基准测试表现" class="headerlink" title="（一）基准测试表现"></a>（一）基准测试表现</h3><p>在多个长视频理解与时间定位基准测试中，Video-XL-2（8B参数）展现出开源轻量模型中的顶尖性能：</p>
+<ul>
+<li><strong>MLVU基准</strong>：开发集准确率74.8%，超过GPT-4o（64.6%）及同规模模型（如VideoChat-Flash-8B的74.6%），测试集准确率52.2%，领先开源轻量模型；</li>
+<li><strong>VideoMME基准</strong>：无字幕设置下准确率66.6%，高于InternVL2.5-8B（64.2%）、Qwen-2.5-VL-8B（65.1%）；</li>
+<li><strong>LongVideoBench&#x2F;LVBench</strong>：分别取得第二、第一的排名，在超长视频理解任务中优势显著；</li>
+<li><strong>时间定位任务</strong>：Charades-STA基准准确率28.6%，V-STaR基准准确率21.3%，体现强时间感知能力。</li>
+</ul>
+<h3 id="（二）效率优势"><a href="#（二）效率优势" class="headerlink" title="（二）效率优势"></a>（二）效率优势</h3><ol>
+<li><strong>计算量</strong>：平均计算量（FLOPs）仅142.0G，为同规模模型中最低（如VideoChat-Flash-8B为142.8G，LLaVA-Video-8B为1.4×10³G）；</li>
+<li><strong>内存占用</strong>：单张80GB NVIDIA A100 GPU可处理10000帧，24GB GPU可处理数千帧，远超Video-XL的2048帧上限；</li>
+<li><strong>推理速度</strong>：预填充时间随输入帧数近似线性增长，支持高效处理超长视频。</li>
+</ol>
+<h3 id="（三）“大海捞针”测试"><a href="#（三）“大海捞针”测试" class="headerlink" title="（三）“大海捞针”测试"></a>（三）“大海捞针”测试</h3><p>在1小时以上长视频（取自VideoMME）的关键信息检索任务中，Video-XL-2可处理10000帧并精准捕捉关键信息，而Video-XL仅能处理2048帧，验证了其超长视频处理能力。</p>
+<h2 id="五、结论与未来方向"><a href="#五、结论与未来方向" class="headerlink" title="五、结论与未来方向"></a>五、结论与未来方向</h2><p>Video-XL-2通过“动态令牌合成+增量训练”构建强视觉理解能力，以“块预填充+双层KV解码”实现高效推理，在长视频理解任务中兼顾性能与效率，成为实用的超长视频处理方案。未来将进一步扩展模型对更长视频的处理能力，并探索其在更多场景的应用。</p>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>论文阅读</tag>
+        <tag>视频理解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>我的第一篇技术博客</title>
+    <url>/2025/08/31/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="欢迎来到我的技术世界！🚀"><a href="#欢迎来到我的技术世界！🚀" class="headerlink" title="欢迎来到我的技术世界！🚀"></a>欢迎来到我的技术世界！🚀</h1><p>大家好！我是 <strong>YuDong Wang</strong>，欢迎来到我的技术博客。在这里，我将分享：</p>
+<h2 id="📝-博客内容"><a href="#📝-博客内容" class="headerlink" title="📝 博客内容"></a>📝 博客内容</h2><h3 id="🛠️-技术分享"><a href="#🛠️-技术分享" class="headerlink" title="🛠️ 技术分享"></a>🛠️ 技术分享</h3><ul>
+<li><strong>前端开发</strong>：JavaScript、React、Vue.js 等现代前端技术</li>
+<li><strong>后端开发</strong>：Node.js、Python、数据库设计等</li>
+<li><strong>工具使用</strong>：Git、Docker、CI&#x2F;CD 等开发工具</li>
+</ul>
+<h3 id="💡-项目经验"><a href="#💡-项目经验" class="headerlink" title="💡 项目经验"></a>💡 项目经验</h3><ul>
+<li>实际项目中遇到的问题和解决方案</li>
+<li>代码优化和性能提升经验</li>
+<li>架构设计思考</li>
+</ul>
+<h3 id="🎯-学习笔记"><a href="#🎯-学习笔记" class="headerlink" title="🎯 学习笔记"></a>🎯 学习笔记</h3><ul>
+<li>新技术学习心得</li>
+<li>读书笔记和总结</li>
+<li>技术趋势分析</li>
+</ul>
+<h2 id="🎨-博客特色"><a href="#🎨-博客特色" class="headerlink" title="🎨 博客特色"></a>🎨 博客特色</h2><p>这个博客使用 <strong>Hexo + Fluid</strong> 主题构建，具有以下特点：</p>
+<p><img src="https://source.unsplash.com/800x400/?website,design" alt="博客界面预览"></p>
+<ul>
+<li>✨ 现代化设计</li>
+<li>🌙 支持暗色模式  </li>
+<li>🔍 全站搜索功能</li>
+<li>📱 响应式布局</li>
+<li>🚀 快速加载</li>
+</ul>
+<h2 id="💻-开发环境"><a href="#💻-开发环境" class="headerlink" title="💻 开发环境"></a>💻 开发环境</h2><p>我的主要开发环境和工具：</p>
+<p><img src="https://source.unsplash.com/800x400/?developer,workspace" alt="开发环境"></p>
+<ul>
+<li><strong>编辑器</strong>: VS Code</li>
+<li><strong>版本控制</strong>: Git &amp; GitHub</li>
+<li><strong>终端</strong>: Windows Terminal</li>
+<li><strong>浏览器</strong>: Chrome DevTools</li>
+</ul>
+<h2 id="📞-联系方式"><a href="#📞-联系方式" class="headerlink" title="📞 联系方式"></a>📞 联系方式</h2><ul>
+<li><strong>GitHub</strong>: <a href="https://github.com/hellowydwyd">hellowydwyd</a></li>
+<li><strong>邮箱</strong>: <a href="mailto:&#x68;&#x65;&#108;&#108;&#111;&#x77;&#121;&#100;&#x77;&#121;&#100;&#64;&#x31;&#x36;&#x33;&#x2e;&#x63;&#x6f;&#x6d;">hellowydwyd@163.com</a></li>
+</ul>
+<hr>
+<p>感谢你的阅读！如果你有任何问题或建议，欢迎通过上述方式联系我。</p>
+<blockquote>
+<p>持续学习，持续分享，让我们一起成长！💪</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术分享</category>
+      </categories>
+      <tags>
+        <tag>技术</tag>
+        <tag>博客</tag>
+        <tag>Hexo</tag>
+      </tags>
   </entry>
 </search>
