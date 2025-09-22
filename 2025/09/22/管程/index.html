@@ -253,7 +253,7 @@
         
         
           <!-- compatible with older versions-->
-          51 分钟
+          50 分钟
         
       </span>
     
@@ -396,22 +396,21 @@
 </li>
 </ol>
 <p>下图通过流程图的形式直观描述了信号量实现管程的工作流程：</p>
-<pre><code class=" mermaid">flowchart TD  
-    A[&quot;初始状态：mutex = 1，S = 0&quot;]  
-    B[&quot;进程调用 wait(mutex)&quot;]  
-    C[&quot;进入管程执行临界代码&quot;]  
-    D[&quot;检测条件变量 - 是否有等待进程？&quot;]  
-    E[&quot;如果有等待进程：signal(S) 唤醒等待者&quot;]  
-    F[&quot;如果无等待进程：signal(mutex) 释放互斥锁&quot;]  
-    G[&quot;进程离开管程&quot;]  
-    A --&gt; B  
-    B --&gt; C  
-    C --&gt; D  
-    D -- &quot;有等待进程&quot; --&gt; E  
-    D -- &quot;无等待进程&quot; --&gt; F  
-    E --&gt; G  
-    F --&gt; G  
-</code></pre>
+<pre class="mermaid">flowchart TD  
+    A["初始状态：mutex = 1，S = 0"]  
+    B["进程调用 wait(mutex)"]  
+    C["进入管程执行临界代码"]  
+    D["检测条件变量 - 是否有等待进程？"]  
+    E["如果有等待进程：signal(S) 唤醒等待者"]  
+    F["如果无等待进程：signal(mutex) 释放互斥锁"]  
+    G["进程离开管程"]  
+    A --> B  
+    B --> C  
+    C --> D  
+    D -- "有等待进程" --> E  
+    D -- "无等待进程" --> F  
+    E --> G  
+    F --> G</pre>
 
 <p><em>图 1：基于信号量实现管程的工作过程图</em></p>
 <h3 id="3-2-条件变量的实现方式"><a href="#3-2-条件变量的实现方式" class="headerlink" title="3.2 条件变量的实现方式"></a>3.2 条件变量的实现方式</h3><p>在实际应用中，除了互斥外，还需要对某些条件进行等待和唤醒控制。条件变量是实现这一功能的重要工具，其实现步骤如下:</p>
@@ -484,22 +483,21 @@
 <li><strong>锁的扩展实现</strong>：除了使用 <code>synchronized</code> 关键字之外，Java 5 及以后的版本还提供了 <code>ReentrantLock</code> 类以及 <code>Condition</code> 对象，这些工具允许开发人员更加灵活地控制锁及条件变量，进一步实现类似管程的高级控制策略。</li>
 </ul>
 <p>下图展示了 Java 中使用 <code>ReentrantLock</code> 和 <code>Condition</code> 实现管程的示意流程：</p>
-<pre><code class=" mermaid">flowchart TD  
-    A[&quot;线程请求进入管程&quot;]  
-    B[&quot;获取ReentrantLock锁&quot;]  
-    C[&quot;检查共享条件是否满足&quot;]  
-    D[&quot;条件不满足，调用Condition.await()&quot;]  
-    E[&quot;条件满足，执行临界区操作&quot;]  
-    F[&quot;调用Condition.signal()或signalAll()&quot;]  
-    G[&quot;释放ReentrantLock锁&quot;]  
-    A --&gt; B  
-    B --&gt; C  
-    C -- &quot;条件不满足&quot; --&gt; D  
-    C -- &quot;条件满足&quot; --&gt; E  
-    D --&gt; E  
-    E --&gt; F  
-    F --&gt; G  
-</code></pre>
+<pre class="mermaid">flowchart TD  
+    A["线程请求进入管程"]  
+    B["获取ReentrantLock锁"]  
+    C["检查共享条件是否满足"]  
+    D["条件不满足，调用Condition.await()"]  
+    E["条件满足，执行临界区操作"]  
+    F["调用Condition.signal()或signalAll()"]  
+    G["释放ReentrantLock锁"]  
+    A --> B  
+    B --> C  
+    C -- "条件不满足" --> D  
+    C -- "条件满足" --> E  
+    D --> E  
+    E --> F  
+    F --> G</pre>
 
 <p><em>图 2：Java中基于ReentrantLock与Condition实现管程的流程图</em></p>
 <h3 id="4-2-其他语言中的管程设计"><a href="#4-2-其他语言中的管程设计" class="headerlink" title="4.2 其他语言中的管程设计"></a>4.2 其他语言中的管程设计</h3><p>除 Java 外，其他面向对象或支持并发编程的语言，如 C#、Visual Basic、Ada 等，也支持管程的实现。它们通常通过内置库或语言扩展来实现共享数据的封装和自动互斥控制，从而帮助程序员以更安全、高效的方式进行多线程开发。例如：</p>
