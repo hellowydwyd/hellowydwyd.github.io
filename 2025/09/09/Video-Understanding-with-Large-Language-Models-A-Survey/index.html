@@ -360,7 +360,7 @@
 <li><strong>时间理解任务</strong>：关注视频时序维度的事件定位与提取<ul>
 <li>视频摘要&#x2F;精彩片段检测：浓缩长视频或提取关键片段，数据集如SumMe、TVSum，指标为F1-score。</li>
 <li>时序动作定位&#x2F;提案生成：识别动作发生的时间区间或生成候选区间，数据集如THUMOS’14、ActivityNet，指标为tIoU、Recall@K。</li>
-<li>视频时序接地：根据文本查询定位视频特定时刻，数据集如Charades-STA，指标为<a href="mailto:&#x52;&#x31;&#64;&#48;&#x2e;&#x35;">R1@0.5</a>&#x2F;<a href="mailto:&#82;&#49;&#x40;&#48;&#x2e;&#55;">R1@0.7</a>。</li>
+<li>视频时序接地：根据文本查询定位视频特定时刻，数据集如Charades-STA，指标为<a href="mailto:&#82;&#49;&#64;&#x30;&#46;&#53;">R1@0.5</a>&#x2F;<a href="mailto:&#82;&#x31;&#x40;&#x30;&#x2e;&#55;">R1@0.7</a>。</li>
 </ul>
 </li>
 <li><strong>时空理解任务</strong>：结合空间与时间维度的精细理解<ul>
@@ -655,6 +655,21 @@
 
   
 
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
 
 
 
