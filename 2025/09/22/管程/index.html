@@ -27,7 +27,7 @@
 <meta property="og:description" content="目录 引言 管程的基本概念 管程的实现机制 3.1 使用信号量实现管程 3.2 条件变量的实现方式 管程在面向对象编程语言中的应用 4.1 Java 中的管程实现 4.2 其他语言中的管程设计 管程在操作系统中的应用 5.1 共享资源访问控制中的管程 5.2 Android 系统中的运行时安全监控 管程的优势与局限性分析 结论与主要研究发现   1. 引言管程（Monitor）是一种高级同步机制，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-09-22T02:39:08.000Z">
-<meta property="article:modified_time" content="2025-09-22T03:11:06.805Z">
+<meta property="article:modified_time" content="2025-09-22T03:19:00.497Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="操作系统">
 <meta name="twitter:card" content="summary_large_image">
@@ -241,7 +241,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          6k 字
+          5.9k 字
         
       </span>
     
@@ -253,7 +253,7 @@
         
         
           <!-- compatible with older versions-->
-          50 分钟
+          49 分钟
         
       </span>
     
@@ -396,21 +396,22 @@
 </li>
 </ol>
 <p>下图通过流程图的形式直观描述了信号量实现管程的工作流程：</p>
-<pre class="mermaid">flowchart TD
-    A["初始状态: mutex = 1, S = 0"]
-    B["进程调用 wait(mutex)"]
-    C["进入管程执行临界代码"]
-    D["检测条件变量 - 是否有等待进程?"]
-    E["如果有等待进程: signal(S) 唤醒等待者"]
-    F["如果无等待进程: signal(mutex) 释放互斥锁"]
-    G["进程离开管程"]
-    A --> B
-    B --> C
-    C --> D
-    D -->|"有等待进程"| E
-    D -->|"无等待进程"| F
-    E --> G
-    F --> G</pre>
+<pre><code class=" mermaid">graph TD
+    A[Initial State: mutex = 1, S = 0]
+    B[Process calls wait(mutex)]
+    C[Enter monitor critical code]
+    D[Check condition variable - any waiting processes?]
+    E[If yes: signal(S) to wake up waiter]
+    F[If no: signal(mutex) to release lock]
+    G[Process leaves monitor]
+    A --&gt; B
+    B --&gt; C
+    C --&gt; D
+    D --&gt;|Yes| E
+    D --&gt;|No| F
+    E --&gt; G
+    F --&gt; G
+</code></pre>
 
 <p><em>图 1：基于信号量实现管程的工作过程图</em></p>
 <h3 id="3-2-条件变量的实现方式"><a href="#3-2-条件变量的实现方式" class="headerlink" title="3.2 条件变量的实现方式"></a>3.2 条件变量的实现方式</h3><p>在实际应用中，除了互斥外，还需要对某些条件进行等待和唤醒控制。条件变量是实现这一功能的重要工具，其实现步骤如下:</p>
@@ -483,21 +484,22 @@
 <li><strong>锁的扩展实现</strong>：除了使用 <code>synchronized</code> 关键字之外，Java 5 及以后的版本还提供了 <code>ReentrantLock</code> 类以及 <code>Condition</code> 对象，这些工具允许开发人员更加灵活地控制锁及条件变量，进一步实现类似管程的高级控制策略。</li>
 </ul>
 <p>下图展示了 Java 中使用 <code>ReentrantLock</code> 和 <code>Condition</code> 实现管程的示意流程：</p>
-<pre class="mermaid">flowchart TD
-    A["线程请求进入管程"]
-    B["获取ReentrantLock锁"]
-    C["检查共享条件是否满足"]
-    D["条件不满足, 调用Condition.await()"]
-    E["条件满足, 执行临界区操作"]
-    F["调用Condition.signal()或signalAll()"]
-    G["释放ReentrantLock锁"]
-    A --> B
-    B --> C
-    C -->|"条件不满足"| D
-    C -->|"条件满足"| E
-    D --> E
-    E --> F
-    F --> G</pre>
+<pre><code class=" mermaid">graph TD
+    A[Thread requests monitor entry]
+    B[Acquire ReentrantLock]
+    C[Check if shared condition is satisfied]
+    D[Condition not met, call Condition.await()]
+    E[Condition met, execute critical section]
+    F[Call Condition.signal() or signalAll()]
+    G[Release ReentrantLock]
+    A --&gt; B
+    B --&gt; C
+    C --&gt;|Not satisfied| D
+    C --&gt;|Satisfied| E
+    D --&gt; E
+    E --&gt; F
+    F --&gt; G
+</code></pre>
 
 <p><em>图 2：Java中基于ReentrantLock与Condition实现管程的流程图</em></p>
 <h3 id="4-2-其他语言中的管程设计"><a href="#4-2-其他语言中的管程设计" class="headerlink" title="4.2 其他语言中的管程设计"></a>4.2 其他语言中的管程设计</h3><p>除 Java 外，其他面向对象或支持并发编程的语言，如 C#、Visual Basic、Ada 等，也支持管程的实现。它们通常通过内置库或语言扩展来实现共享数据的封装和自动互斥控制，从而帮助程序员以更安全、高效的方式进行多线程开发。例如：</p>
