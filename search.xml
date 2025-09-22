@@ -1623,7 +1623,7 @@
 <li><p>由于部分情况下需要等待条件满足才能继续执行，因此需要引入一个额外的信号量（记为 <code>S</code>）并初始化为0。同时，通过一个整数计数器 <code>S_count</code> 来记录处于等待状态的进程数。</p>
 </li>
 <li><p>当某个进程调用条件变量的 <code>wait()</code> 操作时，将执行如下过程：</p>
-<figure class="highlight vhdl"><table><tr><td class="code"><pre><code class="hljs vhdl"><span class="hljs-keyword">wait</span>(mutex);  // 进入临界区执行关键代码  <span class="hljs-keyword">if</span> (S_count &gt; <span class="hljs-number">0</span>)      <span class="hljs-keyword">signal</span>(S);  <span class="hljs-keyword">else</span>      <span class="hljs-keyword">signal</span>(mutex);  <br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c">wait(mutex);  <span class="hljs-comment">// 进入临界区执行关键代码</span><br><span class="hljs-keyword">if</span> (S_count &gt; <span class="hljs-number">0</span>)<br>    signal(S);<br><span class="hljs-keyword">else</span><br>    signal(mutex);<br></code></pre></td></tr></table></figure>
 </li>
 <li><p>当条件满足时，通过 <code>signal()</code> 操作唤醒等待队列中的进程。</p>
 </li>
@@ -1665,7 +1665,7 @@
 <li>条件满足后再减少 <code>x_count</code> 的值。</li>
 </ul>
 <p>代码示例：</p>
-<figure class="highlight scss"><table><tr><td class="code"><pre><code class="hljs scss"><span class="hljs-attribute">x</span><span class="hljs-selector-class">.wait</span>() &#123;  <br>    x_count++;  <br>    if (S_count &gt; <span class="hljs-number">0</span>)  <br>        <span class="hljs-built_in">signal</span>(S);  <br>    else  <br>        <span class="hljs-built_in">signal</span>(mutex);  <br>    wait(x_num);  <br>    x_count--;  <br>&#125;  <br></code></pre></td></tr></table></figure></li>
+<figure class="highlight c"><table><tr><td class="code"><pre><code class="hljs c">x.wait() &#123;  <br>    x_count++;  <br>    <span class="hljs-keyword">if</span> (S_count &gt; <span class="hljs-number">0</span>)  <br>        signal(S);  <br>    <span class="hljs-keyword">else</span>  <br>        signal(mutex);  <br>    wait(x_num);  <br>    x_count--;  <br>&#125;  <br></code></pre></td></tr></table></figure></li>
 </ul>
 </li>
 <li><p><strong>条件变量唤醒操作（x.signal()）</strong></p>
