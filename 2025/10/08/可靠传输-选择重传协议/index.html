@@ -27,7 +27,7 @@
 <meta property="og:description" content="一、协议背景与核心目标1. 问题起源回退N帧协议（GBN）存在资源浪费缺陷：  接收窗口尺寸 $W_R &#x3D; 1$，仅能按序接收数据 若某一数据分组误码，后续无错分组会因”失序”被丢弃 导致发送方超时重传这些无错分组，浪费通信资源  2. 核心目标 仅重传误码分组 增大接收窗口尺寸 $W_R &gt; 1$ 缓存”序号在接收窗口内、无错但失序”的分组 待缺失分组补全后再一并提交上层 提升传输效率">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-10-08T05:03:49.000Z">
-<meta property="article:modified_time" content="2025-10-08T05:11:36.624Z">
+<meta property="article:modified_time" content="2025-10-08T07:31:12.710Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="计算机与网络">
 <meta name="twitter:card" content="summary_large_image">
@@ -245,7 +245,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          633 字
+          632 字
         
       </span>
     
@@ -400,15 +400,7 @@
 </tbody>
 </table>
 </div>
-<h2 id="附：SR协议伪代码示例"><a href="#附：SR协议伪代码示例" class="headerlink" title="附：SR协议伪代码示例"></a>附：SR协议伪代码示例</h2><p>```python<br>class SelectiveRepeatProtocol:<br>    def <strong>init</strong>(self, window_size):<br>        self.window_size = window_size<br>        self.send_window = []<br>        self.recv_window = []  </p>
-<pre><code class="hljs">def send_packet(self, packet):  
-    # 发送数据包逻辑  
-    pass  
-
-def receive_packet(self, packet):  
-    # 接收数据包逻辑  
-    pass
-</code></pre>
+<h2 id="附：SR协议伪代码示例"><a href="#附：SR协议伪代码示例" class="headerlink" title="附：SR协议伪代码示例"></a>附：SR协议伪代码示例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SelectiveRepeatProtocol</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, window_size</span>):<br>        <span class="hljs-variable language_">self</span>.window_size = window_size<br>        <span class="hljs-variable language_">self</span>.send_window = []<br>        <span class="hljs-variable language_">self</span>.recv_window = []<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_packet</span>(<span class="hljs-params">self, packet</span>):<br>        <span class="hljs-comment"># 发送数据包逻辑</span><br>        <span class="hljs-keyword">pass</span><br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">receive_packet</span>(<span class="hljs-params">self, packet</span>):<br>        <span class="hljs-comment"># 接收数据包逻辑</span><br>        <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>
                 
               </div>
             
