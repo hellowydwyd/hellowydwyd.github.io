@@ -1,0 +1,837 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="YuDong Wang">
+  <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
+  
+    <meta name="description" content="MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析本文（arXiv:2406.17309）提出的MM-Screenplayer是一款具备多模态感知能力的长视频理解系统，核心目标是解决“长视频问答（LVQA）”任务中“处理时长超5分钟视频”“兼顾全局语义与局部时间定位”的核心难点，最终以零样本方式斩获CVPR’2024 LOVEU T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sreenplay">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/09/03/Sreenplay/index.html">
+<meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
+<meta property="og:description" content="MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析本文（arXiv:2406.17309）提出的MM-Screenplayer是一款具备多模态感知能力的长视频理解系统，核心目标是解决“长视频问答（LVQA）”任务中“处理时长超5分钟视频”“兼顾全局语义与局部时间定位”的核心难点，最终以零样本方式斩获CVPR’2024 LOVEU T">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-09-03T03:15:08.000Z">
+<meta property="article:modified_time" content="2025-09-08T11:39:24.217Z">
+<meta property="article:author" content="YuDong Wang">
+<meta property="article:tag" content="论文阅读">
+<meta property="article:tag" content="视频理解">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Sreenplay - Wydcoder&#39;s Tech Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"hellowydwyd.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wydcoder&#39;s Tech Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/about-bg.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Sreenplay"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        YuDong Wang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-09-03 11:15" pubdate>
+          星期三, 九月 3日 2025, 11:15 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Sreenplay</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025年9月8日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="MM-Screenplayer：零样本长视频理解系统（CVPR’2024-LOVEU-Track1冠军方案）深度解析"><a href="#MM-Screenplayer：零样本长视频理解系统（CVPR’2024-LOVEU-Track1冠军方案）深度解析" class="headerlink" title="MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析"></a>MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析</h1><p>本文（arXiv:2406.17309）提出的<strong>MM-Screenplayer</strong>是一款具备多模态感知能力的长视频理解系统，核心目标是解决“长视频问答（LVQA）”任务中“处理时长超5分钟视频”“兼顾全局语义与局部时间定位”的核心难点，最终以零样本方式斩获CVPR’2024 LOVEU Track1挑战赛冠军。以下从研究背景、核心方法、实验验证、结论与价值四方面展开详细解析。</p>
+<h2 id="一、研究背景与任务挑战"><a href="#一、研究背景与任务挑战" class="headerlink" title="一、研究背景与任务挑战"></a>一、研究背景与任务挑战</h2><h3 id="1-1-长视频问答（LVQA）任务定义"><a href="#1-1-长视频问答（LVQA）任务定义" class="headerlink" title="1.1 长视频问答（LVQA）任务定义"></a>1.1 长视频问答（LVQA）任务定义</h3><p>LVQA是视频理解领域的进阶任务，要求模型分析<strong>时长超过5分钟的长视频</strong>，并基于两类模式回答问题：</p>
+<ul>
+<li><strong>全局模式</strong>：需理解视频整体叙事（如“电影主角的核心目标是什么？”）；</li>
+<li><strong>断点模式</strong>：需精准定位特定时间戳的细节（如“视频第2分30秒时人物手中物品是什么？”）。<br>该任务的核心挑战在于“全局语义连贯性”与“局部时间定位精度”的双重需求。</li>
+</ul>
+<h3 id="1-2-现有方案的局限性"><a href="#1-2-现有方案的局限性" class="headerlink" title="1.2 现有方案的局限性"></a>1.2 现有方案的局限性</h3><p>现有LVQA方法主要分为两类，但均存在明显缺陷：<br>| 方案类型 | 代表方法 | 核心思路 | 关键局限 |<br>|—————|—————|—————|—————|<br>| 端到端训练模型 | MovieChat | 依赖大量标注数据，通过问题驱动构建视频表示 | 高质量LVQA标注数据稀缺，模型泛化能力差，全局准确率仅55.1%、断点准确率38.5% |<br>| 故事叙述类方法 | MM-Vid、LLoVi | 将视频拆分为单帧/视觉连续“镜头”，生成文本描述后用LLM理解 | 忽略镜头间的时间关联，无法捕捉连贯叙事（例：电影中“撞冰山前的多组快速切换镜头”代表单一事件，单独分析会丢失核心信息） |</p>
+<h3 id="1-3-基准数据集"><a href="#1-3-基准数据集" class="headerlink" title="1.3 基准数据集"></a>1.3 基准数据集</h3><p>实验采用<strong>MovieChat-1K基准</strong>，该数据集包含1000个来自电影、电视剧的高质量长视频片段（时长超5分钟），配套14000条人工标注问答对，是当前LVQA任务的核心定量评估标准。</p>
+<h2 id="二、核心方法：MM-Screenplayer系统架构"><a href="#二、核心方法：MM-Screenplayer系统架构" class="headerlink" title="二、核心方法：MM-Screenplayer系统架构"></a>二、核心方法：MM-Screenplayer系统架构</h2><p>MM-Screenplayer的核心创新在于“将视频转化为场景级文本剧本”与“回溯（Look Back）机制优化断点问答”，系统整体架构如图1所示，包含三大核心模块，形成“多模态信息提取→场景级剧本生成→精准问答优化”的完整 pipeline。</p>
+<h3 id="2-1-模块1：多模态感知（Multi-Modal-Perception）"><a href="#2-1-模块1：多模态感知（Multi-Modal-Perception）" class="headerlink" title="2.1 模块1：多模态感知（Multi-Modal Perception）"></a>2.1 模块1：多模态感知（Multi-Modal Perception）</h3><p>该模块的目标是从视频的“视觉轨道”和“音频轨道”中提取结构化信息，为后续剧本生成提供基础数据支撑，具体流程如下：</p>
+<ul>
+<li><strong>视觉轨道处理</strong>：<ol>
+<li>先通过“镜头检测（Shot Detection）”算法将长视频分割为独立的视觉镜头（如电影中“人物对话镜头”“风景镜头”的区分）；</li>
+<li>对每个镜头按固定时间间隔采样关键帧（平衡信息完整性与效率）；</li>
+<li>采用<strong>GPT-4o（视觉语言模型，VLM）</strong> 为每个采样帧生成详细文本描述（如“画面中男性穿着棕色外套、无眼镜，背景是挂满横幅的漫画书店”），捕捉视觉语义。</li>
+</ol>
+</li>
+<li><strong>音频轨道处理</strong>：<ol>
+<li>用<strong>whisperX（自动语音识别，ASR）</strong> 模型将音频中的对话、旁白等转录为文本，并保留时间戳信息；</li>
+<li>用<strong>Gemini-1.5 Pro（音频事件定位模型）</strong> 检测并索引视频中的关键非语音音频事件（如爆炸声、掌声、背景音乐切换），补充音频维度的语义信息。</li>
+</ol>
+</li>
+<li><strong>输出结果</strong>：结构化的多模态数据集，包含“镜头分割信息、帧文本描述、对话转录文本、音频事件索引”四类核心数据。</li>
+</ul>
+<h3 id="2-2-模块2：场景级剧本生成（Scene-Level-Scripts-Generation）"><a href="#2-2-模块2：场景级剧本生成（Scene-Level-Scripts-Generation）" class="headerlink" title="2.2 模块2：场景级剧本生成（Scene-Level Scripts Generation）"></a>2.2 模块2：场景级剧本生成（Scene-Level Scripts Generation）</h3><p>这是系统的核心创新点之一，解决了传统“镜头级描述”碎片化的问题。其核心思想是<strong>以“场景”为基本单位（而非单一镜头）</strong>，捕捉视频的连贯叙事逻辑，具体实现步骤如下：</p>
+<ol>
+<li><strong>对话文本预处理</strong>：<ul>
+<li>将whisperX转录的对话按时间顺序排列；</li>
+<li>若两段对话的时间间隔超过2秒（判定为“叙事停顿”），插入“分隔符”标记，引导LLM初步分割文本块（避免将不同场景的对话混为一谈）。</li>
+</ul>
+</li>
+<li><strong>多模态信息融合</strong>：<ul>
+<li>在初步分割的文本块之间，插入对应时间段的“视觉帧描述”和“音频事件标注”，形成“对话+视觉+音频”的多模态文本表示（例：“[22.064-24.055秒] [音频：欢呼声] [视觉：穿超级英雄服装的人群拥抱庆祝] [对话：‘最佳团体服装奖颁给正义联盟！’]”）。</li>
+</ul>
+</li>
+<li><strong>LLM场景重组</strong>：<ul>
+<li>采用<strong>GPT-4-turbo（大语言模型，LLM）</strong> 对融合后的多模态文本进行分析，识别“逻辑边界”（如场景地点变化、核心事件转折）；</li>
+<li>将多个语义关联的镜头合并为一个“场景”，生成结构化剧本（例：将《泰坦尼克号》中“瞭望员发现冰山→船长下令转向→船员慌乱操作”的多个快速镜头合并为“冰山危机预警场景”，并标注场景时间范围与核心内容）。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-3-模块3：回溯判定（Look-Back-for-Determination）"><a href="#2-3-模块3：回溯判定（Look-Back-for-Determination）" class="headerlink" title="2.3 模块3：回溯判定（Look Back for Determination）"></a>2.3 模块3：回溯判定（Look Back for Determination）</h3><p>该模块专门针对“断点模式”的精度问题设计，解决“仅靠剧本可能遗漏局部细节”的缺陷，工作流程如下：</p>
+<ol>
+<li><strong>无效回答检测</strong>：<ul>
+<li>当“答案生成器”基于场景级剧本回答断点问题时，若输出为空、含“无法回答”“不知道”等否定关键词，判定为“无效回答”（表明剧本未覆盖足够细节）。</li>
+</ul>
+</li>
+<li><strong>视觉信息补充</strong>：<ul>
+<li>提取问题指定时间戳“前后连续帧”（如“第100秒”问题，提取98-102秒的所有帧），用GPT-4o生成更细粒度的视觉描述（如“人物手指指向画面左侧的红色门，门上有‘出口’标识”）。</li>
+</ul>
+</li>
+<li><strong>答案重新生成</strong>：<ul>
+<li>结合“场景级剧本（全局语义）”与“补充视觉帧描述（局部细节）”，由GPT-4-turbo重新生成答案，确保断点问题的定位精度。</li>
+</ul>
+</li>
+</ol>
+<h2 id="三、实验验证：性能与有效性证明"><a href="#三、实验验证：性能与有效性证明" class="headerlink" title="三、实验验证：性能与有效性证明"></a>三、实验验证：性能与有效性证明</h2><p>实验以“CVPR’2024 LOVEU Track1挑战赛测试集”（170个长视频）和“MovieChat-1K数据集”为评估对象，采用“准确率（Accuracy）”和“得分（Score，综合回答完整性与准确性）”为核心指标，验证系统性能。</p>
+<h3 id="3-1-实验设置"><a href="#3-1-实验设置" class="headerlink" title="3.1 实验设置"></a>3.1 实验设置</h3><ul>
+<li><strong>核心模型选型</strong>：LLM用GPT-4-turbo（剧本生成与问答）、VLM用GPT-4o（帧描述）、ASR用whisperX、音频分析用Gemini-1.5 Pro；</li>
+<li><strong>训练方式</strong>：零样本（No Extra Training），模型参数固定，无需标注数据微调；</li>
+<li><strong>硬件环境</strong>：单块T4 GPU（兼顾效率与实用性，降低部署门槛）。</li>
+</ul>
+<h3 id="3-2-主性能结果（冠军验证）"><a href="#3-2-主性能结果（冠军验证）" class="headerlink" title="3.2 主性能结果（冠军验证）"></a>3.2 主性能结果（冠军验证）</h3><p>MM-Screenplayer在MovieChat-1K数据集上的表现远超现有方法，具体结果如下表所示（加粗为最优）：<br>| 评估模式 | 准确率（Accuracy） | 得分（Score） | 对比基准（MovieChat） |<br>|—————|——————————|———————-|————————————|<br>| 全局模式 | <strong>87.5%</strong>          | <strong>4.18</strong>      | 55.1% / 2.78           |<br>| 断点模式 | <strong>68.8%</strong>          | <strong>3.52</strong>      | 38.5% / 1.87           |</p>
+<ul>
+<li>关键结论：场景级剧本有效提升了全局语义理解能力（全局准确率提升32.4%），回溯机制显著优化了断点定位精度（断点准确率提升30.3%），最终以绝对优势获挑战赛冠军。</li>
+</ul>
+<h3 id="3-3-消融实验（核心模块有效性）"><a href="#3-3-消融实验（核心模块有效性）" class="headerlink" title="3.3 消融实验（核心模块有效性）"></a>3.3 消融实验（核心模块有效性）</h3><p>通过“移除关键模块”验证各组件的贡献，结果如下表所示（SSGM=场景级剧本生成模块，LBDM=回溯判定模块）：<br>| SSGM（场景级剧本） | LBDM（回溯机制） | 全局准确率（G-Acc） | 全局得分（G-Score） | 断点准确率（B-Acc） | 断点得分（B-Score） |<br>|——————————|—————————|——————————-|——————————-|——————————-|——————————-|<br>| ×                  | ×                | 66.7%                | 3.60                | 48.5%                | 2.51                |<br>| √                  | ×                | 85.6%                | 4.18                | 54.8%                | 2.77                |<br>| √                  | √                | 87.5%                | 4.18                | 68.8%                | 3.52                |</p>
+<ul>
+<li>关键结论：<ol>
+<li>SSGM单独作用时，全局准确率提升18.9%，证明“场景级表示”是全局理解的核心；</li>
+<li>LBDM单独作用时，断点准确率提升14%，验证“回溯机制”对局部细节的补充价值；</li>
+<li>两者结合时性能最优，说明“全局场景+局部回溯”的协同效应。</li>
+</ol>
+</li>
+</ul>
+<h3 id="3-4-定性实验（案例对比）"><a href="#3-4-定性实验（案例对比）" class="headerlink" title="3.4 定性实验（案例对比）"></a>3.4 定性实验（案例对比）</h3><p>以MovieChat-1K数据集中《楚门的世界》（Truman’s World）的断点问题“船上的男人最终去了哪里？”为例，对比MM-Screenplayer与现有方法的回答质量：</p>
+<ul>
+<li><strong>MM-Screenplayer</strong>：“男人最终穿过一扇门，离开了当前环境”（准确捕捉“场景转折+视觉细节”，符合剧情）；</li>
+<li><strong>LLoVi/MM-Vid</strong>：“视频未提供男人的最终目的地”（无法理解连贯场景，回答无效）；</li>
+<li><strong>MovieChat</strong>：“他最终去了船上”（混淆“工具”与“目的地”，回答错误）。<br>该案例直观证明：场景级剧本确保了全局叙事理解，回溯机制补充了“门”的视觉细节，两者结合实现精准问答。</li>
+</ul>
+<h2 id="四、研究结论与应用价值"><a href="#四、研究结论与应用价值" class="headerlink" title="四、研究结论与应用价值"></a>四、研究结论与应用价值</h2><h3 id="4-1-核心结论"><a href="#4-1-核心结论" class="headerlink" title="4.1 核心结论"></a>4.1 核心结论</h3><ol>
+<li><strong>方法创新</strong>：提出“场景级剧本生成”解决长视频碎片化理解问题，“回溯机制”优化断点定位精度，两者结合形成零样本LVQA的有效框架；</li>
+<li><strong>性能领先</strong>：在MovieChat-1K数据集上全局准确率87.5%、断点准确率68.8%，显著超越现有方法，获CVPR’2024 LOVEU Track1冠军；</li>
+<li><strong>实用性强</strong>：无需大量标注数据，基于现有预训练模型（GPT-4系列、whisperX等）构建，单T4 GPU即可运行，降低部署门槛。</li>
+</ol>
+<h3 id="4-2-应用价值"><a href="#4-2-应用价值" class="headerlink" title="4.2 应用价值"></a>4.2 应用价值</h3><ul>
+<li><strong>影视内容分析</strong>：可自动生成电影、电视剧的结构化剧本，辅助导演复盘叙事逻辑、观众快速理解剧情；</li>
+<li><strong>视频内容检索</strong>：基于剧本的文本化表示，支持“语义级检索”（如“检索包含‘冰山危机场景’的视频片段”），提升长视频检索效率；</li>
+<li><strong>智能视频问答系统</strong>：应用于教育（如“课程视频中第15分钟讲解的公式推导步骤”）、安防（如“监控视频中第30秒出现的异常声音来源”）等领域，提供精准问答支持。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" class="category-chain-item">论文阅读</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" class="print-no-link">#论文阅读</a>
+      
+        <a href="/tags/%E8%A7%86%E9%A2%91%E7%90%86%E8%A7%A3/" class="print-no-link">#视频理解</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Sreenplay</div>
+      <div>https://hellowydwyd.github.io/2025/09/03/Sreenplay/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>YuDong Wang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年9月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/09/03/MovieChat/" title="MovieChat">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">MovieChat</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/09/03/looongLLaVA/" title="looongLLaVA">
+                        <span class="hidden-mobile">looongLLaVA</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

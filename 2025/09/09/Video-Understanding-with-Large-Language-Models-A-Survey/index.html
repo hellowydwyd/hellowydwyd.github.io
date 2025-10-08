@@ -1,0 +1,943 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="YuDong Wang">
+  <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
+  
+    <meta name="description" content="《Video Understanding with Large Language Models: A Survey》PDF总结一、研究背景与意义 视频内容增长需求：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。 LLM的赋能潜力：大型语言模型（LLMs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Video Understanding with Large Language Models: A Survey">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/09/09/Video-Understanding-with-Large-Language-Models-A-Survey/index.html">
+<meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
+<meta property="og:description" content="《Video Understanding with Large Language Models: A Survey》PDF总结一、研究背景与意义 视频内容增长需求：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。 LLM的赋能潜力：大型语言模型（LLMs">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-09-09T12:47:39.000Z">
+<meta property="article:modified_time" content="2025-09-09T12:47:39.549Z">
+<meta property="article:author" content="YuDong Wang">
+<meta property="article:tag" content="视频理解">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Video Understanding with Large Language Models: A Survey - Wydcoder&#39;s Tech Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"hellowydwyd.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wydcoder&#39;s Tech Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/about-bg.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Video Understanding with Large Language Models: A Survey"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        YuDong Wang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-09-09 20:47" pubdate>
+          星期二, 九月 9日 2025, 8:47 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Video Understanding with Large Language Models: A Survey</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025年9月9日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="《Video-Understanding-with-Large-Language-Models-A-Survey》PDF总结"><a href="#《Video-Understanding-with-Large-Language-Models-A-Survey》PDF总结" class="headerlink" title="《Video Understanding with Large Language Models: A Survey》PDF总结"></a>《Video Understanding with Large Language Models: A Survey》PDF总结</h1><h2 id="一、研究背景与意义"><a href="#一、研究背景与意义" class="headerlink" title="一、研究背景与意义"></a>一、研究背景与意义</h2><ol>
+<li><strong>视频内容增长需求</strong>：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。</li>
+<li><strong>LLM的赋能潜力</strong>：大型语言模型（LLMs）在语言及多模态任务中表现出色，将其应用于视频理解（形成Vid-LLMs），可实现开放式多粒度（抽象、时间、时空）推理与常识结合，为视频理解提供新方向。</li>
+</ol>
+<h2 id="二、视频理解方法发展历程"><a href="#二、视频理解方法发展历程" class="headerlink" title="二、视频理解方法发展历程"></a>二、视频理解方法发展历程</h2><p>视频理解方法演进分为四个阶段，任务解决能力逐步提升，具体如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>时间范围</th>
+<th>核心技术</th>
+<th>代表方法/模型</th>
+<th>关键特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>传统方法</td>
+<td>深度学习普及前</td>
+<td>手工特征提取、传统机器学习算法</td>
+<td>SIFT、SURF、HOG（特征提取）；HMM（时序分析）；SVM、决策树（分类）</td>
+<td>依赖人工设计特征，对复杂视频场景适应性差</td>
+</tr>
+<tr>
+<td>早期神经视频模型</td>
+<td>2014-2019年</td>
+<td>深度学习（CNN、LSTM、3D CNN、Transformer）</td>
+<td>DeepVideo、双流网络、TSN、C3D、I3D、SlowFast、TimeSformer</td>
+<td>引入深度神经网络，开始捕捉运动与时空信息，但需大量任务特定标注数据</td>
+</tr>
+<tr>
+<td>自监督视频预训练</td>
+<td>2019-2023年</td>
+<td>自监督预训练范式</td>
+<td>VideoBERT、ActBERT、VideoMAE、MotionMAE、CLIP-ViP</td>
+<td>通过“预训练-微调”模式，减少对标注数据依赖，提升跨任务泛化能力</td>
+</tr>
+<tr>
+<td>基于LLM的视频理解（Vid-LLMs）</td>
+<td>2023年至今</td>
+<td>LLM与视频处理模块结合</td>
+<td>Video-ChatGPT、Video-LLaMA、GPT4Video、Chat-UniVi</td>
+<td>具备上下文学习、指令跟随能力，可处理多模态复杂交互，接近人类理解水平</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="三、基础概念与任务分类"><a href="#三、基础概念与任务分类" class="headerlink" title="三、基础概念与任务分类"></a>三、基础概念与任务分类</h2><h3 id="（一）视频理解核心任务"><a href="#（一）视频理解核心任务" class="headerlink" title="（一）视频理解核心任务"></a>（一）视频理解核心任务</h3><p>按理解粒度与语言参与度，任务分为三类：</p>
+<ol>
+<li><strong>抽象理解任务</strong>：侧重整体语义理解，无需精细时空定位<ul>
+<li>视频分类与动作识别：按类别标签分类视频/动作，数据集如UCF-101、Kinetics-400，指标为Top-K准确率。</li>
+<li>文本-视频检索：根据文本描述匹配视频片段，数据集如MSRVTT、DiDeMo，指标为Recall@K。</li>
+<li>视频文本摘要/字幕生成：生成视频 concise 摘要或连贯描述，数据集如VideoInstruct-100K、MSVD，指标为BLEU、METEOR、CIDEr。</li>
+<li>视频问答（VQA）：基于视频回答文本问题，数据集如TVQA、NExT-QA，指标为Top-1/Top-K准确率。</li>
+</ul>
+</li>
+<li><strong>时间理解任务</strong>：关注视频时序维度的事件定位与提取<ul>
+<li>视频摘要/精彩片段检测：浓缩长视频或提取关键片段，数据集如SumMe、TVSum，指标为F1-score。</li>
+<li>时序动作定位/提案生成：识别动作发生的时间区间或生成候选区间，数据集如THUMOS’14、ActivityNet，指标为tIoU、Recall@K。</li>
+<li>视频时序接地：根据文本查询定位视频特定时刻，数据集如Charades-STA，指标为R1@0.5/R1@0.7。</li>
+</ul>
+</li>
+<li><strong>时空理解任务</strong>：结合空间与时间维度的精细理解<ul>
+<li>目标跟踪/重识别：持续追踪目标或跨帧/视角匹配目标，数据集如OTB、Market-1501，指标为精度、成功率。</li>
+<li>视频显著性检测/目标分割：识别视觉重点区域或分割目标，数据集如DHF1K、YouTube-VOS，指标为AUC-J、mAP。</li>
+<li>时空接地：根据查询定位视频中目标的时空位置，数据集如Vid-STG、Ego4D-MQ。</li>
+</ul>
+</li>
+</ol>
+<h3 id="（二）LLM基础背景"><a href="#（二）LLM基础背景" class="headerlink" title="（二）LLM基础背景"></a>（二）LLM基础背景</h3><ol>
+<li><strong>核心公式</strong>：LLM学习文本序列的联合概率分布，通过自回归范式生成下一个token：<ul>
+<li>联合分布：(p(x<em>{1: L})=\prod</em>{i=1}^{L} p(x<em>{i} | x</em>{1: i-1}))（(L)为序列长度）</li>
+<li>自回归生成：(\mathcal{M}(x<em>{1: i-1})=p(x</em>{i} | x_{1: i-1}))（(\mathcal{M})为LLM）</li>
+</ul>
+</li>
+<li><strong>解码策略</strong>：包括贪心解码（选概率最高token）、采样策略（随机选token以保证多样性）。</li>
+<li><strong>关键特性</strong>：<ul>
+<li>缩放定律：模型参数、训练数据量、计算资源扩展时，性能呈规律性增长。</li>
+<li>涌现能力：参数与数据超阈值后，出现上下文学习、链式推理（CoT）、指令跟随等能力。</li>
+<li>多模态扩展：多模态LLM（MLLMs）通过模态编码器、跨模态对齐器与LLM核心结合，处理视觉-语言交互。</li>
+</ul>
+</li>
+</ol>
+<h2 id="四、Vid-LLMs分类与训练策略"><a href="#四、Vid-LLMs分类与训练策略" class="headerlink" title="四、Vid-LLMs分类与训练策略"></a>四、Vid-LLMs分类与训练策略</h2><h3 id="（一）分类体系"><a href="#（一）分类体系" class="headerlink" title="（一）分类体系"></a>（一）分类体系</h3><p>基于视频输入处理方式，Vid-LLMs分为三类，每类按LLM功能进一步细分：</p>
+<ol>
+<li><strong>Video Analyzer × LLM</strong>：视频分析器将视频转为文本（如字幕、目标跟踪结果），输入LLM<ul>
+<li>LLM作为总结器（Summarizer）：对分析文本总结，信息单向流动，如LaViLa、VLog。</li>
+<li>LLM作为管理器（Manager）：协调调用多个分析器，支持多轮交互，如ViperGPT、HuggingGPT。</li>
+</ul>
+</li>
+<li><strong>Video Embedder × LLM</strong>：视频嵌入器将视频转为向量表示（嵌入），通过适配器映射到LLM语义空间<ul>
+<li>LLM作为文本解码器（Text Decoder）：将嵌入解码为文本（如问答、字幕），如Video-LLaMA、Video-ChatGPT。</li>
+<li>LLM作为回归器（Regressor）：预测连续值（如时间戳、边界框坐标），如VTimeLLM、SeViLA。</li>
+<li>LLM作为隐藏层（Hidden Layer）：连接任务特定头完成回归，不直接输出文本，如GPT4Video、VTG-LLM。</li>
+</ul>
+</li>
+<li><strong>(Analyzer + Embedder) × LLM</strong>：混合使用分析器（文本）与嵌入器（向量），输入LLM，如Vid2Seq、VideoChat，LLM功能可灵活为上述五种类型。</li>
+</ol>
+<h3 id="（二）训练策略"><a href="#（二）训练策略" class="headerlink" title="（二）训练策略"></a>（二）训练策略</h3><ol>
+<li><strong>无训练（Training-free）</strong>：基于LLM的零样本、上下文学习能力，无需微调参数，多为Video Analyzer × LLM类，如SlowFast-LLaVA。</li>
+<li><strong>微调（Fine-tuning）</strong>：主要用于Video Embedder × LLM类，按适配器类型分为四种：<ul>
+<li>全量微调：更新LLM所有参数，性能优但计算成本高，如AV-LLM。</li>
+<li>连接型适配器微调：冻结LLM与嵌入器，仅更新模态对齐适配器（如MLP、Q-former）。</li>
+<li>插入型适配器微调：在LLM内部插入适配器（如LoRA），改变LLM行为，适用于回归任务。</li>
+<li>混合适配器微调：结合连接型与插入型，多阶段微调（先对齐模态，再适配任务）。</li>
+</ul>
+</li>
+</ol>
+<h2 id="五、基准测试与评估方法"><a href="#五、基准测试与评估方法" class="headerlink" title="五、基准测试与评估方法"></a>五、基准测试与评估方法</h2><h3 id="（一）主要基准数据集"><a href="#（一）主要基准数据集" class="headerlink" title="（一）主要基准数据集"></a>（一）主要基准数据集</h3><p>涵盖不同任务与场景，关键信息如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>基准名称</th>
+<th>视频数量</th>
+<th>平均时长（秒）</th>
+<th>核心任务</th>
+<th>问题类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSRVTT-QA</td>
+<td>2990</td>
+<td>15.2</td>
+<td>视频问答</td>
+<td>闭卷/开卷（what/who等）</td>
+</tr>
+<tr>
+<td>TVQA</td>
+<td>2179</td>
+<td>11.2</td>
+<td>视频问答</td>
+<td>闭卷（选择题）</td>
+</tr>
+<tr>
+<td>NExT-QA</td>
+<td>1000</td>
+<td>39.5</td>
+<td>视频问答</td>
+<td>闭卷/开卷（因果、时序）</td>
+</tr>
+<tr>
+<td>MVBench</td>
+<td>3641</td>
+<td>16.0</td>
+<td>多任务理解</td>
+<td>闭卷（分类、定位等）</td>
+</tr>
+<tr>
+<td>ActivityNet Captions</td>
+<td>800</td>
+<td>111.4</td>
+<td>密集视频字幕</td>
+<td>开卷（事件描述）</td>
+</tr>
+<tr>
+<td>Ego4D-MQ</td>
+<td>5063</td>
+<td>180.0</td>
+<td>时空接地</td>
+<td>开卷（第一视角场景）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="（二）评估方法"><a href="#（二）评估方法" class="headerlink" title="（二）评估方法"></a>（二）评估方法</h3><ol>
+<li><strong>闭卷评估</strong>：预定义答案/格式，如选择题（准确率）、结构化输出（CIDEr、ROUGE），适用于基础任务。</li>
+<li><strong>开卷评估</strong>：无预定义选项，用GPT-3.5/4对比预测与参考答案，适用于复杂推理（如MovieChat-1K、NExT-QA），但存在版本依赖、提示敏感性问题。</li>
+<li><strong>其他评估</strong>：<ul>
+<li>时空精细评估：密集字幕（BLEU）、时序接地（tIoU）、目标跟踪（精度）。</li>
+<li>定性评估：错误分析、注意力可视化、模型自解释、人工评估。</li>
+</ul>
+</li>
+</ol>
+<h3 id="（三）性能分析"><a href="#（三）性能分析" class="headerlink" title="（三）性能分析"></a>（三）性能分析</h3><ol>
+<li><strong>关键影响因素</strong>：大参数LLM（如34B的IG-VLM）、强视觉嵌入器（EVA-CLIP、ViT-G）、多帧采样（100+帧）、复杂适配器（Q-former、跨注意力）提升性能。</li>
+<li><strong>代表性结果</strong>：<ul>
+<li>密集字幕任务：Streaming GIT在ActivityNet Captions上CIDEr达41.2，超传统模型。</li>
+<li>开卷VQA：IG-VLM在MSVD-QA、MSRVTT-QA、ActivityNet-QA上准确率分别为76.7%、62.7%、57.3%，居前列。</li>
+</ul>
+</li>
+</ol>
+<h2 id="六、应用场景与未来方向"><a href="#六、应用场景与未来方向" class="headerlink" title="六、应用场景与未来方向"></a>六、应用场景与未来方向</h2><h3 id="（一）核心应用领域"><a href="#（一）核心应用领域" class="headerlink" title="（一）核心应用领域"></a>（一）核心应用领域</h3><ol>
+<li><strong>媒体娱乐</strong>：视频平台搜索推荐、自动字幕生成、视频编辑（如广告剪辑）。</li>
+<li><strong>交互与用户系统</strong>：虚拟教育（智能 tutors）、手语翻译、游戏动态剧情生成、AR/VR叙事。</li>
+<li><strong>医疗与安全</strong>：医疗视频诊断辅助、 surveillance 异常行为检测、自动驾驶路况理解。</li>
+<li><strong>其他</strong>：视频生成模型评估、边缘计算部署、联邦学习隐私保护。</li>
+</ol>
+<h3 id="（二）挑战与未来方向"><a href="#（二）挑战与未来方向" class="headerlink" title="（二）挑战与未来方向"></a>（二）挑战与未来方向</h3><ol>
+<li><strong>精细粒度理解</strong>：缺乏数据集，帧级分析计算成本高，需提升语义深度（如情感、场景动态）。</li>
+<li><strong>长视频理解</strong>：难以捕捉长时间跨度事件，需优化关键事件检测与注意力机制。</li>
+<li><strong>多模态融合</strong>：视觉、音频、文本的时空对齐难，缺乏高质量多模态数据集。</li>
+<li><strong>幻觉问题</strong>：模型生成与视频无关内容，需优化特征提取、模态对齐，引入后训练校正。</li>
+<li><strong>工业部署</strong>：需通过模型压缩、token合并、模块化设计，平衡效率与性能。</li>
+<li><strong>伦理问题</strong>：隐私泄露（视频敏感信息）、内容滥用（误导性生成）、数据偏见，需加强数据治理与伦理规范。</li>
+</ol>
+<h2 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h2><p>该综述系统梳理了Vid-LLMs的发展背景、分类体系、训练策略、评估基准与应用方向，指出其通过LLM赋能，实现了从传统视频理解到多粒度、类人推理的突破。当前Vid-LLMs在抽象与时间理解任务中表现突出，但在长视频、多模态融合、幻觉抑制等方面仍需突破，未来需结合高效训练、数据集扩展与伦理规范，推动其在实际场景中的规模化应用。</p>
+<p>此外，作者提供了GitHub仓库（<a target="_blank" rel="noopener" href="https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。">https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/" class="category-chain-item">论文阅读</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%A7%86%E9%A2%91%E7%90%86%E8%A7%A3/" class="print-no-link">#视频理解</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Video Understanding with Large Language Models: A Survey</div>
+      <div>https://hellowydwyd.github.io/2025/09/09/Video-Understanding-with-Large-Language-Models-A-Survey/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>YuDong Wang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年9月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/09/10/%E5%BD%A9%E8%89%B2%E8%AF%AD%E8%B0%B1%E5%9B%BE/" title="彩色语谱图(Color Spectrogram)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">彩色语谱图(Color Spectrogram)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/09/08/ViLAMP/" title="ViLAMP">
+                        <span class="hidden-mobile">ViLAMP</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

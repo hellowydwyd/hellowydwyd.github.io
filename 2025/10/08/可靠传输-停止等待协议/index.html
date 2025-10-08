@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="YuDong Wang">
+  <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
+  
+    <meta name="description" content="一、停止 - 等待协议（SW）核心机制停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块： 1. 确认与否认（ACK&#x2F;NAK） 正常场景：发送方发送DATA分组，接收方正确接收后，返回ACK（确认）分组，发送方收到ACK后继续发送下一个DATA。 误码场景：接收方检测到DATA分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="可靠传输-停止等待协议">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%81%9C%E6%AD%A2%E7%AD%89%E5%BE%85%E5%8D%8F%E8%AE%AE/index.html">
+<meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
+<meta property="og:description" content="一、停止 - 等待协议（SW）核心机制停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块： 1. 确认与否认（ACK&#x2F;NAK） 正常场景：发送方发送DATA分组，接收方正确接收后，返回ACK（确认）分组，发送方收到ACK后继续发送下一个DATA。 误码场景：接收方检测到DATA分">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-08T03:00:24.000Z">
+<meta property="article:modified_time" content="2025-10-08T07:20:04.526Z">
+<meta property="article:author" content="YuDong Wang">
+<meta property="article:tag" content="计算机与网络">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>可靠传输-停止等待协议 - Wydcoder&#39;s Tech Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"hellowydwyd.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wydcoder&#39;s Tech Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/post-bg.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="可靠传输-停止等待协议"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        YuDong Wang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-10-08 11:00" pubdate>
+          星期三, 十月 8日 2025, 11:00 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          1.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">可靠传输-停止等待协议</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025年10月8日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="一、停止-等待协议（SW）核心机制"><a href="#一、停止-等待协议（SW）核心机制" class="headerlink" title="一、停止 - 等待协议（SW）核心机制"></a>一、停止 - 等待协议（SW）核心机制</h2><p>停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块：</p>
+<h3 id="1-确认与否认（ACK-NAK）"><a href="#1-确认与否认（ACK-NAK）" class="headerlink" title="1. 确认与否认（ACK/NAK）"></a>1. 确认与否认（ACK/NAK）</h3><ul>
+<li><strong>正常场景</strong>：发送方发送<code>DATA</code>分组，接收方正确接收后，返回<code>ACK</code>（确认）分组，发送方收到<code>ACK</code>后继续发送下一个<code>DATA</code>。</li>
+<li><strong>误码场景</strong>：接收方检测到<code>DATA</code>分组存在误码时，有两种处理方式：<ul>
+<li>直接丢弃误码分组，等待发送方超时重传（适用于误码率较低的链路）；</li>
+<li>向发送方发送<code>NAK</code>（否认）分组，触发发送方尽早重传（适用于误码率较高的点对点链路）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-超时重传"><a href="#2-超时重传" class="headerlink" title="2. 超时重传"></a>2. 超时重传</h3><ul>
+<li><strong>核心问题</strong>：若<code>DATA</code>分组丢失或<code>ACK</code>分组丢失，发送方会一直等待确认，陷入死锁。</li>
+<li><strong>解决方案</strong>：发送方发送<code>DATA</code>分组后，立即启动<strong>超时计时器</strong>；若计时器超时仍未收到<code>ACK/NAK</code>，则重传原<code>DATA</code>分组。</li>
+<li><strong>重传时间设定</strong>：需 “略大于发送方到接收方的平均往返时间（RTT）”，避免过早重传导致资源浪费，或过晚重传导致时延增加。<ul>
+<li>数据链路层：点对点往返时间稳定，重传时间易设定；</li>
+<li>运输层：端到端往返时间不确定，重传时间设定难度较高。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-分组编号（避免重复）"><a href="#3-分组编号（避免重复）" class="headerlink" title="3. 分组编号（避免重复）"></a>3. 分组编号（避免重复）</h3><ul>
+<li><strong>数据分组编号</strong>：由于协议 “停等” 特性，只需 1 个比特编号（0 和 1）即可区分新分组与重复分组（确保每次新分组编号与上一次不同）。</li>
+<li><strong>ACK 分组编号</strong>：理论上需与数据分组编号比特数一致（帮助发送方判断<code>ACK</code>是否重复），但数据链路层极少出现<code>ACK</code>迟到场景，因此可省略<code>ACK</code>编号。</li>
+</ul>
+<h3 id="4-异常场景处理"><a href="#4-异常场景处理" class="headerlink" title="4. 异常场景处理"></a>4. 异常场景处理</h3><p>文档明确了 4 种典型异常场景的协议行为，具体如下表：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>异常场景</th>
+<th>发送方行为</th>
+<th>接收方行为</th>
+<th>最终结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DATA</code>分组丢失</td>
+<td>启动超时计时器，超时后重传<code>DATA</code></td>
+<td>未收到<code>DATA</code>，不发送<code>ACK/NAK</code></td>
+<td>重传<code>DATA</code>被正确接收，返回<code>ACK</code></td>
+</tr>
+<tr>
+<td><code>ACK</code>分组丢失</td>
+<td>未收到<code>ACK</code>，超时后重传<code>DATA</code></td>
+<td>已正确接收原<code>DATA</code>，收到重传<code>DATA</code>后丢弃（因编号重复），重新发送<code>ACK</code></td>
+<td>发送方收到重发的<code>ACK</code>，继续发送下一个<code>DATA</code></td>
+</tr>
+<tr>
+<td><code>DATA</code>分组误码</td>
+<td>若收到<code>NAK</code>则立即重传；若未收到<code>NAK</code>，则超时后重传</td>
+<td>丢弃误码<code>DATA</code>，可选发送<code>NAK</code></td>
+<td>重传<code>DATA</code>被正确接收，返回<code>ACK</code></td>
+</tr>
+<tr>
+<td><code>ACK</code>分组迟到</td>
+<td>未及时收到<code>ACK</code>，超时后重传<code>DATA</code></td>
+<td>已收到原<code>DATA</code>，收到重传<code>DATA</code>后丢弃，重新发送<code>ACK</code></td>
+<td>发送方收到迟到 / 重发的<code>ACK</code>，停止重传</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="二、停止-等待协议的信道利用率"><a href="#二、停止-等待协议的信道利用率" class="headerlink" title="二、停止 - 等待协议的信道利用率"></a>二、停止 - 等待协议的信道利用率</h2><h3 id="1-利用率公式"><a href="#1-利用率公式" class="headerlink" title="1. 利用率公式"></a>1. 利用率公式</h3><p>信道利用率（$U$）表示有效传输时间占总周期时间的比例，公式如下：</p>
+<script type="math/tex; mode=display">U \approx \frac{T_D}{RTT + T_D + T_A}</script><p>其中：</p>
+<ul>
+<li>$T_D$：数据分组发送时延（发送分组所需时间）</li>
+<li>$RTT$：往返时间（分组从发送到接收ACK的总时间）</li>
+<li>$T_A$：ACK分组发送时延（通常远小于$T_D$，可忽略）</li>
+</ul>
+<p>简化公式为：</p>
+<script type="math/tex; mode=display">U \approx \frac{T_D}{RTT + T_D}</script><h3 id="2-核心缺陷"><a href="#2-核心缺陷" class="headerlink" title="2. 核心缺陷"></a>2. 核心缺陷</h3><p>当$RTT$远大于$T_D$（如卫星链路）时，信道利用率极低；若出现重传，利用率会进一步下降 —— 这也是 GBN 和 SR 协议产生的核心原因（弥补 SW 利用率低的缺陷）。</p>
+<h2 id="三、相关协议对比（GBN-与-SR）"><a href="#三、相关协议对比（GBN-与-SR）" class="headerlink" title="三、相关协议对比（GBN 与 SR）"></a>三、相关协议对比（GBN 与 SR）</h2><p>文档虽未详细展开 GBN 和 SR 协议，但明确其设计目标是 “解决 SW 信道利用率低的问题”，三者核心差异如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>协议</th>
+<th>发送方式</th>
+<th>重传策略</th>
+<th>信道利用率</th>
+<th>复杂度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>停止 - 等待（SW）</td>
+<td>一次发 1 个，停等确认</td>
+<td>仅重传超时 / 否认的分组</td>
+<td>最低（RTT 越大越低）</td>
+<td>最低</td>
+</tr>
+<tr>
+<td>回退 N 帧（GBN）</td>
+<td>连续发 N 个，无需等待确认</td>
+<td>超时后重传该分组及后续所有分组</td>
+<td>中等</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>选择重传（SR）</td>
+<td>连续发 N 个，无需等待确认</td>
+<td>仅重传超时 / 否认的分组</td>
+<td>最高</td>
+<td>最高（需缓存已发未确认分组）</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>停止 - 等待协议是可靠传输的 “基础模型”，通过 “停等确认 + 超时重传 + 分组编号” 实现数据可靠交付，优点是逻辑简单、易于实现，缺点是信道利用率极低（尤其长时延链路）。GBN 和 SR 协议在此基础上优化，通过 “连续发送 + 选择性重传” 提升利用率，但复杂度相应增加。三者共同构成了计算机网络各层可靠传输的核心技术框架，需结合场景选择适用协议</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%8E%E7%BD%91%E7%BB%9C/" class="category-chain-item">计算机与网络</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%8E%E7%BD%91%E7%BB%9C/" class="print-no-link">#计算机与网络</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>可靠传输-停止等待协议</div>
+      <div>https://hellowydwyd.github.io/2025/10/08/可靠传输-停止等待协议/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>YuDong Wang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%9B%9E%E9%80%80N%E5%B8%A7%E5%8D%8F%E8%AE%AE/" title="可靠传输-回退N帧协议">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">可靠传输-回退N帧协议</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/07/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" title="可靠传输的基本概念">
+                        <span class="hidden-mobile">可靠传输的基本概念</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
