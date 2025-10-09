@@ -393,186 +393,6 @@
       </tags>
   </entry>
   <entry>
-    <title>ViLAMP</title>
-    <url>/2025/09/08/ViLAMP/</url>
-    <content><![CDATA[<h1>《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结</h1>
-<h2 id="一、研究背景与问题">一、研究背景与问题</h2>
-<ol>
-<li><strong>长视频处理的核心挑战</strong>：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128K的上下文长度限制；而现实中1小时以上的长视频（如长视频分析、机器人持续学习场景）需求普遍，现有模型难以兼顾效率与语义完整性。</li>
-<li><strong>现有方法的局限性</strong>
-<ul>
-<li><strong>令牌剪枝</strong>：通过均匀或内容感知采样（如固定间隔选帧、数据库检索式选帧）减少令牌数量，但易丢失关键时间依赖关系。</li>
-<li><strong>特征合并</strong>：基于启发式（下采样、池化）或可学习机制（Q-Former、Perceiver Resampler）合并特征，常导致语义信息稀释，无法平衡计算效率与信息保留。</li>
-</ul>
-</li>
-</ol>
-<h2 id="二、核心发现：长视频的信息冗余规律">二、核心发现：长视频的信息冗余规律</h2>
-<p>通过对LLaVA-OneVision、LLaVA-Video等代表性VLMs在Video-MME基准上的注意力模式分析，发现两级冗余特征：</p>
-<ol>
-<li><strong>帧级冗余</strong>：约90%的查询注意力集中在仅5%的帧上，且这些高注意力帧间视觉相似度极高（余弦相似度&gt;0.8），远超随机帧对基线（0.54-0.61），存在大量视觉重复。</li>
-<li><strong>补丁级冗余</strong>：非关键帧中，50%的高注意力补丁贡献80%的总注意力，且这些补丁与关键帧对应位置补丁视觉相似度高，存在跨帧重复视觉模式，导致计算资源浪费。</li>
-</ol>
-<h2 id="三、核心方法：差异蒸馏原理与VILAMP模型">三、核心方法：差异蒸馏原理与VILAMP模型</h2>
-<h3 id="（一）差异蒸馏原理（Differential-Distillation）">（一）差异蒸馏原理（Differential Distillation）</h3>
-<p>定义“差异信息显著性分数”，量化视频组件（帧/补丁）的价值，公式如下：<br>
-[D(v)=R(v,Q)-T(v,\mathcal {C}(v))]</p>
-<ul>
-<li>(R(v,Q))：组件与查询的相关性（如余弦相似度）；</li>
-<li>(T(v,C(v)))：组件与时间上下文（如相邻帧/关键帧）的冗余度；</li>
-<li>分数越高，组件含有的“任务相关且低冗余”信息越多，应分配更多计算资源。</li>
-</ul>
-<h3 id="（二）VILAMP模型架构：分层混合精度处理">（二）VILAMP模型架构：分层混合精度处理</h3>
-<p>VILAMP通过“帧级选关键帧+补丁级压缩非关键帧”实现长视频高效处理，类比“混合精度训练”（Micikevicius et al., 2018），核心包含两大模块：</p>
-<ol>
-<li>
-<p><strong>差异关键帧选择（DKS）</strong>：帧级保留全信息</p>
-<ul>
-<li><strong>目标</strong>：筛选高查询相关性且时间独特性强的帧作为关键帧，避免冗余。</li>
-<li><strong>步骤</strong>：
-<ol>
-<li>用CLIP编码器将帧与查询编码为d维嵌入，计算帧-查询余弦相似度作为相关性分数(R_f)；</li>
-<li>定义帧与已选关键帧的最大余弦相似度为冗余度(T_f)；</li>
-<li>贪心算法：按(R_f)降序排序帧，选择(T_f&lt;\tau)（实验设(\tau=0.85)）的帧，直至选满K个（实验设K=32），复杂度降至(O(max(NK, NlogN)))。</li>
-</ol>
-</li>
-<li><strong>作用</strong>：关键帧保留完整729个视觉令牌，作为时间关系学习的“锚点”。</li>
-</ul>
-</li>
-<li>
-<p><strong>差异特征合并（DFM）</strong>：补丁级压缩非关键帧</p>
-<ul>
-<li><strong>目标</strong>：将非关键帧压缩为1个令牌，同时保留查询相关特征。</li>
-<li><strong>步骤</strong>：
-<ol>
-<li>用VLM视觉编码器获取非关键帧补丁与最近关键帧对应补丁的嵌入；</li>
-<li>计算补丁级显著性分数(D_p=R_p-\lambda T_p)（(R_p)为补丁-查询相关性，(T_p)为补丁-关键帧补丁相似度，(\lambda=1)平衡两者）；</li>
-<li>加权池化：基于(softmax(D_p/\alpha))（(\alpha=10^{-2})控制权重锐度）对补丁嵌入加权平均，生成非关键帧的单令牌表示。</li>
-</ol>
-</li>
-<li><strong>作用</strong>：非关键帧令牌数从729降至1，大幅减少计算量，同时保留核心语义。</li>
-</ul>
-</li>
-<li>
-<p><strong>多模态融合与训练</strong></p>
-<ul>
-<li>用双流MLP连接器分别投影关键帧补丁嵌入（(h_k^m=MLP_k(p_k^m))）与非关键帧压缩嵌入（(h_n=MLP_n(t_n))）；</li>
-<li>按时间顺序拼接视觉嵌入与查询，以语言建模损失（预测答案A的概率）端到端训练：<br>
-[\mathcal{L}=-log P\left(A |\left{h_{k}^{m} | f_{k} \in \mathcal{K}\right} \cup\left{h_{n} | f_{n} \notin \mathcal{K}\right}, Q\right)]</li>
-</ul>
-</li>
-</ol>
-<h2 id="四、实验设计与结果">四、实验设计与结果</h2>
-<h3 id="（一）实验设置">（一）实验设置</h3>
-<ol>
-<li><strong>基准数据集</strong>：覆盖短、中、长视频场景，共5个基准：
-<table>
-<thead>
-<tr>
-<th>基准名称</th>
-<th>视频平均时长</th>
-<th>核心任务</th>
-<th>数据规模</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>LVBench</td>
-<td>4101s</td>
-<td>超长视频决策</td>
-<td>6大类21子类，含体育、纪录片等</td>
-</tr>
-<tr>
-<td>EgoSchema</td>
-<td>180s</td>
-<td>第一视角视频推理</td>
-<td>5000+问答对，250+小时视频</td>
-</tr>
-<tr>
-<td>LongVideoBench</td>
-<td>473s</td>
-<td>参考推理（对抗单帧偏见）</td>
-<td>3763视频，6678问答对</td>
-</tr>
-<tr>
-<td>MLVU</td>
-<td>651s</td>
-<td>多任务长视频理解（如动作计数）</td>
-<td>2593样本，9任务类别</td>
-</tr>
-<tr>
-<td>Video-MME</td>
-<td>1010s（长子集2386s）</td>
-<td>跨领域视频理解（知识、体育等）</td>
-<td>900视频，2700问答对</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><strong>基线模型</strong>：分三类对比——专有VLMs（GPT-4V、GPT-4o、Gemini-1.5-Pro）、开源多图像VLMs（LLaVA-OneVision、InternVL2）、开源视频VLMs（LLaMA-VID、VideoChat-Flash）。</li>
-<li><strong>模型配置</strong>：视觉编码器用SigLIP-so400m，语言模型用Qwen2-7B，帧分辨率384×384。</li>
-</ol>
-<h3 id="（二）关键实验结果">（二）关键实验结果</h3>
-<ol>
-<li>
-<p><strong>主基准性能</strong>：在7B参数规模下，VILAMP刷新多基准SOTA：</p>
-<ul>
-<li>MLVU：72.6%准确率，超过专有模型GPT-4o（64.6%）；</li>
-<li>Video-MME长子集：无字幕67.5%、有字幕73.5%，较同规模模型（如VideoChat-Flash）提升3.0%-4.8%；</li>
-<li>EgoSchema：70.2%准确率，高于LongVILA（67.7%）、LongVU（67.6%）。</li>
-</ul>
-</li>
-<li>
-<p><strong>10K帧超长视频处理（VideoNIAH基准）</strong></p>
-<ul>
-<li><strong>基准设计</strong>：构建“干草堆-针”任务，干草堆为2K-10K帧（1FPS，最长2.7小时），针为30-120秒视频片段，需定位并理解针内容回答问题。</li>
-<li><strong>效率优势</strong>：单NVIDIA A100 GPU可处理10K帧，内存消耗较基线低50%，8192帧时FLOPs仅为VideoChat-Flash的18.4%（表5）。</li>
-<li><strong>性能稳定性</strong>：10K帧时准确率58.15%，较VideoChat-Flash（47.25%）高12.82%，且从2K到10K帧的准确率下降幅度仅为后者的1/3（图2）。</li>
-</ul>
-</li>
-<li>
-<p><strong>消融实验</strong>：验证核心模块有效性（表2）</p>
-<ul>
-<li>DKS vs 其他选帧：DKS在MLVU（67.3% vs 查询引导63.7%/均匀采样66.8%）、Video-MME（61.8% vs 55.6%/60.2%）表现更优；</li>
-<li>DFM vs 其他合并：DFM在LongVideoBench（60.5% vs Q-Former53.9%/均值池化56.3%）、MLVU（72.6% vs 62.6%/67.3%）显著领先。</li>
-</ul>
-</li>
-<li>
-<p><strong>关键帧数量影响</strong>：短视频（如Video-MME短子集）16个关键帧性能饱和，长视频（MLVU、Video-MME长子集）需32个关键帧达最优（图6），符合“长视频需更密采样”规律。</p>
-</li>
-<li>
-<p><strong>跨任务泛化</strong>：在视频定位（QVHighlights）和动作识别（ActivityNet、Sth-V2、UCF-101）任务中表现优异：</p>
-<ul>
-<li>QVHighlights：Hit@10=60%、Hit@30=83%，验证DKS选帧有效性；</li>
-<li>动作识别：ActivityNet mAP=78.6%（超Adaframe 71.5%），Sth-V2准确率86.9%（超MGSampler 60.1%），体现零样本迁移能力。</li>
-</ul>
-</li>
-</ol>
-<h2 id="五、结论与贡献">五、结论与贡献</h2>
-<ol>
-<li>
-<p><strong>核心贡献</strong></p>
-<ul>
-<li>提出<strong>差异蒸馏原理</strong>：系统性识别“高相关低冗余”信息，为长视频高效建模提供理论框架；</li>
-<li>设计<strong>VILAMP模型</strong>：通过分层混合精度处理（DKS+DFM），实现10K帧（2.7小时）单GPU处理；</li>
-<li>验证<strong>性能与效率优势</strong>：5个基准SOTA，10K帧时准确率超基线12.82%，内存/FLOPs显著降低。</li>
-</ul>
-</li>
-<li>
-<p><strong>局限与展望</strong>：当前未充分验证在更细粒度时间推理（如毫秒级动作）的表现，未来可探索动态关键帧数量调整与跨模态冗余优化。</p>
-</li>
-<li>
-<p><strong>代码与模型</strong>：开源地址为<a href="https://github.com/steven-ccq/ViLAMP%EF%BC%8C%E6%94%AF%E6%8C%81%E5%A4%8D%E7%8E%B0%E4%B8%8E%E6%89%A9%E5%B1%95%E3%80%82">https://github.com/steven-ccq/ViLAMP，支持复现与扩展。</a></p>
-</li>
-</ol>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>视频理解</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Sreenplay</title>
     <url>/2025/09/03/Sreenplay/</url>
     <content><![CDATA[<h1>MM-Screenplayer：零样本长视频理解系统（CVPR’2024 LOVEU Track1冠军方案）深度解析</h1>
@@ -790,240 +610,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Video Understanding with Large Language Models: A Survey</title>
-    <url>/2025/09/09/Video-Understanding-with-Large-Language-Models-A-Survey/</url>
-    <content><![CDATA[<h1>《Video Understanding with Large Language Models: A Survey》PDF总结</h1>
-<h2 id="一、研究背景与意义">一、研究背景与意义</h2>
-<ol>
-<li><strong>视频内容增长需求</strong>：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。</li>
-<li><strong>LLM的赋能潜力</strong>：大型语言模型（LLMs）在语言及多模态任务中表现出色，将其应用于视频理解（形成Vid-LLMs），可实现开放式多粒度（抽象、时间、时空）推理与常识结合，为视频理解提供新方向。</li>
-</ol>
-<h2 id="二、视频理解方法发展历程">二、视频理解方法发展历程</h2>
-<p>视频理解方法演进分为四个阶段，任务解决能力逐步提升，具体如下：</p>
-<table>
-<thead>
-<tr>
-<th>阶段</th>
-<th>时间范围</th>
-<th>核心技术</th>
-<th>代表方法/模型</th>
-<th>关键特点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>传统方法</td>
-<td>深度学习普及前</td>
-<td>手工特征提取、传统机器学习算法</td>
-<td>SIFT、SURF、HOG（特征提取）；HMM（时序分析）；SVM、决策树（分类）</td>
-<td>依赖人工设计特征，对复杂视频场景适应性差</td>
-</tr>
-<tr>
-<td>早期神经视频模型</td>
-<td>2014-2019年</td>
-<td>深度学习（CNN、LSTM、3D CNN、Transformer）</td>
-<td>DeepVideo、双流网络、TSN、C3D、I3D、SlowFast、TimeSformer</td>
-<td>引入深度神经网络，开始捕捉运动与时空信息，但需大量任务特定标注数据</td>
-</tr>
-<tr>
-<td>自监督视频预训练</td>
-<td>2019-2023年</td>
-<td>自监督预训练范式</td>
-<td>VideoBERT、ActBERT、VideoMAE、MotionMAE、CLIP-ViP</td>
-<td>通过“预训练-微调”模式，减少对标注数据依赖，提升跨任务泛化能力</td>
-</tr>
-<tr>
-<td>基于LLM的视频理解（Vid-LLMs）</td>
-<td>2023年至今</td>
-<td>LLM与视频处理模块结合</td>
-<td>Video-ChatGPT、Video-LLaMA、GPT4Video、Chat-UniVi</td>
-<td>具备上下文学习、指令跟随能力，可处理多模态复杂交互，接近人类理解水平</td>
-</tr>
-</tbody>
-</table>
-<h2 id="三、基础概念与任务分类">三、基础概念与任务分类</h2>
-<h3 id="（一）视频理解核心任务">（一）视频理解核心任务</h3>
-<p>按理解粒度与语言参与度，任务分为三类：</p>
-<ol>
-<li><strong>抽象理解任务</strong>：侧重整体语义理解，无需精细时空定位
-<ul>
-<li>视频分类与动作识别：按类别标签分类视频/动作，数据集如UCF-101、Kinetics-400，指标为Top-K准确率。</li>
-<li>文本-视频检索：根据文本描述匹配视频片段，数据集如MSRVTT、DiDeMo，指标为Recall@K。</li>
-<li>视频文本摘要/字幕生成：生成视频 concise 摘要或连贯描述，数据集如VideoInstruct-100K、MSVD，指标为BLEU、METEOR、CIDEr。</li>
-<li>视频问答（VQA）：基于视频回答文本问题，数据集如TVQA、NExT-QA，指标为Top-1/Top-K准确率。</li>
-</ul>
-</li>
-<li><strong>时间理解任务</strong>：关注视频时序维度的事件定位与提取
-<ul>
-<li>视频摘要/精彩片段检测：浓缩长视频或提取关键片段，数据集如SumMe、TVSum，指标为F1-score。</li>
-<li>时序动作定位/提案生成：识别动作发生的时间区间或生成候选区间，数据集如THUMOS’14、ActivityNet，指标为tIoU、Recall@K。</li>
-<li>视频时序接地：根据文本查询定位视频特定时刻，数据集如Charades-STA，指标为R1@0.5/R1@0.7。</li>
-</ul>
-</li>
-<li><strong>时空理解任务</strong>：结合空间与时间维度的精细理解
-<ul>
-<li>目标跟踪/重识别：持续追踪目标或跨帧/视角匹配目标，数据集如OTB、Market-1501，指标为精度、成功率。</li>
-<li>视频显著性检测/目标分割：识别视觉重点区域或分割目标，数据集如DHF1K、YouTube-VOS，指标为AUC-J、mAP。</li>
-<li>时空接地：根据查询定位视频中目标的时空位置，数据集如Vid-STG、Ego4D-MQ。</li>
-</ul>
-</li>
-</ol>
-<h3 id="（二）LLM基础背景">（二）LLM基础背景</h3>
-<ol>
-<li><strong>核心公式</strong>：LLM学习文本序列的联合概率分布，通过自回归范式生成下一个token：
-<ul>
-<li>联合分布：(p(x_{1: L})=\prod_{i=1}^{L} p(x_{i} | x_{1: i-1}))（(L)为序列长度）</li>
-<li>自回归生成：(\mathcal{M}(x_{1: i-1})=p(x_{i} | x_{1: i-1}))（(\mathcal{M})为LLM）</li>
-</ul>
-</li>
-<li><strong>解码策略</strong>：包括贪心解码（选概率最高token）、采样策略（随机选token以保证多样性）。</li>
-<li><strong>关键特性</strong>：
-<ul>
-<li>缩放定律：模型参数、训练数据量、计算资源扩展时，性能呈规律性增长。</li>
-<li>涌现能力：参数与数据超阈值后，出现上下文学习、链式推理（CoT）、指令跟随等能力。</li>
-<li>多模态扩展：多模态LLM（MLLMs）通过模态编码器、跨模态对齐器与LLM核心结合，处理视觉-语言交互。</li>
-</ul>
-</li>
-</ol>
-<h2 id="四、Vid-LLMs分类与训练策略">四、Vid-LLMs分类与训练策略</h2>
-<h3 id="（一）分类体系">（一）分类体系</h3>
-<p>基于视频输入处理方式，Vid-LLMs分为三类，每类按LLM功能进一步细分：</p>
-<ol>
-<li><strong>Video Analyzer × LLM</strong>：视频分析器将视频转为文本（如字幕、目标跟踪结果），输入LLM
-<ul>
-<li>LLM作为总结器（Summarizer）：对分析文本总结，信息单向流动，如LaViLa、VLog。</li>
-<li>LLM作为管理器（Manager）：协调调用多个分析器，支持多轮交互，如ViperGPT、HuggingGPT。</li>
-</ul>
-</li>
-<li><strong>Video Embedder × LLM</strong>：视频嵌入器将视频转为向量表示（嵌入），通过适配器映射到LLM语义空间
-<ul>
-<li>LLM作为文本解码器（Text Decoder）：将嵌入解码为文本（如问答、字幕），如Video-LLaMA、Video-ChatGPT。</li>
-<li>LLM作为回归器（Regressor）：预测连续值（如时间戳、边界框坐标），如VTimeLLM、SeViLA。</li>
-<li>LLM作为隐藏层（Hidden Layer）：连接任务特定头完成回归，不直接输出文本，如GPT4Video、VTG-LLM。</li>
-</ul>
-</li>
-<li><strong>(Analyzer + Embedder) × LLM</strong>：混合使用分析器（文本）与嵌入器（向量），输入LLM，如Vid2Seq、VideoChat，LLM功能可灵活为上述五种类型。</li>
-</ol>
-<h3 id="（二）训练策略">（二）训练策略</h3>
-<ol>
-<li><strong>无训练（Training-free）</strong>：基于LLM的零样本、上下文学习能力，无需微调参数，多为Video Analyzer × LLM类，如SlowFast-LLaVA。</li>
-<li><strong>微调（Fine-tuning）</strong>：主要用于Video Embedder × LLM类，按适配器类型分为四种：
-<ul>
-<li>全量微调：更新LLM所有参数，性能优但计算成本高，如AV-LLM。</li>
-<li>连接型适配器微调：冻结LLM与嵌入器，仅更新模态对齐适配器（如MLP、Q-former）。</li>
-<li>插入型适配器微调：在LLM内部插入适配器（如LoRA），改变LLM行为，适用于回归任务。</li>
-<li>混合适配器微调：结合连接型与插入型，多阶段微调（先对齐模态，再适配任务）。</li>
-</ul>
-</li>
-</ol>
-<h2 id="五、基准测试与评估方法">五、基准测试与评估方法</h2>
-<h3 id="（一）主要基准数据集">（一）主要基准数据集</h3>
-<p>涵盖不同任务与场景，关键信息如下：</p>
-<table>
-<thead>
-<tr>
-<th>基准名称</th>
-<th>视频数量</th>
-<th>平均时长（秒）</th>
-<th>核心任务</th>
-<th>问题类型</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>MSRVTT-QA</td>
-<td>2990</td>
-<td>15.2</td>
-<td>视频问答</td>
-<td>闭卷/开卷（what/who等）</td>
-</tr>
-<tr>
-<td>TVQA</td>
-<td>2179</td>
-<td>11.2</td>
-<td>视频问答</td>
-<td>闭卷（选择题）</td>
-</tr>
-<tr>
-<td>NExT-QA</td>
-<td>1000</td>
-<td>39.5</td>
-<td>视频问答</td>
-<td>闭卷/开卷（因果、时序）</td>
-</tr>
-<tr>
-<td>MVBench</td>
-<td>3641</td>
-<td>16.0</td>
-<td>多任务理解</td>
-<td>闭卷（分类、定位等）</td>
-</tr>
-<tr>
-<td>ActivityNet Captions</td>
-<td>800</td>
-<td>111.4</td>
-<td>密集视频字幕</td>
-<td>开卷（事件描述）</td>
-</tr>
-<tr>
-<td>Ego4D-MQ</td>
-<td>5063</td>
-<td>180.0</td>
-<td>时空接地</td>
-<td>开卷（第一视角场景）</td>
-</tr>
-</tbody>
-</table>
-<h3 id="（二）评估方法">（二）评估方法</h3>
-<ol>
-<li><strong>闭卷评估</strong>：预定义答案/格式，如选择题（准确率）、结构化输出（CIDEr、ROUGE），适用于基础任务。</li>
-<li><strong>开卷评估</strong>：无预定义选项，用GPT-3.5/4对比预测与参考答案，适用于复杂推理（如MovieChat-1K、NExT-QA），但存在版本依赖、提示敏感性问题。</li>
-<li><strong>其他评估</strong>：
-<ul>
-<li>时空精细评估：密集字幕（BLEU）、时序接地（tIoU）、目标跟踪（精度）。</li>
-<li>定性评估：错误分析、注意力可视化、模型自解释、人工评估。</li>
-</ul>
-</li>
-</ol>
-<h3 id="（三）性能分析">（三）性能分析</h3>
-<ol>
-<li><strong>关键影响因素</strong>：大参数LLM（如34B的IG-VLM）、强视觉嵌入器（EVA-CLIP、ViT-G）、多帧采样（100+帧）、复杂适配器（Q-former、跨注意力）提升性能。</li>
-<li><strong>代表性结果</strong>：
-<ul>
-<li>密集字幕任务：Streaming GIT在ActivityNet Captions上CIDEr达41.2，超传统模型。</li>
-<li>开卷VQA：IG-VLM在MSVD-QA、MSRVTT-QA、ActivityNet-QA上准确率分别为76.7%、62.7%、57.3%，居前列。</li>
-</ul>
-</li>
-</ol>
-<h2 id="六、应用场景与未来方向">六、应用场景与未来方向</h2>
-<h3 id="（一）核心应用领域">（一）核心应用领域</h3>
-<ol>
-<li><strong>媒体娱乐</strong>：视频平台搜索推荐、自动字幕生成、视频编辑（如广告剪辑）。</li>
-<li><strong>交互与用户系统</strong>：虚拟教育（智能 tutors）、手语翻译、游戏动态剧情生成、AR/VR叙事。</li>
-<li><strong>医疗与安全</strong>：医疗视频诊断辅助、 surveillance 异常行为检测、自动驾驶路况理解。</li>
-<li><strong>其他</strong>：视频生成模型评估、边缘计算部署、联邦学习隐私保护。</li>
-</ol>
-<h3 id="（二）挑战与未来方向">（二）挑战与未来方向</h3>
-<ol>
-<li><strong>精细粒度理解</strong>：缺乏数据集，帧级分析计算成本高，需提升语义深度（如情感、场景动态）。</li>
-<li><strong>长视频理解</strong>：难以捕捉长时间跨度事件，需优化关键事件检测与注意力机制。</li>
-<li><strong>多模态融合</strong>：视觉、音频、文本的时空对齐难，缺乏高质量多模态数据集。</li>
-<li><strong>幻觉问题</strong>：模型生成与视频无关内容，需优化特征提取、模态对齐，引入后训练校正。</li>
-<li><strong>工业部署</strong>：需通过模型压缩、token合并、模块化设计，平衡效率与性能。</li>
-<li><strong>伦理问题</strong>：隐私泄露（视频敏感信息）、内容滥用（误导性生成）、数据偏见，需加强数据治理与伦理规范。</li>
-</ol>
-<h2 id="七、总结">七、总结</h2>
-<p>该综述系统梳理了Vid-LLMs的发展背景、分类体系、训练策略、评估基准与应用方向，指出其通过LLM赋能，实现了从传统视频理解到多粒度、类人推理的突破。当前Vid-LLMs在抽象与时间理解任务中表现突出，但在长视频、多模态融合、幻觉抑制等方面仍需突破，未来需结合高效训练、数据集扩展与伦理规范，推动其在实际场景中的规模化应用。</p>
-<p>此外，作者提供了GitHub仓库（<a href="https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding%EF%BC%89%EF%BC%8C%E6%B1%87%E6%80%BBVid-LLMs%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90%EF%BC%8C%E4%BE%BF%E4%BA%8E%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%A0%94%E7%A9%B6%E3%80%82">https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。</a></p>
-]]></content>
-      <categories>
-        <category>论文阅读</category>
-      </categories>
-      <tags>
-        <tag>视频理解</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Video-XL-2</title>
     <url>/2025/09/01/Video-XL-2/</url>
     <content><![CDATA[<h1>Video-XL-2：面向超长视频理解的任务感知KV稀疏化模型</h1>
@@ -1125,6 +711,186 @@
       </categories>
       <tags>
         <tag>论文阅读</tag>
+        <tag>视频理解</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ViLAMP</title>
+    <url>/2025/09/08/ViLAMP/</url>
+    <content><![CDATA[<h1>《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结</h1>
+<h2 id="一、研究背景与问题">一、研究背景与问题</h2>
+<ol>
+<li><strong>长视频处理的核心挑战</strong>：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128K的上下文长度限制；而现实中1小时以上的长视频（如长视频分析、机器人持续学习场景）需求普遍，现有模型难以兼顾效率与语义完整性。</li>
+<li><strong>现有方法的局限性</strong>
+<ul>
+<li><strong>令牌剪枝</strong>：通过均匀或内容感知采样（如固定间隔选帧、数据库检索式选帧）减少令牌数量，但易丢失关键时间依赖关系。</li>
+<li><strong>特征合并</strong>：基于启发式（下采样、池化）或可学习机制（Q-Former、Perceiver Resampler）合并特征，常导致语义信息稀释，无法平衡计算效率与信息保留。</li>
+</ul>
+</li>
+</ol>
+<h2 id="二、核心发现：长视频的信息冗余规律">二、核心发现：长视频的信息冗余规律</h2>
+<p>通过对LLaVA-OneVision、LLaVA-Video等代表性VLMs在Video-MME基准上的注意力模式分析，发现两级冗余特征：</p>
+<ol>
+<li><strong>帧级冗余</strong>：约90%的查询注意力集中在仅5%的帧上，且这些高注意力帧间视觉相似度极高（余弦相似度&gt;0.8），远超随机帧对基线（0.54-0.61），存在大量视觉重复。</li>
+<li><strong>补丁级冗余</strong>：非关键帧中，50%的高注意力补丁贡献80%的总注意力，且这些补丁与关键帧对应位置补丁视觉相似度高，存在跨帧重复视觉模式，导致计算资源浪费。</li>
+</ol>
+<h2 id="三、核心方法：差异蒸馏原理与VILAMP模型">三、核心方法：差异蒸馏原理与VILAMP模型</h2>
+<h3 id="（一）差异蒸馏原理（Differential-Distillation）">（一）差异蒸馏原理（Differential Distillation）</h3>
+<p>定义“差异信息显著性分数”，量化视频组件（帧/补丁）的价值，公式如下：<br>
+[D(v)=R(v,Q)-T(v,\mathcal {C}(v))]</p>
+<ul>
+<li>(R(v,Q))：组件与查询的相关性（如余弦相似度）；</li>
+<li>(T(v,C(v)))：组件与时间上下文（如相邻帧/关键帧）的冗余度；</li>
+<li>分数越高，组件含有的“任务相关且低冗余”信息越多，应分配更多计算资源。</li>
+</ul>
+<h3 id="（二）VILAMP模型架构：分层混合精度处理">（二）VILAMP模型架构：分层混合精度处理</h3>
+<p>VILAMP通过“帧级选关键帧+补丁级压缩非关键帧”实现长视频高效处理，类比“混合精度训练”（Micikevicius et al., 2018），核心包含两大模块：</p>
+<ol>
+<li>
+<p><strong>差异关键帧选择（DKS）</strong>：帧级保留全信息</p>
+<ul>
+<li><strong>目标</strong>：筛选高查询相关性且时间独特性强的帧作为关键帧，避免冗余。</li>
+<li><strong>步骤</strong>：
+<ol>
+<li>用CLIP编码器将帧与查询编码为d维嵌入，计算帧-查询余弦相似度作为相关性分数(R_f)；</li>
+<li>定义帧与已选关键帧的最大余弦相似度为冗余度(T_f)；</li>
+<li>贪心算法：按(R_f)降序排序帧，选择(T_f&lt;\tau)（实验设(\tau=0.85)）的帧，直至选满K个（实验设K=32），复杂度降至(O(max(NK, NlogN)))。</li>
+</ol>
+</li>
+<li><strong>作用</strong>：关键帧保留完整729个视觉令牌，作为时间关系学习的“锚点”。</li>
+</ul>
+</li>
+<li>
+<p><strong>差异特征合并（DFM）</strong>：补丁级压缩非关键帧</p>
+<ul>
+<li><strong>目标</strong>：将非关键帧压缩为1个令牌，同时保留查询相关特征。</li>
+<li><strong>步骤</strong>：
+<ol>
+<li>用VLM视觉编码器获取非关键帧补丁与最近关键帧对应补丁的嵌入；</li>
+<li>计算补丁级显著性分数(D_p=R_p-\lambda T_p)（(R_p)为补丁-查询相关性，(T_p)为补丁-关键帧补丁相似度，(\lambda=1)平衡两者）；</li>
+<li>加权池化：基于(softmax(D_p/\alpha))（(\alpha=10^{-2})控制权重锐度）对补丁嵌入加权平均，生成非关键帧的单令牌表示。</li>
+</ol>
+</li>
+<li><strong>作用</strong>：非关键帧令牌数从729降至1，大幅减少计算量，同时保留核心语义。</li>
+</ul>
+</li>
+<li>
+<p><strong>多模态融合与训练</strong></p>
+<ul>
+<li>用双流MLP连接器分别投影关键帧补丁嵌入（(h_k^m=MLP_k(p_k^m))）与非关键帧压缩嵌入（(h_n=MLP_n(t_n))）；</li>
+<li>按时间顺序拼接视觉嵌入与查询，以语言建模损失（预测答案A的概率）端到端训练：<br>
+[\mathcal{L}=-log P\left(A |\left{h_{k}^{m} | f_{k} \in \mathcal{K}\right} \cup\left{h_{n} | f_{n} \notin \mathcal{K}\right}, Q\right)]</li>
+</ul>
+</li>
+</ol>
+<h2 id="四、实验设计与结果">四、实验设计与结果</h2>
+<h3 id="（一）实验设置">（一）实验设置</h3>
+<ol>
+<li><strong>基准数据集</strong>：覆盖短、中、长视频场景，共5个基准：
+<table>
+<thead>
+<tr>
+<th>基准名称</th>
+<th>视频平均时长</th>
+<th>核心任务</th>
+<th>数据规模</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LVBench</td>
+<td>4101s</td>
+<td>超长视频决策</td>
+<td>6大类21子类，含体育、纪录片等</td>
+</tr>
+<tr>
+<td>EgoSchema</td>
+<td>180s</td>
+<td>第一视角视频推理</td>
+<td>5000+问答对，250+小时视频</td>
+</tr>
+<tr>
+<td>LongVideoBench</td>
+<td>473s</td>
+<td>参考推理（对抗单帧偏见）</td>
+<td>3763视频，6678问答对</td>
+</tr>
+<tr>
+<td>MLVU</td>
+<td>651s</td>
+<td>多任务长视频理解（如动作计数）</td>
+<td>2593样本，9任务类别</td>
+</tr>
+<tr>
+<td>Video-MME</td>
+<td>1010s（长子集2386s）</td>
+<td>跨领域视频理解（知识、体育等）</td>
+<td>900视频，2700问答对</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><strong>基线模型</strong>：分三类对比——专有VLMs（GPT-4V、GPT-4o、Gemini-1.5-Pro）、开源多图像VLMs（LLaVA-OneVision、InternVL2）、开源视频VLMs（LLaMA-VID、VideoChat-Flash）。</li>
+<li><strong>模型配置</strong>：视觉编码器用SigLIP-so400m，语言模型用Qwen2-7B，帧分辨率384×384。</li>
+</ol>
+<h3 id="（二）关键实验结果">（二）关键实验结果</h3>
+<ol>
+<li>
+<p><strong>主基准性能</strong>：在7B参数规模下，VILAMP刷新多基准SOTA：</p>
+<ul>
+<li>MLVU：72.6%准确率，超过专有模型GPT-4o（64.6%）；</li>
+<li>Video-MME长子集：无字幕67.5%、有字幕73.5%，较同规模模型（如VideoChat-Flash）提升3.0%-4.8%；</li>
+<li>EgoSchema：70.2%准确率，高于LongVILA（67.7%）、LongVU（67.6%）。</li>
+</ul>
+</li>
+<li>
+<p><strong>10K帧超长视频处理（VideoNIAH基准）</strong></p>
+<ul>
+<li><strong>基准设计</strong>：构建“干草堆-针”任务，干草堆为2K-10K帧（1FPS，最长2.7小时），针为30-120秒视频片段，需定位并理解针内容回答问题。</li>
+<li><strong>效率优势</strong>：单NVIDIA A100 GPU可处理10K帧，内存消耗较基线低50%，8192帧时FLOPs仅为VideoChat-Flash的18.4%（表5）。</li>
+<li><strong>性能稳定性</strong>：10K帧时准确率58.15%，较VideoChat-Flash（47.25%）高12.82%，且从2K到10K帧的准确率下降幅度仅为后者的1/3（图2）。</li>
+</ul>
+</li>
+<li>
+<p><strong>消融实验</strong>：验证核心模块有效性（表2）</p>
+<ul>
+<li>DKS vs 其他选帧：DKS在MLVU（67.3% vs 查询引导63.7%/均匀采样66.8%）、Video-MME（61.8% vs 55.6%/60.2%）表现更优；</li>
+<li>DFM vs 其他合并：DFM在LongVideoBench（60.5% vs Q-Former53.9%/均值池化56.3%）、MLVU（72.6% vs 62.6%/67.3%）显著领先。</li>
+</ul>
+</li>
+<li>
+<p><strong>关键帧数量影响</strong>：短视频（如Video-MME短子集）16个关键帧性能饱和，长视频（MLVU、Video-MME长子集）需32个关键帧达最优（图6），符合“长视频需更密采样”规律。</p>
+</li>
+<li>
+<p><strong>跨任务泛化</strong>：在视频定位（QVHighlights）和动作识别（ActivityNet、Sth-V2、UCF-101）任务中表现优异：</p>
+<ul>
+<li>QVHighlights：Hit@10=60%、Hit@30=83%，验证DKS选帧有效性；</li>
+<li>动作识别：ActivityNet mAP=78.6%（超Adaframe 71.5%），Sth-V2准确率86.9%（超MGSampler 60.1%），体现零样本迁移能力。</li>
+</ul>
+</li>
+</ol>
+<h2 id="五、结论与贡献">五、结论与贡献</h2>
+<ol>
+<li>
+<p><strong>核心贡献</strong></p>
+<ul>
+<li>提出<strong>差异蒸馏原理</strong>：系统性识别“高相关低冗余”信息，为长视频高效建模提供理论框架；</li>
+<li>设计<strong>VILAMP模型</strong>：通过分层混合精度处理（DKS+DFM），实现10K帧（2.7小时）单GPU处理；</li>
+<li>验证<strong>性能与效率优势</strong>：5个基准SOTA，10K帧时准确率超基线12.82%，内存/FLOPs显著降低。</li>
+</ul>
+</li>
+<li>
+<p><strong>局限与展望</strong>：当前未充分验证在更细粒度时间推理（如毫秒级动作）的表现，未来可探索动态关键帧数量调整与跨模态冗余优化。</p>
+</li>
+<li>
+<p><strong>代码与模型</strong>：开源地址为<a href="https://github.com/steven-ccq/ViLAMP%EF%BC%8C%E6%94%AF%E6%8C%81%E5%A4%8D%E7%8E%B0%E4%B8%8E%E6%89%A9%E5%B1%95%E3%80%82">https://github.com/steven-ccq/ViLAMP，支持复现与扩展。</a></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
         <tag>视频理解</tag>
       </tags>
   </entry>
@@ -1562,137 +1328,6 @@
       </tags>
   </entry>
   <entry>
-    <title>可靠传输-停止等待协议</title>
-    <url>/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%81%9C%E6%AD%A2%E7%AD%89%E5%BE%85%E5%8D%8F%E8%AE%AE/</url>
-    <content><![CDATA[<h2 id="一、停止-等待协议（SW）核心机制">一、停止 - 等待协议（SW）核心机制</h2>
-<p>停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块：</p>
-<h3 id="1-确认与否认（ACK-NAK）">1. 确认与否认（ACK/NAK）</h3>
-<ul>
-<li><strong>正常场景</strong>：发送方发送<code>DATA</code>分组，接收方正确接收后，返回<code>ACK</code>（确认）分组，发送方收到<code>ACK</code>后继续发送下一个<code>DATA</code>。</li>
-<li><strong>误码场景</strong>：接收方检测到<code>DATA</code>分组存在误码时，有两种处理方式：
-<ul>
-<li>直接丢弃误码分组，等待发送方超时重传（适用于误码率较低的链路）；</li>
-<li>向发送方发送<code>NAK</code>（否认）分组，触发发送方尽早重传（适用于误码率较高的点对点链路）。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-超时重传">2. 超时重传</h3>
-<ul>
-<li><strong>核心问题</strong>：若<code>DATA</code>分组丢失或<code>ACK</code>分组丢失，发送方会一直等待确认，陷入死锁。</li>
-<li><strong>解决方案</strong>：发送方发送<code>DATA</code>分组后，立即启动<strong>超时计时器</strong>；若计时器超时仍未收到<code>ACK/NAK</code>，则重传原<code>DATA</code>分组。</li>
-<li><strong>重传时间设定</strong>：需 “略大于发送方到接收方的平均往返时间（RTT）”，避免过早重传导致资源浪费，或过晚重传导致时延增加。
-<ul>
-<li>数据链路层：点对点往返时间稳定，重传时间易设定；</li>
-<li>运输层：端到端往返时间不确定，重传时间设定难度较高。</li>
-</ul>
-</li>
-</ul>
-<h3 id="3-分组编号（避免重复）">3. 分组编号（避免重复）</h3>
-<ul>
-<li><strong>数据分组编号</strong>：由于协议 “停等” 特性，只需 1 个比特编号（0 和 1）即可区分新分组与重复分组（确保每次新分组编号与上一次不同）。</li>
-<li><strong>ACK 分组编号</strong>：理论上需与数据分组编号比特数一致（帮助发送方判断<code>ACK</code>是否重复），但数据链路层极少出现<code>ACK</code>迟到场景，因此可省略<code>ACK</code>编号。</li>
-</ul>
-<h3 id="4-异常场景处理">4. 异常场景处理</h3>
-<p>文档明确了 4 种典型异常场景的协议行为，具体如下表：</p>
-<table>
-<thead>
-<tr>
-<th>异常场景</th>
-<th>发送方行为</th>
-<th>接收方行为</th>
-<th>最终结果</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>DATA</code>分组丢失</td>
-<td>启动超时计时器，超时后重传<code>DATA</code></td>
-<td>未收到<code>DATA</code>，不发送<code>ACK/NAK</code></td>
-<td>重传<code>DATA</code>被正确接收，返回<code>ACK</code></td>
-</tr>
-<tr>
-<td><code>ACK</code>分组丢失</td>
-<td>未收到<code>ACK</code>，超时后重传<code>DATA</code></td>
-<td>已正确接收原<code>DATA</code>，收到重传<code>DATA</code>后丢弃（因编号重复），重新发送<code>ACK</code></td>
-<td>发送方收到重发的<code>ACK</code>，继续发送下一个<code>DATA</code></td>
-</tr>
-<tr>
-<td><code>DATA</code>分组误码</td>
-<td>若收到<code>NAK</code>则立即重传；若未收到<code>NAK</code>，则超时后重传</td>
-<td>丢弃误码<code>DATA</code>，可选发送<code>NAK</code></td>
-<td>重传<code>DATA</code>被正确接收，返回<code>ACK</code></td>
-</tr>
-<tr>
-<td><code>ACK</code>分组迟到</td>
-<td>未及时收到<code>ACK</code>，超时后重传<code>DATA</code></td>
-<td>已收到原<code>DATA</code>，收到重传<code>DATA</code>后丢弃，重新发送<code>ACK</code></td>
-<td>发送方收到迟到 / 重发的<code>ACK</code>，停止重传</td>
-</tr>
-</tbody>
-</table>
-<h2 id="二、停止-等待协议的信道利用率">二、停止 - 等待协议的信道利用率</h2>
-<h3 id="1-利用率公式">1. 利用率公式</h3>
-<p>信道利用率（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi></mrow><annotation encoding="application/x-tex">U</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span></span></span></span>）表示有效传输时间占总周期时间的比例，公式如下：</p>
-<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>≈</mo><mfrac><msub><mi>T</mi><mi>D</mi></msub><mrow><mi>R</mi><mi>T</mi><mi>T</mi><mo>+</mo><msub><mi>T</mi><mi>D</mi></msub><mo>+</mo><msub><mi>T</mi><mi>A</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">U \approx \frac{T_D}{RTT + T_D + T_A}
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.836em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
-<p>其中：</p>
-<ul>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：数据分组发送时延（发送分组所需时间）</li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>T</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">RTT</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span></span></span></span>：往返时间（分组从发送到接收ACK的总时间）</li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub></mrow><annotation encoding="application/x-tex">T_A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：ACK分组发送时延（通常远小于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，可忽略）</li>
-</ul>
-<p>简化公式为：</p>
-<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>≈</mo><mfrac><msub><mi>T</mi><mi>D</mi></msub><mrow><mi>R</mi><mi>T</mi><mi>T</mi><mo>+</mo><msub><mi>T</mi><mi>D</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">U \approx \frac{T_D}{RTT + T_D}
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.836em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
-<h3 id="2-核心缺陷">2. 核心缺陷</h3>
-<p>当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>T</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">RTT</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span></span></span></span>远大于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>（如卫星链路）时，信道利用率极低；若出现重传，利用率会进一步下降 —— 这也是 GBN 和 SR 协议产生的核心原因（弥补 SW 利用率低的缺陷）。</p>
-<h2 id="三、相关协议对比（GBN-与-SR）">三、相关协议对比（GBN 与 SR）</h2>
-<p>文档虽未详细展开 GBN 和 SR 协议，但明确其设计目标是 “解决 SW 信道利用率低的问题”，三者核心差异如下：</p>
-<table>
-<thead>
-<tr>
-<th>协议</th>
-<th>发送方式</th>
-<th>重传策略</th>
-<th>信道利用率</th>
-<th>复杂度</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>停止 - 等待（SW）</td>
-<td>一次发 1 个，停等确认</td>
-<td>仅重传超时 / 否认的分组</td>
-<td>最低（RTT 越大越低）</td>
-<td>最低</td>
-</tr>
-<tr>
-<td>回退 N 帧（GBN）</td>
-<td>连续发 N 个，无需等待确认</td>
-<td>超时后重传该分组及后续所有分组</td>
-<td>中等</td>
-<td>中等</td>
-</tr>
-<tr>
-<td>选择重传（SR）</td>
-<td>连续发 N 个，无需等待确认</td>
-<td>仅重传超时 / 否认的分组</td>
-<td>最高</td>
-<td>最高（需缓存已发未确认分组）</td>
-</tr>
-</tbody>
-</table>
-<h2 id="四、总结">四、总结</h2>
-<p>停止 - 等待协议是可靠传输的 “基础模型”，通过 “停等确认 + 超时重传 + 分组编号” 实现数据可靠交付，优点是逻辑简单、易于实现，缺点是信道利用率极低（尤其长时延链路）。GBN 和 SR 协议在此基础上优化，通过 “连续发送 + 选择性重传” 提升利用率，但复杂度相应增加。三者共同构成了计算机网络各层可靠传输的核心技术框架，需结合场景选择适用协议</p>
-]]></content>
-      <categories>
-        <category>计算机与网络</category>
-      </categories>
-      <tags>
-        <tag>计算机与网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>假设空间和版本空间</title>
     <url>/2025/10/09/%E5%81%87%E8%AE%BE%E7%A9%BA%E9%97%B4%E5%92%8C%E7%89%88%E6%9C%AC%E7%A9%BA%E9%97%B4/</url>
     <content><![CDATA[<p>在机器学习中，<strong>假设空间（Hypothesis Space）</strong> 和<strong>版本空间（Version Space）</strong> 是理解模型归纳学习过程的核心概念，二者共同描述了“模型可能学到的所有规律”与“符合训练数据的规律”之间的关系。下面将从定义、本质、构建方法、关系及示例等方面，进行详细拆解。</p>
@@ -1858,6 +1493,371 @@
       </categories>
       <tags>
         <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>可靠传输-停止等待协议</title>
+    <url>/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%81%9C%E6%AD%A2%E7%AD%89%E5%BE%85%E5%8D%8F%E8%AE%AE/</url>
+    <content><![CDATA[<h2 id="一、停止-等待协议（SW）核心机制">一、停止 - 等待协议（SW）核心机制</h2>
+<p>停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块：</p>
+<h3 id="1-确认与否认（ACK-NAK）">1. 确认与否认（ACK/NAK）</h3>
+<ul>
+<li><strong>正常场景</strong>：发送方发送<code>DATA</code>分组，接收方正确接收后，返回<code>ACK</code>（确认）分组，发送方收到<code>ACK</code>后继续发送下一个<code>DATA</code>。</li>
+<li><strong>误码场景</strong>：接收方检测到<code>DATA</code>分组存在误码时，有两种处理方式：
+<ul>
+<li>直接丢弃误码分组，等待发送方超时重传（适用于误码率较低的链路）；</li>
+<li>向发送方发送<code>NAK</code>（否认）分组，触发发送方尽早重传（适用于误码率较高的点对点链路）。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-超时重传">2. 超时重传</h3>
+<ul>
+<li><strong>核心问题</strong>：若<code>DATA</code>分组丢失或<code>ACK</code>分组丢失，发送方会一直等待确认，陷入死锁。</li>
+<li><strong>解决方案</strong>：发送方发送<code>DATA</code>分组后，立即启动<strong>超时计时器</strong>；若计时器超时仍未收到<code>ACK/NAK</code>，则重传原<code>DATA</code>分组。</li>
+<li><strong>重传时间设定</strong>：需 “略大于发送方到接收方的平均往返时间（RTT）”，避免过早重传导致资源浪费，或过晚重传导致时延增加。
+<ul>
+<li>数据链路层：点对点往返时间稳定，重传时间易设定；</li>
+<li>运输层：端到端往返时间不确定，重传时间设定难度较高。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-分组编号（避免重复）">3. 分组编号（避免重复）</h3>
+<ul>
+<li><strong>数据分组编号</strong>：由于协议 “停等” 特性，只需 1 个比特编号（0 和 1）即可区分新分组与重复分组（确保每次新分组编号与上一次不同）。</li>
+<li><strong>ACK 分组编号</strong>：理论上需与数据分组编号比特数一致（帮助发送方判断<code>ACK</code>是否重复），但数据链路层极少出现<code>ACK</code>迟到场景，因此可省略<code>ACK</code>编号。</li>
+</ul>
+<h3 id="4-异常场景处理">4. 异常场景处理</h3>
+<p>文档明确了 4 种典型异常场景的协议行为，具体如下表：</p>
+<table>
+<thead>
+<tr>
+<th>异常场景</th>
+<th>发送方行为</th>
+<th>接收方行为</th>
+<th>最终结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DATA</code>分组丢失</td>
+<td>启动超时计时器，超时后重传<code>DATA</code></td>
+<td>未收到<code>DATA</code>，不发送<code>ACK/NAK</code></td>
+<td>重传<code>DATA</code>被正确接收，返回<code>ACK</code></td>
+</tr>
+<tr>
+<td><code>ACK</code>分组丢失</td>
+<td>未收到<code>ACK</code>，超时后重传<code>DATA</code></td>
+<td>已正确接收原<code>DATA</code>，收到重传<code>DATA</code>后丢弃（因编号重复），重新发送<code>ACK</code></td>
+<td>发送方收到重发的<code>ACK</code>，继续发送下一个<code>DATA</code></td>
+</tr>
+<tr>
+<td><code>DATA</code>分组误码</td>
+<td>若收到<code>NAK</code>则立即重传；若未收到<code>NAK</code>，则超时后重传</td>
+<td>丢弃误码<code>DATA</code>，可选发送<code>NAK</code></td>
+<td>重传<code>DATA</code>被正确接收，返回<code>ACK</code></td>
+</tr>
+<tr>
+<td><code>ACK</code>分组迟到</td>
+<td>未及时收到<code>ACK</code>，超时后重传<code>DATA</code></td>
+<td>已收到原<code>DATA</code>，收到重传<code>DATA</code>后丢弃，重新发送<code>ACK</code></td>
+<td>发送方收到迟到 / 重发的<code>ACK</code>，停止重传</td>
+</tr>
+</tbody>
+</table>
+<h2 id="二、停止-等待协议的信道利用率">二、停止 - 等待协议的信道利用率</h2>
+<h3 id="1-利用率公式">1. 利用率公式</h3>
+<p>信道利用率（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi></mrow><annotation encoding="application/x-tex">U</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span></span></span></span>）表示有效传输时间占总周期时间的比例，公式如下：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>≈</mo><mfrac><msub><mi>T</mi><mi>D</mi></msub><mrow><mi>R</mi><mi>T</mi><mi>T</mi><mo>+</mo><msub><mi>T</mi><mi>D</mi></msub><mo>+</mo><msub><mi>T</mi><mi>A</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">U \approx \frac{T_D}{RTT + T_D + T_A}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.836em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>其中：</p>
+<ul>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：数据分组发送时延（发送分组所需时间）</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>T</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">RTT</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span></span></span></span>：往返时间（分组从发送到接收ACK的总时间）</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub></mrow><annotation encoding="application/x-tex">T_A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：ACK分组发送时延（通常远小于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，可忽略）</li>
+</ul>
+<p>简化公式为：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>≈</mo><mfrac><msub><mi>T</mi><mi>D</mi></msub><mrow><mi>R</mi><mi>T</mi><mi>T</mi><mo>+</mo><msub><mi>T</mi><mi>D</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">U \approx \frac{T_D}{RTT + T_D}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.836em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<h3 id="2-核心缺陷">2. 核心缺陷</h3>
+<p>当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>T</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">RTT</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span></span></span></span>远大于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>（如卫星链路）时，信道利用率极低；若出现重传，利用率会进一步下降 —— 这也是 GBN 和 SR 协议产生的核心原因（弥补 SW 利用率低的缺陷）。</p>
+<h2 id="三、相关协议对比（GBN-与-SR）">三、相关协议对比（GBN 与 SR）</h2>
+<p>文档虽未详细展开 GBN 和 SR 协议，但明确其设计目标是 “解决 SW 信道利用率低的问题”，三者核心差异如下：</p>
+<table>
+<thead>
+<tr>
+<th>协议</th>
+<th>发送方式</th>
+<th>重传策略</th>
+<th>信道利用率</th>
+<th>复杂度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>停止 - 等待（SW）</td>
+<td>一次发 1 个，停等确认</td>
+<td>仅重传超时 / 否认的分组</td>
+<td>最低（RTT 越大越低）</td>
+<td>最低</td>
+</tr>
+<tr>
+<td>回退 N 帧（GBN）</td>
+<td>连续发 N 个，无需等待确认</td>
+<td>超时后重传该分组及后续所有分组</td>
+<td>中等</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>选择重传（SR）</td>
+<td>连续发 N 个，无需等待确认</td>
+<td>仅重传超时 / 否认的分组</td>
+<td>最高</td>
+<td>最高（需缓存已发未确认分组）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="四、总结">四、总结</h2>
+<p>停止 - 等待协议是可靠传输的 “基础模型”，通过 “停等确认 + 超时重传 + 分组编号” 实现数据可靠交付，优点是逻辑简单、易于实现，缺点是信道利用率极低（尤其长时延链路）。GBN 和 SR 协议在此基础上优化，通过 “连续发送 + 选择性重传” 提升利用率，但复杂度相应增加。三者共同构成了计算机网络各层可靠传输的核心技术框架，需结合场景选择适用协议</p>
+]]></content>
+      <categories>
+        <category>计算机与网络</category>
+      </categories>
+      <tags>
+        <tag>计算机与网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Video Understanding with Large Language Models: A Survey</title>
+    <url>/2025/09/09/Video-Understanding-with-Large-Language-Models-A-Survey/</url>
+    <content><![CDATA[<h1>《Video Understanding with Large Language Models: A Survey》PDF总结</h1>
+<h2 id="一、研究背景与意义">一、研究背景与意义</h2>
+<ol>
+<li><strong>视频内容增长需求</strong>：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。</li>
+<li><strong>LLM的赋能潜力</strong>：大型语言模型（LLMs）在语言及多模态任务中表现出色，将其应用于视频理解（形成Vid-LLMs），可实现开放式多粒度（抽象、时间、时空）推理与常识结合，为视频理解提供新方向。</li>
+</ol>
+<h2 id="二、视频理解方法发展历程">二、视频理解方法发展历程</h2>
+<p>视频理解方法演进分为四个阶段，任务解决能力逐步提升，具体如下：</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>时间范围</th>
+<th>核心技术</th>
+<th>代表方法/模型</th>
+<th>关键特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>传统方法</td>
+<td>深度学习普及前</td>
+<td>手工特征提取、传统机器学习算法</td>
+<td>SIFT、SURF、HOG（特征提取）；HMM（时序分析）；SVM、决策树（分类）</td>
+<td>依赖人工设计特征，对复杂视频场景适应性差</td>
+</tr>
+<tr>
+<td>早期神经视频模型</td>
+<td>2014-2019年</td>
+<td>深度学习（CNN、LSTM、3D CNN、Transformer）</td>
+<td>DeepVideo、双流网络、TSN、C3D、I3D、SlowFast、TimeSformer</td>
+<td>引入深度神经网络，开始捕捉运动与时空信息，但需大量任务特定标注数据</td>
+</tr>
+<tr>
+<td>自监督视频预训练</td>
+<td>2019-2023年</td>
+<td>自监督预训练范式</td>
+<td>VideoBERT、ActBERT、VideoMAE、MotionMAE、CLIP-ViP</td>
+<td>通过“预训练-微调”模式，减少对标注数据依赖，提升跨任务泛化能力</td>
+</tr>
+<tr>
+<td>基于LLM的视频理解（Vid-LLMs）</td>
+<td>2023年至今</td>
+<td>LLM与视频处理模块结合</td>
+<td>Video-ChatGPT、Video-LLaMA、GPT4Video、Chat-UniVi</td>
+<td>具备上下文学习、指令跟随能力，可处理多模态复杂交互，接近人类理解水平</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三、基础概念与任务分类">三、基础概念与任务分类</h2>
+<h3 id="（一）视频理解核心任务">（一）视频理解核心任务</h3>
+<p>按理解粒度与语言参与度，任务分为三类：</p>
+<ol>
+<li><strong>抽象理解任务</strong>：侧重整体语义理解，无需精细时空定位
+<ul>
+<li>视频分类与动作识别：按类别标签分类视频/动作，数据集如UCF-101、Kinetics-400，指标为Top-K准确率。</li>
+<li>文本-视频检索：根据文本描述匹配视频片段，数据集如MSRVTT、DiDeMo，指标为Recall@K。</li>
+<li>视频文本摘要/字幕生成：生成视频 concise 摘要或连贯描述，数据集如VideoInstruct-100K、MSVD，指标为BLEU、METEOR、CIDEr。</li>
+<li>视频问答（VQA）：基于视频回答文本问题，数据集如TVQA、NExT-QA，指标为Top-1/Top-K准确率。</li>
+</ul>
+</li>
+<li><strong>时间理解任务</strong>：关注视频时序维度的事件定位与提取
+<ul>
+<li>视频摘要/精彩片段检测：浓缩长视频或提取关键片段，数据集如SumMe、TVSum，指标为F1-score。</li>
+<li>时序动作定位/提案生成：识别动作发生的时间区间或生成候选区间，数据集如THUMOS’14、ActivityNet，指标为tIoU、Recall@K。</li>
+<li>视频时序接地：根据文本查询定位视频特定时刻，数据集如Charades-STA，指标为R1@0.5/R1@0.7。</li>
+</ul>
+</li>
+<li><strong>时空理解任务</strong>：结合空间与时间维度的精细理解
+<ul>
+<li>目标跟踪/重识别：持续追踪目标或跨帧/视角匹配目标，数据集如OTB、Market-1501，指标为精度、成功率。</li>
+<li>视频显著性检测/目标分割：识别视觉重点区域或分割目标，数据集如DHF1K、YouTube-VOS，指标为AUC-J、mAP。</li>
+<li>时空接地：根据查询定位视频中目标的时空位置，数据集如Vid-STG、Ego4D-MQ。</li>
+</ul>
+</li>
+</ol>
+<h3 id="（二）LLM基础背景">（二）LLM基础背景</h3>
+<ol>
+<li><strong>核心公式</strong>：LLM学习文本序列的联合概率分布，通过自回归范式生成下一个token：
+<ul>
+<li>联合分布：(p(x_{1: L})=\prod_{i=1}^{L} p(x_{i} | x_{1: i-1}))（(L)为序列长度）</li>
+<li>自回归生成：(\mathcal{M}(x_{1: i-1})=p(x_{i} | x_{1: i-1}))（(\mathcal{M})为LLM）</li>
+</ul>
+</li>
+<li><strong>解码策略</strong>：包括贪心解码（选概率最高token）、采样策略（随机选token以保证多样性）。</li>
+<li><strong>关键特性</strong>：
+<ul>
+<li>缩放定律：模型参数、训练数据量、计算资源扩展时，性能呈规律性增长。</li>
+<li>涌现能力：参数与数据超阈值后，出现上下文学习、链式推理（CoT）、指令跟随等能力。</li>
+<li>多模态扩展：多模态LLM（MLLMs）通过模态编码器、跨模态对齐器与LLM核心结合，处理视觉-语言交互。</li>
+</ul>
+</li>
+</ol>
+<h2 id="四、Vid-LLMs分类与训练策略">四、Vid-LLMs分类与训练策略</h2>
+<h3 id="（一）分类体系">（一）分类体系</h3>
+<p>基于视频输入处理方式，Vid-LLMs分为三类，每类按LLM功能进一步细分：</p>
+<ol>
+<li><strong>Video Analyzer × LLM</strong>：视频分析器将视频转为文本（如字幕、目标跟踪结果），输入LLM
+<ul>
+<li>LLM作为总结器（Summarizer）：对分析文本总结，信息单向流动，如LaViLa、VLog。</li>
+<li>LLM作为管理器（Manager）：协调调用多个分析器，支持多轮交互，如ViperGPT、HuggingGPT。</li>
+</ul>
+</li>
+<li><strong>Video Embedder × LLM</strong>：视频嵌入器将视频转为向量表示（嵌入），通过适配器映射到LLM语义空间
+<ul>
+<li>LLM作为文本解码器（Text Decoder）：将嵌入解码为文本（如问答、字幕），如Video-LLaMA、Video-ChatGPT。</li>
+<li>LLM作为回归器（Regressor）：预测连续值（如时间戳、边界框坐标），如VTimeLLM、SeViLA。</li>
+<li>LLM作为隐藏层（Hidden Layer）：连接任务特定头完成回归，不直接输出文本，如GPT4Video、VTG-LLM。</li>
+</ul>
+</li>
+<li><strong>(Analyzer + Embedder) × LLM</strong>：混合使用分析器（文本）与嵌入器（向量），输入LLM，如Vid2Seq、VideoChat，LLM功能可灵活为上述五种类型。</li>
+</ol>
+<h3 id="（二）训练策略">（二）训练策略</h3>
+<ol>
+<li><strong>无训练（Training-free）</strong>：基于LLM的零样本、上下文学习能力，无需微调参数，多为Video Analyzer × LLM类，如SlowFast-LLaVA。</li>
+<li><strong>微调（Fine-tuning）</strong>：主要用于Video Embedder × LLM类，按适配器类型分为四种：
+<ul>
+<li>全量微调：更新LLM所有参数，性能优但计算成本高，如AV-LLM。</li>
+<li>连接型适配器微调：冻结LLM与嵌入器，仅更新模态对齐适配器（如MLP、Q-former）。</li>
+<li>插入型适配器微调：在LLM内部插入适配器（如LoRA），改变LLM行为，适用于回归任务。</li>
+<li>混合适配器微调：结合连接型与插入型，多阶段微调（先对齐模态，再适配任务）。</li>
+</ul>
+</li>
+</ol>
+<h2 id="五、基准测试与评估方法">五、基准测试与评估方法</h2>
+<h3 id="（一）主要基准数据集">（一）主要基准数据集</h3>
+<p>涵盖不同任务与场景，关键信息如下：</p>
+<table>
+<thead>
+<tr>
+<th>基准名称</th>
+<th>视频数量</th>
+<th>平均时长（秒）</th>
+<th>核心任务</th>
+<th>问题类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSRVTT-QA</td>
+<td>2990</td>
+<td>15.2</td>
+<td>视频问答</td>
+<td>闭卷/开卷（what/who等）</td>
+</tr>
+<tr>
+<td>TVQA</td>
+<td>2179</td>
+<td>11.2</td>
+<td>视频问答</td>
+<td>闭卷（选择题）</td>
+</tr>
+<tr>
+<td>NExT-QA</td>
+<td>1000</td>
+<td>39.5</td>
+<td>视频问答</td>
+<td>闭卷/开卷（因果、时序）</td>
+</tr>
+<tr>
+<td>MVBench</td>
+<td>3641</td>
+<td>16.0</td>
+<td>多任务理解</td>
+<td>闭卷（分类、定位等）</td>
+</tr>
+<tr>
+<td>ActivityNet Captions</td>
+<td>800</td>
+<td>111.4</td>
+<td>密集视频字幕</td>
+<td>开卷（事件描述）</td>
+</tr>
+<tr>
+<td>Ego4D-MQ</td>
+<td>5063</td>
+<td>180.0</td>
+<td>时空接地</td>
+<td>开卷（第一视角场景）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="（二）评估方法">（二）评估方法</h3>
+<ol>
+<li><strong>闭卷评估</strong>：预定义答案/格式，如选择题（准确率）、结构化输出（CIDEr、ROUGE），适用于基础任务。</li>
+<li><strong>开卷评估</strong>：无预定义选项，用GPT-3.5/4对比预测与参考答案，适用于复杂推理（如MovieChat-1K、NExT-QA），但存在版本依赖、提示敏感性问题。</li>
+<li><strong>其他评估</strong>：
+<ul>
+<li>时空精细评估：密集字幕（BLEU）、时序接地（tIoU）、目标跟踪（精度）。</li>
+<li>定性评估：错误分析、注意力可视化、模型自解释、人工评估。</li>
+</ul>
+</li>
+</ol>
+<h3 id="（三）性能分析">（三）性能分析</h3>
+<ol>
+<li><strong>关键影响因素</strong>：大参数LLM（如34B的IG-VLM）、强视觉嵌入器（EVA-CLIP、ViT-G）、多帧采样（100+帧）、复杂适配器（Q-former、跨注意力）提升性能。</li>
+<li><strong>代表性结果</strong>：
+<ul>
+<li>密集字幕任务：Streaming GIT在ActivityNet Captions上CIDEr达41.2，超传统模型。</li>
+<li>开卷VQA：IG-VLM在MSVD-QA、MSRVTT-QA、ActivityNet-QA上准确率分别为76.7%、62.7%、57.3%，居前列。</li>
+</ul>
+</li>
+</ol>
+<h2 id="六、应用场景与未来方向">六、应用场景与未来方向</h2>
+<h3 id="（一）核心应用领域">（一）核心应用领域</h3>
+<ol>
+<li><strong>媒体娱乐</strong>：视频平台搜索推荐、自动字幕生成、视频编辑（如广告剪辑）。</li>
+<li><strong>交互与用户系统</strong>：虚拟教育（智能 tutors）、手语翻译、游戏动态剧情生成、AR/VR叙事。</li>
+<li><strong>医疗与安全</strong>：医疗视频诊断辅助、 surveillance 异常行为检测、自动驾驶路况理解。</li>
+<li><strong>其他</strong>：视频生成模型评估、边缘计算部署、联邦学习隐私保护。</li>
+</ol>
+<h3 id="（二）挑战与未来方向">（二）挑战与未来方向</h3>
+<ol>
+<li><strong>精细粒度理解</strong>：缺乏数据集，帧级分析计算成本高，需提升语义深度（如情感、场景动态）。</li>
+<li><strong>长视频理解</strong>：难以捕捉长时间跨度事件，需优化关键事件检测与注意力机制。</li>
+<li><strong>多模态融合</strong>：视觉、音频、文本的时空对齐难，缺乏高质量多模态数据集。</li>
+<li><strong>幻觉问题</strong>：模型生成与视频无关内容，需优化特征提取、模态对齐，引入后训练校正。</li>
+<li><strong>工业部署</strong>：需通过模型压缩、token合并、模块化设计，平衡效率与性能。</li>
+<li><strong>伦理问题</strong>：隐私泄露（视频敏感信息）、内容滥用（误导性生成）、数据偏见，需加强数据治理与伦理规范。</li>
+</ol>
+<h2 id="七、总结">七、总结</h2>
+<p>该综述系统梳理了Vid-LLMs的发展背景、分类体系、训练策略、评估基准与应用方向，指出其通过LLM赋能，实现了从传统视频理解到多粒度、类人推理的突破。当前Vid-LLMs在抽象与时间理解任务中表现突出，但在长视频、多模态融合、幻觉抑制等方面仍需突破，未来需结合高效训练、数据集扩展与伦理规范，推动其在实际场景中的规模化应用。</p>
+<p>此外，作者提供了GitHub仓库（<a href="https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding%EF%BC%89%EF%BC%8C%E6%B1%87%E6%80%BBVid-LLMs%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90%EF%BC%8C%E4%BE%BF%E4%BA%8E%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%A0%94%E7%A9%B6%E3%80%82">https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。</a></p>
+]]></content>
+      <categories>
+        <category>论文阅读</category>
+      </categories>
+      <tags>
+        <tag>视频理解</tag>
       </tags>
   </entry>
   <entry>
@@ -2110,83 +2110,6 @@
       </tags>
   </entry>
   <entry>
-    <title>媒体接入控制的基本概念</title>
-    <url>/2025/10/08/%E5%AA%92%E4%BD%93%E6%8E%A5%E5%85%A5%E6%8E%A7%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
-    <content><![CDATA[<h2 id="一、核心定义">一、核心定义</h2>
-<p>媒体接入控制（MAC，Medium Access Control）是数据链路层中针对<strong>共享信道</strong>的关键技术，核心目标是协调多个发送 / 接收站点对共享传输媒体的占用，避免因多站点同时使用信道导致的通信问题。</p>
-<h2 id="二、媒体接入控制的分类及详解">二、媒体接入控制的分类及详解</h2>
-<p>媒体接入控制主要分为<strong>静态划分信道</strong>和<strong>动态接入控制</strong>两大类，其中动态接入控制又细分为受控接入和随机接入，具体差异如下表所示：</p>
-<table>
-<thead>
-<tr>
-<th>大类</th>
-<th>子类</th>
-<th>核心原理</th>
-<th>特点 / 优缺点</th>
-<th>适用场景</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>静态划分信道</strong></td>
-<td>频分多址（FDMA）</td>
-<td>预先将信道的频率资源固定分配给不同站点</td>
-<td>- 优点：无冲突，分配规则简单 - 缺点：灵活性差，对<strong>突发性数据传输</strong>的信道利用率极低</td>
-<td>通常用于无线网络的<strong>物理层</strong>，不用于数据链路层</td>
-</tr>
-<tr>
-<td></td>
-<td>时分多址（TDMA）</td>
-<td>预先将信道的时间资源固定划分为多个时隙，分配给不同站点</td>
-<td>同频分多址，固定分配导致灵活性和利用率不足</td>
-<td>同上（无线网络物理层）</td>
-</tr>
-<tr>
-<td></td>
-<td>码分多址（CDMA）</td>
-<td>预先为不同站点分配独特的编码，站点通过专属编码在同一频段 / 时间传输数据</td>
-<td>同频分多址，固定编码分配限制灵活性</td>
-<td>同上（无线网络物理层）</td>
-</tr>
-<tr>
-<td><strong>动态接入控制</strong></td>
-<td>受控接入 - 集中控制</td>
-<td>存在 1 个 “主站”，主站以循环方式轮询各站点，仅被轮询到且有数据的站点可发送</td>
-<td>- 优点：有序控制，冲突少 - 缺点：存在<strong>单点故障</strong>（主站故障则整个系统瘫痪），已逐渐被淘汰</td>
-<td>早期共享信道场景，目前应用较少</td>
-</tr>
-<tr>
-<td></td>
-<td>受控接入 - 分散控制（令牌环）</td>
-<td>各站点平等，连接成环形网络；“令牌”（特殊控制帧）沿环逐站传递，仅持有令牌的站点可发送数据，发送后传递令牌</td>
-<td>- 优点：无主站依赖，站点地位平等 - 缺点：环形拓扑维护复杂，令牌丢失会导致通信中断</td>
-<td>早期环形局域网，目前应用较少</td>
-</tr>
-<tr>
-<td></td>
-<td>随机接入</td>
-<td>所有站点通过 “竞争” 随机在信道上发送数据；若多站点同时发送，会产生 “碰撞（冲突）”，导致发送失败</td>
-<td>- 优点：灵活性高，适应突发性数据传输 - 关键问题：需解决 “如何避免冲突” 和 “冲突后如何恢复通信”</td>
-<td>共享式以太网（经典应用）；无线局域网（因无线信道广播特性，仍依赖此技术）</td>
-</tr>
-</tbody>
-</table>
-<h2 id="三、技术发展趋势">三、技术发展趋势</h2>
-<p>随着交换技术成熟和成本降低，<strong>有线领域</strong>已发生根本性转变：</p>
-<ul>
-<li>过去的 “共享式局域网”（依赖随机接入等共享信道技术），已被 “交换式局域网” 完全取代；</li>
-<li>交换式局域网基于 “点对点链路” 和 “链路层交换机”，无需共享信道，性能更高。</li>
-</ul>
-<p>而<strong>无线领域</strong>因 “无线信道的广播天性”，无法采用点对点交换架构，仍需使用共享媒体技术（如随机接入）。</p>
-]]></content>
-      <categories>
-        <category>计算机与网络</category>
-      </categories>
-      <tags>
-        <tag>计算机与网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>可靠传输的基本概念</title>
     <url>/2025/10/07/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
     <content><![CDATA[<h2 id="一、差错检测技术">一、差错检测技术</h2>
@@ -2262,6 +2185,251 @@
 </li>
 <li><strong>选择原则</strong>：可靠传输实现复杂、开销较大，<strong>是否使用取决于应用需求</strong>，需在 “可靠性” 与 “开销成本” 间权衡。</li>
 </ol>
+]]></content>
+      <categories>
+        <category>计算机与网络</category>
+      </categories>
+      <tags>
+        <tag>计算机与网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>封装成帧</title>
+    <url>/2025/10/06/%E5%B0%81%E8%A3%85%E6%88%90%E5%B8%A7/</url>
+    <content><![CDATA[<h2 id="一、封装成帧核心定义">一、封装成帧核心定义</h2>
+<p>封装成帧是数据链路层的核心功能之一，指该层为上层（网络层）交付的协议数据单元（PDU）添加<strong>帧头</strong>和<strong>帧尾</strong>，最终形成可在链路中传输的 “帧”。其中，帧头和帧尾包含关键控制信息，核心作用之一是<strong>帧定界</strong>—— 帮助接收方数据链路层从物理层传递的连续比特流中准确提取出单个帧。</p>
+<h2 id="二、典型帧结构">二、典型帧结构</h2>
+<p>该文档重点介绍了两种主流帧格式，具体结构如下：</p>
+<h3 id="1-以太网-V2-的-MAC-帧">1. 以太网 V2 的 MAC 帧</h3>
+<ul>
+<li><strong>总长度限制</strong>：最大长度为 1518 字节（含帧头、数据载荷、帧尾）。</li>
+<li><strong>字段构成</strong>（按顺序）：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>长度（字节）</th>
+<th>核心作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>目的地址</td>
+<td>6</td>
+<td>标识帧的接收设备（MAC 地址）</td>
+</tr>
+<tr>
+<td>源地址</td>
+<td>6</td>
+<td>标识帧的发送设备（MAC 地址）</td>
+</tr>
+<tr>
+<td>类型</td>
+<td>2</td>
+<td>指明上层使用的协议（如 IP 协议）</td>
+</tr>
+<tr>
+<td>数据载荷</td>
+<td>46~1500</td>
+<td>承载上层（网络层）交付的协议数据单元</td>
+</tr>
+<tr>
+<td>FCS</td>
+<td>4</td>
+<td>帧检验序列，用于检测帧在传输中的差错</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>补充说明</strong>：实际传输时，MAC 帧前会附加 “前导码”（7 字节，用于同步时钟）和 “帧开始定界符”（1 字节，标识帧开始），且帧之间需保留 “帧间间隔”（96 比特时间，避免帧冲突）。</li>
+</ul>
+<h3 id="2-PPP-帧（点对点协议帧）">2. PPP 帧（点对点协议帧）</h3>
+<ul>
+<li><strong>字段构成</strong>（按顺序）：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>长度（字节）</th>
+<th>核心作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标志（Flag）</td>
+<td>1</td>
+<td>帧定界符，固定值为<code>01111110</code>，标识帧的开始与结束</td>
+</tr>
+<tr>
+<td>地址</td>
+<td>1</td>
+<td>PPP 为点对点链路，通常设为固定值<code>FF</code>（广播地址）</td>
+</tr>
+<tr>
+<td>控制</td>
+<td>1</td>
+<td>用于流量控制和差错控制，默认值为<code>03</code></td>
+</tr>
+<tr>
+<td>协议</td>
+<td>2</td>
+<td>指明上层协议（如 IP 协议对应<code>0021</code>）</td>
+</tr>
+<tr>
+<td>数据载荷</td>
+<td>≤1500</td>
+<td>承载上层协议数据单元</td>
+</tr>
+<tr>
+<td>FCS</td>
+<td>2</td>
+<td>帧检验序列，检测传输差错</td>
+</tr>
+<tr>
+<td>标志（Flag）</td>
+<td>1</td>
+<td>与帧头标志一致，标识帧结束</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三、透明传输技术">三、透明传输技术</h2>
+<h3 id="1-透明传输定义">1. 透明传输定义</h3>
+<p>数据链路层对上层交付的传输数据无任何限制（即数据中可包含任意比特组合），上层无需关注链路层细节，如同链路层 “不存在”，这一特性称为透明传输。</p>
+<h3 id="2-实现方式（按链路类型分类）">2. 实现方式（按链路类型分类）</h3>
+<h4 id="（1）面向字节的物理链路：字节填充（字符填充）">（1）面向字节的物理链路：字节填充（字符填充）</h4>
+<ul>
+<li><strong>核心逻辑</strong>：若数据中出现与 “标志字段（Flag，<code>01111110</code>）” 或 “转义字符（ESC，<code>1B</code>）” 相同的字节，需在其前插入转义字符<code>ESC</code>，避免被误识别为帧定界符或转义符。</li>
+<li><strong>示例</strong>：
+<ul>
+<li>原始数据含<code>Flag</code>（<code>01111110</code>）→ 填充后变为<code>ESC + Flag</code>；</li>
+<li>原始数据含<code>ESC</code>（<code>1B</code>）→ 填充后变为<code>ESC + ESC</code>；</li>
+<li>接收方收到后，删除<code>ESC</code>即可恢复原始数据。</li>
+</ul>
+</li>
+</ul>
+<h4 id="（2）面向比特的物理链路：比特填充（零比特填充法）">（2）面向比特的物理链路：比特填充（零比特填充法）</h4>
+<ul>
+<li><strong>核心逻辑</strong>：以 HDLC 协议为例，帧定界符为<code>01111110</code>（含 6 个连续 1）。发送方在数据部分检测到 “5 个连续 1” 时，自动插入 1 个 “0”；接收方检测到 “5 个连续 1+1 个 0” 时，删除该 “0”，恢复原始数据。</li>
+<li><strong>真题示例（2013 年题 37）</strong>：
+<ul>
+<li>原始比特串：<code>011111000111111</code>；</li>
+<li>填充规则：5 个连续 1 后插 0，处理后为<code>011111000011111010</code>（对应选项 A）；</li>
+<li>最终帧结构：前后附加<code>01111110</code>（标志字段），完整帧为<code>01111110 011111000011111010 01111110</code>。</li>
+</ul>
+</li>
+</ul>
+<h2 id="四、最大传送单元（MTU）">四、最大传送单元（MTU）</h2>
+<ol>
+<li><strong>定义</strong>：为平衡传输效率与差错控制（帧越长，差错重传代价越高），每种数据链路层协议均规定 “帧的数据部分长度上限”，即最大传送单元 MTU。</li>
+<li><strong>核心作用</strong>：限制帧的数据载荷大小（如以太网 V2 的 MAC 帧数据载荷上限为 1500 字节），避免帧过长导致传输效率下降或差错风险增加。</li>
+<li><strong>关系公式</strong>：<code>帧总长度 = 帧头长度 + 数据载荷长度（≤MTU） + 帧尾长度</code>。</li>
+</ol>
+<h2 id="五、关键总结">五、关键总结</h2>
+<table>
+<thead>
+<tr>
+<th>核心概念</th>
+<th>核心内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>封装成帧</td>
+<td>数据链路层添加帧头 / 帧尾形成帧，实现帧定界</td>
+</tr>
+<tr>
+<td>典型帧结构</td>
+<td>以太网 V2 MAC 帧（1518 字节上限）、PPP 帧（标志字段定界）</td>
+</tr>
+<tr>
+<td>透明传输</td>
+<td>数据无限制，通过字节填充（面向字节链路）或比特填充（面向比特链路）实现</td>
+</tr>
+<tr>
+<td>MTU</td>
+<td>帧数据部分长度上限，平衡传输效率与差错控制</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>计算机与网络</category>
+      </categories>
+      <tags>
+        <tag>计算机与网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>媒体接入控制的基本概念</title>
+    <url>/2025/10/08/%E5%AA%92%E4%BD%93%E6%8E%A5%E5%85%A5%E6%8E%A7%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<h2 id="一、核心定义">一、核心定义</h2>
+<p>媒体接入控制（MAC，Medium Access Control）是数据链路层中针对<strong>共享信道</strong>的关键技术，核心目标是协调多个发送 / 接收站点对共享传输媒体的占用，避免因多站点同时使用信道导致的通信问题。</p>
+<h2 id="二、媒体接入控制的分类及详解">二、媒体接入控制的分类及详解</h2>
+<p>媒体接入控制主要分为<strong>静态划分信道</strong>和<strong>动态接入控制</strong>两大类，其中动态接入控制又细分为受控接入和随机接入，具体差异如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>大类</th>
+<th>子类</th>
+<th>核心原理</th>
+<th>特点 / 优缺点</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>静态划分信道</strong></td>
+<td>频分多址（FDMA）</td>
+<td>预先将信道的频率资源固定分配给不同站点</td>
+<td>- 优点：无冲突，分配规则简单 - 缺点：灵活性差，对<strong>突发性数据传输</strong>的信道利用率极低</td>
+<td>通常用于无线网络的<strong>物理层</strong>，不用于数据链路层</td>
+</tr>
+<tr>
+<td></td>
+<td>时分多址（TDMA）</td>
+<td>预先将信道的时间资源固定划分为多个时隙，分配给不同站点</td>
+<td>同频分多址，固定分配导致灵活性和利用率不足</td>
+<td>同上（无线网络物理层）</td>
+</tr>
+<tr>
+<td></td>
+<td>码分多址（CDMA）</td>
+<td>预先为不同站点分配独特的编码，站点通过专属编码在同一频段 / 时间传输数据</td>
+<td>同频分多址，固定编码分配限制灵活性</td>
+<td>同上（无线网络物理层）</td>
+</tr>
+<tr>
+<td><strong>动态接入控制</strong></td>
+<td>受控接入 - 集中控制</td>
+<td>存在 1 个 “主站”，主站以循环方式轮询各站点，仅被轮询到且有数据的站点可发送</td>
+<td>- 优点：有序控制，冲突少 - 缺点：存在<strong>单点故障</strong>（主站故障则整个系统瘫痪），已逐渐被淘汰</td>
+<td>早期共享信道场景，目前应用较少</td>
+</tr>
+<tr>
+<td></td>
+<td>受控接入 - 分散控制（令牌环）</td>
+<td>各站点平等，连接成环形网络；“令牌”（特殊控制帧）沿环逐站传递，仅持有令牌的站点可发送数据，发送后传递令牌</td>
+<td>- 优点：无主站依赖，站点地位平等 - 缺点：环形拓扑维护复杂，令牌丢失会导致通信中断</td>
+<td>早期环形局域网，目前应用较少</td>
+</tr>
+<tr>
+<td></td>
+<td>随机接入</td>
+<td>所有站点通过 “竞争” 随机在信道上发送数据；若多站点同时发送，会产生 “碰撞（冲突）”，导致发送失败</td>
+<td>- 优点：灵活性高，适应突发性数据传输 - 关键问题：需解决 “如何避免冲突” 和 “冲突后如何恢复通信”</td>
+<td>共享式以太网（经典应用）；无线局域网（因无线信道广播特性，仍依赖此技术）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三、技术发展趋势">三、技术发展趋势</h2>
+<p>随着交换技术成熟和成本降低，<strong>有线领域</strong>已发生根本性转变：</p>
+<ul>
+<li>过去的 “共享式局域网”（依赖随机接入等共享信道技术），已被 “交换式局域网” 完全取代；</li>
+<li>交换式局域网基于 “点对点链路” 和 “链路层交换机”，无需共享信道，性能更高。</li>
+</ul>
+<p>而<strong>无线领域</strong>因 “无线信道的广播天性”，无法采用点对点交换架构，仍需使用共享媒体技术（如随机接入）。</p>
 ]]></content>
       <categories>
         <category>计算机与网络</category>
@@ -2613,174 +2781,6 @@
       </categories>
       <tags>
         <tag>音频处理</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>封装成帧</title>
-    <url>/2025/10/06/%E5%B0%81%E8%A3%85%E6%88%90%E5%B8%A7/</url>
-    <content><![CDATA[<h2 id="一、封装成帧核心定义">一、封装成帧核心定义</h2>
-<p>封装成帧是数据链路层的核心功能之一，指该层为上层（网络层）交付的协议数据单元（PDU）添加<strong>帧头</strong>和<strong>帧尾</strong>，最终形成可在链路中传输的 “帧”。其中，帧头和帧尾包含关键控制信息，核心作用之一是<strong>帧定界</strong>—— 帮助接收方数据链路层从物理层传递的连续比特流中准确提取出单个帧。</p>
-<h2 id="二、典型帧结构">二、典型帧结构</h2>
-<p>该文档重点介绍了两种主流帧格式，具体结构如下：</p>
-<h3 id="1-以太网-V2-的-MAC-帧">1. 以太网 V2 的 MAC 帧</h3>
-<ul>
-<li><strong>总长度限制</strong>：最大长度为 1518 字节（含帧头、数据载荷、帧尾）。</li>
-<li><strong>字段构成</strong>（按顺序）：</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>字段名称</th>
-<th>长度（字节）</th>
-<th>核心作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>目的地址</td>
-<td>6</td>
-<td>标识帧的接收设备（MAC 地址）</td>
-</tr>
-<tr>
-<td>源地址</td>
-<td>6</td>
-<td>标识帧的发送设备（MAC 地址）</td>
-</tr>
-<tr>
-<td>类型</td>
-<td>2</td>
-<td>指明上层使用的协议（如 IP 协议）</td>
-</tr>
-<tr>
-<td>数据载荷</td>
-<td>46~1500</td>
-<td>承载上层（网络层）交付的协议数据单元</td>
-</tr>
-<tr>
-<td>FCS</td>
-<td>4</td>
-<td>帧检验序列，用于检测帧在传输中的差错</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>补充说明</strong>：实际传输时，MAC 帧前会附加 “前导码”（7 字节，用于同步时钟）和 “帧开始定界符”（1 字节，标识帧开始），且帧之间需保留 “帧间间隔”（96 比特时间，避免帧冲突）。</li>
-</ul>
-<h3 id="2-PPP-帧（点对点协议帧）">2. PPP 帧（点对点协议帧）</h3>
-<ul>
-<li><strong>字段构成</strong>（按顺序）：</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>字段名称</th>
-<th>长度（字节）</th>
-<th>核心作用</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>标志（Flag）</td>
-<td>1</td>
-<td>帧定界符，固定值为<code>01111110</code>，标识帧的开始与结束</td>
-</tr>
-<tr>
-<td>地址</td>
-<td>1</td>
-<td>PPP 为点对点链路，通常设为固定值<code>FF</code>（广播地址）</td>
-</tr>
-<tr>
-<td>控制</td>
-<td>1</td>
-<td>用于流量控制和差错控制，默认值为<code>03</code></td>
-</tr>
-<tr>
-<td>协议</td>
-<td>2</td>
-<td>指明上层协议（如 IP 协议对应<code>0021</code>）</td>
-</tr>
-<tr>
-<td>数据载荷</td>
-<td>≤1500</td>
-<td>承载上层协议数据单元</td>
-</tr>
-<tr>
-<td>FCS</td>
-<td>2</td>
-<td>帧检验序列，检测传输差错</td>
-</tr>
-<tr>
-<td>标志（Flag）</td>
-<td>1</td>
-<td>与帧头标志一致，标识帧结束</td>
-</tr>
-</tbody>
-</table>
-<h2 id="三、透明传输技术">三、透明传输技术</h2>
-<h3 id="1-透明传输定义">1. 透明传输定义</h3>
-<p>数据链路层对上层交付的传输数据无任何限制（即数据中可包含任意比特组合），上层无需关注链路层细节，如同链路层 “不存在”，这一特性称为透明传输。</p>
-<h3 id="2-实现方式（按链路类型分类）">2. 实现方式（按链路类型分类）</h3>
-<h4 id="（1）面向字节的物理链路：字节填充（字符填充）">（1）面向字节的物理链路：字节填充（字符填充）</h4>
-<ul>
-<li><strong>核心逻辑</strong>：若数据中出现与 “标志字段（Flag，<code>01111110</code>）” 或 “转义字符（ESC，<code>1B</code>）” 相同的字节，需在其前插入转义字符<code>ESC</code>，避免被误识别为帧定界符或转义符。</li>
-<li><strong>示例</strong>：
-<ul>
-<li>原始数据含<code>Flag</code>（<code>01111110</code>）→ 填充后变为<code>ESC + Flag</code>；</li>
-<li>原始数据含<code>ESC</code>（<code>1B</code>）→ 填充后变为<code>ESC + ESC</code>；</li>
-<li>接收方收到后，删除<code>ESC</code>即可恢复原始数据。</li>
-</ul>
-</li>
-</ul>
-<h4 id="（2）面向比特的物理链路：比特填充（零比特填充法）">（2）面向比特的物理链路：比特填充（零比特填充法）</h4>
-<ul>
-<li><strong>核心逻辑</strong>：以 HDLC 协议为例，帧定界符为<code>01111110</code>（含 6 个连续 1）。发送方在数据部分检测到 “5 个连续 1” 时，自动插入 1 个 “0”；接收方检测到 “5 个连续 1+1 个 0” 时，删除该 “0”，恢复原始数据。</li>
-<li><strong>真题示例（2013 年题 37）</strong>：
-<ul>
-<li>原始比特串：<code>011111000111111</code>；</li>
-<li>填充规则：5 个连续 1 后插 0，处理后为<code>011111000011111010</code>（对应选项 A）；</li>
-<li>最终帧结构：前后附加<code>01111110</code>（标志字段），完整帧为<code>01111110 011111000011111010 01111110</code>。</li>
-</ul>
-</li>
-</ul>
-<h2 id="四、最大传送单元（MTU）">四、最大传送单元（MTU）</h2>
-<ol>
-<li><strong>定义</strong>：为平衡传输效率与差错控制（帧越长，差错重传代价越高），每种数据链路层协议均规定 “帧的数据部分长度上限”，即最大传送单元 MTU。</li>
-<li><strong>核心作用</strong>：限制帧的数据载荷大小（如以太网 V2 的 MAC 帧数据载荷上限为 1500 字节），避免帧过长导致传输效率下降或差错风险增加。</li>
-<li><strong>关系公式</strong>：<code>帧总长度 = 帧头长度 + 数据载荷长度（≤MTU） + 帧尾长度</code>。</li>
-</ol>
-<h2 id="五、关键总结">五、关键总结</h2>
-<table>
-<thead>
-<tr>
-<th>核心概念</th>
-<th>核心内容</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>封装成帧</td>
-<td>数据链路层添加帧头 / 帧尾形成帧，实现帧定界</td>
-</tr>
-<tr>
-<td>典型帧结构</td>
-<td>以太网 V2 MAC 帧（1518 字节上限）、PPP 帧（标志字段定界）</td>
-</tr>
-<tr>
-<td>透明传输</td>
-<td>数据无限制，通过字节填充（面向字节链路）或比特填充（面向比特链路）实现</td>
-</tr>
-<tr>
-<td>MTU</td>
-<td>帧数据部分长度上限，平衡传输效率与差错控制</td>
-</tr>
-</tbody>
-</table>
-]]></content>
-      <categories>
-        <category>计算机与网络</category>
-      </categories>
-      <tags>
-        <tag>计算机与网络</tag>
       </tags>
   </entry>
   <entry>
