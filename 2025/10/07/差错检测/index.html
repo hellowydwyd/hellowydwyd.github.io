@@ -19,12 +19,12 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="一、核心背景：比特差错与误码率 比特差错定义：实际通信链路非理想，传输中比特可能发生翻转（1 变 0 或 0 变 1），此现象称为比特差错。 误码率（BER）：衡量差错程度的指标，指一段时间内传输错误的比特数占总传输比特数的比率。 差错检测的必要性：使用差错检测码检测传输中的比特差错，是数据链路层的重要任务之一，常见应用场景为以太网 V2 的 MAC 帧、PPP 帧等帧结构，二者均包含用于差错检测">
+    <meta name="description" content="一、核心背景：比特差错与误码率  比特差错定义：实际通信链路非理想，传输中比特可能发生翻转（1 变 0 或 0 变 1），此现象称为比特差错。 误码率（BER）：衡量差错程度的指标，指一段时间内传输错误的比特数占总传输比特数的比率。 差错检测的必要性：使用差错检测码检测传输中的比特差错，是数据链路层的重要任务之一，常见应用场景为以太网 V2 的 MAC 帧、PPP 帧等帧结构，二者均包含用于差错检">
 <meta property="og:type" content="article">
 <meta property="og:title" content="差错检测">
 <meta property="og:url" content="https://hellowydwyd.github.io/2025/10/07/%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="一、核心背景：比特差错与误码率 比特差错定义：实际通信链路非理想，传输中比特可能发生翻转（1 变 0 或 0 变 1），此现象称为比特差错。 误码率（BER）：衡量差错程度的指标，指一段时间内传输错误的比特数占总传输比特数的比率。 差错检测的必要性：使用差错检测码检测传输中的比特差错，是数据链路层的重要任务之一，常见应用场景为以太网 V2 的 MAC 帧、PPP 帧等帧结构，二者均包含用于差错检测">
+<meta property="og:description" content="一、核心背景：比特差错与误码率  比特差错定义：实际通信链路非理想，传输中比特可能发生翻转（1 变 0 或 0 变 1），此现象称为比特差错。 误码率（BER）：衡量差错程度的指标，指一段时间内传输错误的比特数占总传输比特数的比率。 差错检测的必要性：使用差错检测码检测传输中的比特差错，是数据链路层的重要任务之一，常见应用场景为以太网 V2 的 MAC 帧、PPP 帧等帧结构，二者均包含用于差错检">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-10-07T12:57:17.000Z">
 <meta property="article:modified_time" content="2025-10-07T12:59:19.657Z">
@@ -98,11 +98,7 @@
 
 
   
-<!-- hexo injector head_end start -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
 </head>
 
 
@@ -310,14 +306,13 @@
             
               <div class="markdown-body">
                 
-                <h2 id="一、核心背景：比特差错与误码率"><a href="#一、核心背景：比特差错与误码率" class="headerlink" title="一、核心背景：比特差错与误码率"></a>一、核心背景：比特差错与误码率</h2><ol>
+                <h2 id="一、核心背景：比特差错与误码率">一、核心背景：比特差错与误码率</h2>
+<ol>
 <li><strong>比特差错定义</strong>：实际通信链路非理想，传输中比特可能发生翻转（1 变 0 或 0 变 1），此现象称为比特差错。</li>
 <li><strong>误码率（BER）</strong>：衡量差错程度的指标，指一段时间内传输错误的比特数占总传输比特数的比率。</li>
-<li><p><strong>差错检测的必要性</strong>：使用差错检测码检测传输中的比特差错，是数据链路层的重要任务之一，常见应用场景为以太网 V2 的 MAC 帧、PPP 帧等帧结构，二者均包含用于差错检测的 FCS（帧检验序列）字段，具体帧结构如下：</p>
-<p><strong>以太网 V2 的 MAC 帧</strong>：总长度最大为 1518 字节，各字段及长度如下表：</p>
-</li>
+<li><strong>差错检测的必要性</strong>：使用差错检测码检测传输中的比特差错，是数据链路层的重要任务之一，常见应用场景为以太网 V2 的 MAC 帧、PPP 帧等帧结构，二者均包含用于差错检测的 FCS（帧检验序列）字段，具体帧结构如下：</li>
 </ol>
-<div class="table-container">
+<p><strong>以太网 V2 的 MAC 帧</strong>：总长度最大为 1518 字节，各字段及长度如下表：</p>
 <table>
 <thead>
 <tr>
@@ -340,9 +335,7 @@
 </tr>
 </tbody>
 </table>
-</div>
-<p> <strong>PPP 帧</strong>：各字段及长度如下表：</p>
-<div class="table-container">
+<p><strong>PPP 帧</strong>：各字段及长度如下表：</p>
 <table>
 <thead>
 <tr>
@@ -369,57 +362,70 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="二、主流差错检测方法"><a href="#二、主流差错检测方法" class="headerlink" title="二、主流差错检测方法"></a>二、主流差错检测方法</h2><h3 id="（一）奇偶校验"><a href="#（一）奇偶校验" class="headerlink" title="（一）奇偶校验"></a>（一）奇偶校验</h3><ol>
+<h2 id="二、主流差错检测方法">二、主流差错检测方法</h2>
+<h3 id="（一）奇偶校验">（一）奇偶校验</h3>
+<ol>
 <li><strong>核心原理</strong>：在待发送数据后添加 1 位奇偶校验位，使整体数据（含校验位）中 “1” 的个数满足特定规则 —— 奇校验（“1” 的个数为奇数）或偶校验（“1” 的个数为偶数）。</li>
-<li><strong>差错检测能力</strong>：<ul>
+<li><strong>差错检测能力</strong>：
+<ul>
 <li><strong>可检出错误</strong>：当传输过程中发生奇数个位误码时，数据中 “1” 的奇偶性改变，可检测出错误。例如奇校验下，原数据 “11011”（含校验位共 5 个 1）传输中 1 位误码后，“1” 的个数变为 4（偶数），奇偶性改变，能检出错误。</li>
 <li><strong>不可检出错误</strong>：当发生偶数个位误码时，“1” 的奇偶性不变，无法检测出错误。例如偶校验下，原数据 “0111101”（含校验位共 5 个 1，偶校验时需调整校验位使 “1” 的个数为偶数）传输中 2 位误码后，“1” 的个数仍为偶数，奇偶性未变，漏检错误。</li>
 </ul>
 </li>
 </ol>
-<h3 id="（二）循环冗余校验（CRC）"><a href="#（二）循环冗余校验（CRC）" class="headerlink" title="（二）循环冗余校验（CRC）"></a>（二）循环冗余校验（CRC）</h3><h4 id="1-核心机制"><a href="#1-核心机制" class="headerlink" title="1. 核心机制"></a>1. 核心机制</h4><ul>
+<h3 id="（二）循环冗余校验（CRC）">（二）循环冗余校验（CRC）</h3>
+<h4 id="1-核心机制">1. 核心机制</h4>
+<ul>
 <li><strong>前提约定</strong>：收发双方预先约定一个生成多项式 G (x)，且生成多项式必须包含最低次项。</li>
-<li><strong>发送方处理</strong>：<ol>
+<li><strong>发送方处理</strong>：
+<ol>
 <li>构造被除数：在待发送数据后添加生成多项式最高次数个 0；</li>
 <li>构造除数：由生成多项式各项系数构成比特串；</li>
 <li>计算冗余码：将被除数与除数进行 “异或除法”（仅做异或运算，无借位），得到的余数即为冗余码，其长度与生成多项式最高次数相同；</li>
 <li>发送数据：将冗余码添加到待发送数据后，形成完整传输数据。</li>
 </ol>
 </li>
-<li><strong>接收方处理</strong>：<ol>
+<li><strong>接收方处理</strong>：
+<ol>
 <li>构造被除数：直接将接收到的完整数据作为被除数；</li>
 <li>构造除数：与发送方一致，由约定的生成多项式各项系数构成比特串；</li>
 <li>验证差错：对被除数和除数进行 “异或除法”，若余数为 0，判定无差错；若余数不为 0，判定传输过程产生误码。</li>
 </ol>
 </li>
 </ul>
-<h4 id="2-生成多项式示例与常用类型"><a href="#2-生成多项式示例与常用类型" class="headerlink" title="2. 生成多项式示例与常用类型"></a>2. 生成多项式示例与常用类型</h4><ul>
+<h4 id="2-生成多项式示例与常用类型">2. 生成多项式示例与常用类型</h4>
+<ul>
 <li><strong>示例</strong>：生成多项式 G (x) = x⁴ + x² + x + 1，其各项系数构成的比特串为 10111（x⁴系数为 1，x³ 系数为 0，x² 系数为 1，x¹ 系数为 1，x⁰系数为 1）。</li>
-<li><strong>常用生成多项式</strong>：<ul>
+<li><strong>常用生成多项式</strong>：
+<ul>
 <li>CRC-16：G(x) = x¹⁶ + x¹⁵ + x² + 1</li>
 <li>CRC-CCITT：G(x) = x¹⁶ + x¹² + x⁵ + 1</li>
 <li>CRC-32：G(x) = x³² + x²⁶ + x²³ + x²² + x¹⁶ + x¹² + x¹¹ + x¹⁰ + x⁸ + x⁷ + x⁵ + x⁴ + x² + x + 1</li>
 </ul>
 </li>
 </ul>
-<h4 id="3-计算示例"><a href="#3-计算示例" class="headerlink" title="3. 计算示例"></a>3. 计算示例</h4><ul>
+<h4 id="3-计算示例">3. 计算示例</h4>
+<ul>
 <li><strong>场景</strong>：待发送信息为 101001，生成多项式 G (x) = x³ + x² + 1（最高次数为 3，各项系数构成比特串 1101）。</li>
-<li><strong>发送方计算冗余码</strong>：<ol>
+<li><strong>发送方计算冗余码</strong>：
+<ol>
 <li>构造被除数：待发送信息 101001 后加 3 个 0，得到 101001000；</li>
 <li>构造除数：1101；</li>
 <li>异或除法计算：101001000 ÷ 1101（异或运算），最终余数为 001（因生成多项式最高次数为 3，余数需补 0 凑足 3 位），即冗余码为 001；</li>
 <li>发送数据：101001 + 001 = 101001001。</li>
 </ol>
 </li>
-<li><strong>接收方验证</strong>：<ol>
+<li><strong>接收方验证</strong>：
+<ol>
 <li>若接收到的信息为 101101001，以其为被除数，除数仍为 1101；</li>
 <li>异或除法计算后余数不为 0，判定传输产生误码。</li>
 </ol>
 </li>
 </ul>
-<h2 id="三、差错处理相关补充"><a href="#三、差错处理相关补充" class="headerlink" title="三、差错处理相关补充"></a>三、差错处理相关补充</h2><ol>
-<li><strong>检错码与纠错码的区别</strong>：<ul>
+<h2 id="三、差错处理相关补充">三、差错处理相关补充</h2>
+<ol>
+<li><strong>检错码与纠错码的区别</strong>：
+<ul>
 <li><strong>检错码</strong>：仅能检测帧传输中的差错，无法定位错误，因此不能纠正错误（如奇偶校验、CRC）；</li>
 <li><strong>纠错码</strong>：通过更多冗余信息实现前向纠错（定位并纠正错误），但开销大，在计算机网络中较少使用。</li>
 </ul>

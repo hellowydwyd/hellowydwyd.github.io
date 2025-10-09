@@ -19,12 +19,12 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结一、研究背景与问题 长视频处理的核心挑战：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128K的">
+    <meta name="description" content="《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结 一、研究背景与问题  长视频处理的核心挑战：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ViLAMP">
 <meta property="og:url" content="https://hellowydwyd.github.io/2025/09/08/ViLAMP/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结一、研究背景与问题 长视频处理的核心挑战：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128K的">
+<meta property="og:description" content="《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结 一、研究背景与问题  长视频处理的核心挑战：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-09-08T12:19:24.052Z">
 <meta property="article:modified_time" content="2025-09-08T12:19:58.749Z">
@@ -98,11 +98,7 @@
 
 
   
-<!-- hexo injector head_end start -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
 </head>
 
 
@@ -310,31 +306,41 @@
             
               <div class="markdown-body">
                 
-                <h1 id="《Scaling-Video-Language-Models-to-10K-Frames-via-Hierarchical-Differential-Distillation》内容总结"><a href="#《Scaling-Video-Language-Models-to-10K-Frames-via-Hierarchical-Differential-Distillation》内容总结" class="headerlink" title="《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结"></a>《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结</h1><h2 id="一、研究背景与问题"><a href="#一、研究背景与问题" class="headerlink" title="一、研究背景与问题"></a>一、研究背景与问题</h2><ol>
+                <h1>《Scaling Video-Language Models to 10K Frames via Hierarchical Differential Distillation》内容总结</h1>
+<h2 id="一、研究背景与问题">一、研究背景与问题</h2>
+<ol>
 <li><strong>长视频处理的核心挑战</strong>：视觉语言模型（VLMs）在处理长视频时面临巨大计算成本。例如，1分钟24帧的视频会生成超100万视觉令牌（24×60×729），远超主流大语言模型（LLMs）4K-128K的上下文长度限制；而现实中1小时以上的长视频（如长视频分析、机器人持续学习场景）需求普遍，现有模型难以兼顾效率与语义完整性。</li>
-<li><strong>现有方法的局限性</strong><ul>
+<li><strong>现有方法的局限性</strong>
+<ul>
 <li><strong>令牌剪枝</strong>：通过均匀或内容感知采样（如固定间隔选帧、数据库检索式选帧）减少令牌数量，但易丢失关键时间依赖关系。</li>
 <li><strong>特征合并</strong>：基于启发式（下采样、池化）或可学习机制（Q-Former、Perceiver Resampler）合并特征，常导致语义信息稀释，无法平衡计算效率与信息保留。</li>
 </ul>
 </li>
 </ol>
-<h2 id="二、核心发现：长视频的信息冗余规律"><a href="#二、核心发现：长视频的信息冗余规律" class="headerlink" title="二、核心发现：长视频的信息冗余规律"></a>二、核心发现：长视频的信息冗余规律</h2><p>通过对LLaVA-OneVision、LLaVA-Video等代表性VLMs在Video-MME基准上的注意力模式分析，发现两级冗余特征：</p>
+<h2 id="二、核心发现：长视频的信息冗余规律">二、核心发现：长视频的信息冗余规律</h2>
+<p>通过对LLaVA-OneVision、LLaVA-Video等代表性VLMs在Video-MME基准上的注意力模式分析，发现两级冗余特征：</p>
 <ol>
 <li><strong>帧级冗余</strong>：约90%的查询注意力集中在仅5%的帧上，且这些高注意力帧间视觉相似度极高（余弦相似度&gt;0.8），远超随机帧对基线（0.54-0.61），存在大量视觉重复。</li>
 <li><strong>补丁级冗余</strong>：非关键帧中，50%的高注意力补丁贡献80%的总注意力，且这些补丁与关键帧对应位置补丁视觉相似度高，存在跨帧重复视觉模式，导致计算资源浪费。</li>
 </ol>
-<h2 id="三、核心方法：差异蒸馏原理与VILAMP模型"><a href="#三、核心方法：差异蒸馏原理与VILAMP模型" class="headerlink" title="三、核心方法：差异蒸馏原理与VILAMP模型"></a>三、核心方法：差异蒸馏原理与VILAMP模型</h2><h3 id="（一）差异蒸馏原理（Differential-Distillation）"><a href="#（一）差异蒸馏原理（Differential-Distillation）" class="headerlink" title="（一）差异蒸馏原理（Differential Distillation）"></a>（一）差异蒸馏原理（Differential Distillation）</h3><p>定义“差异信息显著性分数”，量化视频组件（帧/补丁）的价值，公式如下：<br>[D(v)=R(v,Q)-T(v,\mathcal {C}(v))]  </p>
+<h2 id="三、核心方法：差异蒸馏原理与VILAMP模型">三、核心方法：差异蒸馏原理与VILAMP模型</h2>
+<h3 id="（一）差异蒸馏原理（Differential-Distillation）">（一）差异蒸馏原理（Differential Distillation）</h3>
+<p>定义“差异信息显著性分数”，量化视频组件（帧/补丁）的价值，公式如下：<br>
+[D(v)=R(v,Q)-T(v,\mathcal {C}(v))]</p>
 <ul>
-<li>(R(v,Q))：组件与查询的相关性（如余弦相似度）；  </li>
-<li>(T(v,C(v)))：组件与时间上下文（如相邻帧/关键帧）的冗余度；  </li>
+<li>(R(v,Q))：组件与查询的相关性（如余弦相似度）；</li>
+<li>(T(v,C(v)))：组件与时间上下文（如相邻帧/关键帧）的冗余度；</li>
 <li>分数越高，组件含有的“任务相关且低冗余”信息越多，应分配更多计算资源。</li>
 </ul>
-<h3 id="（二）VILAMP模型架构：分层混合精度处理"><a href="#（二）VILAMP模型架构：分层混合精度处理" class="headerlink" title="（二）VILAMP模型架构：分层混合精度处理"></a>（二）VILAMP模型架构：分层混合精度处理</h3><p>VILAMP通过“帧级选关键帧+补丁级压缩非关键帧”实现长视频高效处理，类比“混合精度训练”（Micikevicius et al., 2018），核心包含两大模块：</p>
+<h3 id="（二）VILAMP模型架构：分层混合精度处理">（二）VILAMP模型架构：分层混合精度处理</h3>
+<p>VILAMP通过“帧级选关键帧+补丁级压缩非关键帧”实现长视频高效处理，类比“混合精度训练”（Micikevicius et al., 2018），核心包含两大模块：</p>
 <ol>
-<li><p><strong>差异关键帧选择（DKS）</strong>：帧级保留全信息</p>
+<li>
+<p><strong>差异关键帧选择（DKS）</strong>：帧级保留全信息</p>
 <ul>
 <li><strong>目标</strong>：筛选高查询相关性且时间独特性强的帧作为关键帧，避免冗余。</li>
-<li><strong>步骤</strong>：<ol>
+<li><strong>步骤</strong>：
+<ol>
 <li>用CLIP编码器将帧与查询编码为d维嵌入，计算帧-查询余弦相似度作为相关性分数(R_f)；</li>
 <li>定义帧与已选关键帧的最大余弦相似度为冗余度(T_f)；</li>
 <li>贪心算法：按(R_f)降序排序帧，选择(T_f&lt;\tau)（实验设(\tau=0.85)）的帧，直至选满K个（实验设K=32），复杂度降至(O(max(NK, NlogN)))。</li>
@@ -343,10 +349,12 @@
 <li><strong>作用</strong>：关键帧保留完整729个视觉令牌，作为时间关系学习的“锚点”。</li>
 </ul>
 </li>
-<li><p><strong>差异特征合并（DFM）</strong>：补丁级压缩非关键帧</p>
+<li>
+<p><strong>差异特征合并（DFM）</strong>：补丁级压缩非关键帧</p>
 <ul>
 <li><strong>目标</strong>：将非关键帧压缩为1个令牌，同时保留查询相关特征。</li>
-<li><strong>步骤</strong>：<ol>
+<li><strong>步骤</strong>：
+<ol>
 <li>用VLM视觉编码器获取非关键帧补丁与最近关键帧对应补丁的嵌入；</li>
 <li>计算补丁级显著性分数(D_p=R_p-\lambda T_p)（(R_p)为补丁-查询相关性，(T_p)为补丁-关键帧补丁相似度，(\lambda=1)平衡两者）；</li>
 <li>加权池化：基于(softmax(D_p/\alpha))（(\alpha=10^{-2})控制权重锐度）对补丁嵌入加权平均，生成非关键帧的单令牌表示。</li>
@@ -355,58 +363,116 @@
 <li><strong>作用</strong>：非关键帧令牌数从729降至1，大幅减少计算量，同时保留核心语义。</li>
 </ul>
 </li>
-<li><p><strong>多模态融合与训练</strong></p>
+<li>
+<p><strong>多模态融合与训练</strong></p>
 <ul>
 <li>用双流MLP连接器分别投影关键帧补丁嵌入（(h_k^m=MLP_k(p_k^m))）与非关键帧压缩嵌入（(h_n=MLP_n(t_n))）；</li>
-<li>按时间顺序拼接视觉嵌入与查询，以语言建模损失（预测答案A的概率）端到端训练：<br>[\mathcal{L}=-log P\left(A |\left{h<em>{k}^{m} | f</em>{k} \in \mathcal{K}\right} \cup\left{h<em>{n} | f</em>{n} \notin \mathcal{K}\right}, Q\right)]</li>
+<li>按时间顺序拼接视觉嵌入与查询，以语言建模损失（预测答案A的概率）端到端训练：<br>
+[\mathcal{L}=-log P\left(A |\left{h_{k}^{m} | f_{k} \in \mathcal{K}\right} \cup\left{h_{n} | f_{n} \notin \mathcal{K}\right}, Q\right)]</li>
 </ul>
 </li>
 </ol>
-<h2 id="四、实验设计与结果"><a href="#四、实验设计与结果" class="headerlink" title="四、实验设计与结果"></a>四、实验设计与结果</h2><h3 id="（一）实验设置"><a href="#（一）实验设置" class="headerlink" title="（一）实验设置"></a>（一）实验设置</h3><ol>
-<li><strong>基准数据集</strong>：覆盖短、中、长视频场景，共5个基准：<br> | 基准名称       | 视频平均时长 | 核心任务                     | 数据规模                     |<br> |————————|———————|———————————————|———————————————|<br> | LVBench        | 4101s        | 超长视频决策                 | 6大类21子类，含体育、纪录片等 |<br> | EgoSchema      | 180s         | 第一视角视频推理             | 5000+问答对，250+小时视频    |<br> | LongVideoBench | 473s         | 参考推理（对抗单帧偏见）     | 3763视频，6678问答对         |<br> | MLVU           | 651s         | 多任务长视频理解（如动作计数）| 2593样本，9任务类别          |<br> | Video-MME      | 1010s（长子集2386s） | 跨领域视频理解（知识、体育等） | 900视频，2700问答对          |</li>
+<h2 id="四、实验设计与结果">四、实验设计与结果</h2>
+<h3 id="（一）实验设置">（一）实验设置</h3>
+<ol>
+<li><strong>基准数据集</strong>：覆盖短、中、长视频场景，共5个基准：
+<table>
+<thead>
+<tr>
+<th>基准名称</th>
+<th>视频平均时长</th>
+<th>核心任务</th>
+<th>数据规模</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LVBench</td>
+<td>4101s</td>
+<td>超长视频决策</td>
+<td>6大类21子类，含体育、纪录片等</td>
+</tr>
+<tr>
+<td>EgoSchema</td>
+<td>180s</td>
+<td>第一视角视频推理</td>
+<td>5000+问答对，250+小时视频</td>
+</tr>
+<tr>
+<td>LongVideoBench</td>
+<td>473s</td>
+<td>参考推理（对抗单帧偏见）</td>
+<td>3763视频，6678问答对</td>
+</tr>
+<tr>
+<td>MLVU</td>
+<td>651s</td>
+<td>多任务长视频理解（如动作计数）</td>
+<td>2593样本，9任务类别</td>
+</tr>
+<tr>
+<td>Video-MME</td>
+<td>1010s（长子集2386s）</td>
+<td>跨领域视频理解（知识、体育等）</td>
+<td>900视频，2700问答对</td>
+</tr>
+</tbody>
+</table>
+</li>
 <li><strong>基线模型</strong>：分三类对比——专有VLMs（GPT-4V、GPT-4o、Gemini-1.5-Pro）、开源多图像VLMs（LLaVA-OneVision、InternVL2）、开源视频VLMs（LLaMA-VID、VideoChat-Flash）。</li>
 <li><strong>模型配置</strong>：视觉编码器用SigLIP-so400m，语言模型用Qwen2-7B，帧分辨率384×384。</li>
 </ol>
-<h3 id="（二）关键实验结果"><a href="#（二）关键实验结果" class="headerlink" title="（二）关键实验结果"></a>（二）关键实验结果</h3><ol>
-<li><p><strong>主基准性能</strong>：在7B参数规模下，VILAMP刷新多基准SOTA：</p>
+<h3 id="（二）关键实验结果">（二）关键实验结果</h3>
+<ol>
+<li>
+<p><strong>主基准性能</strong>：在7B参数规模下，VILAMP刷新多基准SOTA：</p>
 <ul>
 <li>MLVU：72.6%准确率，超过专有模型GPT-4o（64.6%）；</li>
 <li>Video-MME长子集：无字幕67.5%、有字幕73.5%，较同规模模型（如VideoChat-Flash）提升3.0%-4.8%；</li>
 <li>EgoSchema：70.2%准确率，高于LongVILA（67.7%）、LongVU（67.6%）。</li>
 </ul>
 </li>
-<li><p><strong>10K帧超长视频处理（VideoNIAH基准）</strong></p>
+<li>
+<p><strong>10K帧超长视频处理（VideoNIAH基准）</strong></p>
 <ul>
 <li><strong>基准设计</strong>：构建“干草堆-针”任务，干草堆为2K-10K帧（1FPS，最长2.7小时），针为30-120秒视频片段，需定位并理解针内容回答问题。</li>
 <li><strong>效率优势</strong>：单NVIDIA A100 GPU可处理10K帧，内存消耗较基线低50%，8192帧时FLOPs仅为VideoChat-Flash的18.4%（表5）。</li>
 <li><strong>性能稳定性</strong>：10K帧时准确率58.15%，较VideoChat-Flash（47.25%）高12.82%，且从2K到10K帧的准确率下降幅度仅为后者的1/3（图2）。</li>
 </ul>
 </li>
-<li><p><strong>消融实验</strong>：验证核心模块有效性（表2）</p>
+<li>
+<p><strong>消融实验</strong>：验证核心模块有效性（表2）</p>
 <ul>
 <li>DKS vs 其他选帧：DKS在MLVU（67.3% vs 查询引导63.7%/均匀采样66.8%）、Video-MME（61.8% vs 55.6%/60.2%）表现更优；</li>
 <li>DFM vs 其他合并：DFM在LongVideoBench（60.5% vs Q-Former53.9%/均值池化56.3%）、MLVU（72.6% vs 62.6%/67.3%）显著领先。</li>
 </ul>
 </li>
-<li><p><strong>关键帧数量影响</strong>：短视频（如Video-MME短子集）16个关键帧性能饱和，长视频（MLVU、Video-MME长子集）需32个关键帧达最优（图6），符合“长视频需更密采样”规律。</p>
+<li>
+<p><strong>关键帧数量影响</strong>：短视频（如Video-MME短子集）16个关键帧性能饱和，长视频（MLVU、Video-MME长子集）需32个关键帧达最优（图6），符合“长视频需更密采样”规律。</p>
 </li>
-<li><p><strong>跨任务泛化</strong>：在视频定位（QVHighlights）和动作识别（ActivityNet、Sth-V2、UCF-101）任务中表现优异：</p>
+<li>
+<p><strong>跨任务泛化</strong>：在视频定位（QVHighlights）和动作识别（ActivityNet、Sth-V2、UCF-101）任务中表现优异：</p>
 <ul>
 <li>QVHighlights：Hit@10=60%、Hit@30=83%，验证DKS选帧有效性；</li>
 <li>动作识别：ActivityNet mAP=78.6%（超Adaframe 71.5%），Sth-V2准确率86.9%（超MGSampler 60.1%），体现零样本迁移能力。</li>
 </ul>
 </li>
 </ol>
-<h2 id="五、结论与贡献"><a href="#五、结论与贡献" class="headerlink" title="五、结论与贡献"></a>五、结论与贡献</h2><ol>
-<li><strong>核心贡献</strong><ul>
+<h2 id="五、结论与贡献">五、结论与贡献</h2>
+<ol>
+<li>
+<p><strong>核心贡献</strong></p>
+<ul>
 <li>提出<strong>差异蒸馏原理</strong>：系统性识别“高相关低冗余”信息，为长视频高效建模提供理论框架；</li>
 <li>设计<strong>VILAMP模型</strong>：通过分层混合精度处理（DKS+DFM），实现10K帧（2.7小时）单GPU处理；</li>
 <li>验证<strong>性能与效率优势</strong>：5个基准SOTA，10K帧时准确率超基线12.82%，内存/FLOPs显著降低。</li>
 </ul>
 </li>
-<li><p><strong>局限与展望</strong>：当前未充分验证在更细粒度时间推理（如毫秒级动作）的表现，未来可探索动态关键帧数量调整与跨模态冗余优化。</p>
+<li>
+<p><strong>局限与展望</strong>：当前未充分验证在更细粒度时间推理（如毫秒级动作）的表现，未来可探索动态关键帧数量调整与跨模态冗余优化。</p>
 </li>
-<li><p><strong>代码与模型</strong>：开源地址为<a target="_blank" rel="noopener" href="https://github.com/steven-ccq/ViLAMP，支持复现与扩展。">https://github.com/steven-ccq/ViLAMP，支持复现与扩展。</a></p>
+<li>
+<p><strong>代码与模型</strong>：开源地址为<a target="_blank" rel="noopener" href="https://github.com/steven-ccq/ViLAMP%EF%BC%8C%E6%94%AF%E6%8C%81%E5%A4%8D%E7%8E%B0%E4%B8%8E%E6%89%A9%E5%B1%95%E3%80%82">https://github.com/steven-ccq/ViLAMP，支持复现与扩展。</a></p>
 </li>
 </ol>
 

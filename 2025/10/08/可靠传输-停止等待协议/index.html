@@ -19,12 +19,12 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="一、停止 - 等待协议（SW）核心机制停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块： 1. 确认与否认（ACK&#x2F;NAK） 正常场景：发送方发送DATA分组，接收方正确接收后，返回ACK（确认）分组，发送方收到ACK后继续发送下一个DATA。 误码场景：接收方检测到DATA分">
+    <meta name="description" content="一、停止 - 等待协议（SW）核心机制 停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块： 1. 确认与否认（ACK&#x2F;NAK）  正常场景：发送方发送DATA分组，接收方正确接收后，返回ACK（确认）分组，发送方收到ACK后继续发送下一个DATA。 误码场景：接收方检测到DAT">
 <meta property="og:type" content="article">
 <meta property="og:title" content="可靠传输-停止等待协议">
 <meta property="og:url" content="https://hellowydwyd.github.io/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%81%9C%E6%AD%A2%E7%AD%89%E5%BE%85%E5%8D%8F%E8%AE%AE/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="一、停止 - 等待协议（SW）核心机制停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块： 1. 确认与否认（ACK&#x2F;NAK） 正常场景：发送方发送DATA分组，接收方正确接收后，返回ACK（确认）分组，发送方收到ACK后继续发送下一个DATA。 误码场景：接收方检测到DATA分">
+<meta property="og:description" content="一、停止 - 等待协议（SW）核心机制 停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块： 1. 确认与否认（ACK&#x2F;NAK）  正常场景：发送方发送DATA分组，接收方正确接收后，返回ACK（确认）分组，发送方收到ACK后继续发送下一个DATA。 误码场景：接收方检测到DAT">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-10-08T03:00:24.000Z">
 <meta property="article:modified_time" content="2025-10-08T07:20:04.526Z">
@@ -98,11 +98,7 @@
 
 
   
-<!-- hexo injector head_end start -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
 </head>
 
 
@@ -310,30 +306,36 @@
             
               <div class="markdown-body">
                 
-                <h2 id="一、停止-等待协议（SW）核心机制"><a href="#一、停止-等待协议（SW）核心机制" class="headerlink" title="一、停止 - 等待协议（SW）核心机制"></a>一、停止 - 等待协议（SW）核心机制</h2><p>停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块：</p>
-<h3 id="1-确认与否认（ACK-NAK）"><a href="#1-确认与否认（ACK-NAK）" class="headerlink" title="1. 确认与否认（ACK/NAK）"></a>1. 确认与否认（ACK/NAK）</h3><ul>
+                <h2 id="一、停止-等待协议（SW）核心机制">一、停止 - 等待协议（SW）核心机制</h2>
+<p>停止 - 等待协议是最基础的可靠传输协议，核心逻辑为 “发送方发送一个数据分组后，停止发送并等待接收方确认，收到确认后再发送下一个分组”，具体机制包含以下 4 个关键模块：</p>
+<h3 id="1-确认与否认（ACK-NAK）">1. 确认与否认（ACK/NAK）</h3>
+<ul>
 <li><strong>正常场景</strong>：发送方发送<code>DATA</code>分组，接收方正确接收后，返回<code>ACK</code>（确认）分组，发送方收到<code>ACK</code>后继续发送下一个<code>DATA</code>。</li>
-<li><strong>误码场景</strong>：接收方检测到<code>DATA</code>分组存在误码时，有两种处理方式：<ul>
+<li><strong>误码场景</strong>：接收方检测到<code>DATA</code>分组存在误码时，有两种处理方式：
+<ul>
 <li>直接丢弃误码分组，等待发送方超时重传（适用于误码率较低的链路）；</li>
 <li>向发送方发送<code>NAK</code>（否认）分组，触发发送方尽早重传（适用于误码率较高的点对点链路）。</li>
 </ul>
 </li>
 </ul>
-<h3 id="2-超时重传"><a href="#2-超时重传" class="headerlink" title="2. 超时重传"></a>2. 超时重传</h3><ul>
+<h3 id="2-超时重传">2. 超时重传</h3>
+<ul>
 <li><strong>核心问题</strong>：若<code>DATA</code>分组丢失或<code>ACK</code>分组丢失，发送方会一直等待确认，陷入死锁。</li>
 <li><strong>解决方案</strong>：发送方发送<code>DATA</code>分组后，立即启动<strong>超时计时器</strong>；若计时器超时仍未收到<code>ACK/NAK</code>，则重传原<code>DATA</code>分组。</li>
-<li><strong>重传时间设定</strong>：需 “略大于发送方到接收方的平均往返时间（RTT）”，避免过早重传导致资源浪费，或过晚重传导致时延增加。<ul>
+<li><strong>重传时间设定</strong>：需 “略大于发送方到接收方的平均往返时间（RTT）”，避免过早重传导致资源浪费，或过晚重传导致时延增加。
+<ul>
 <li>数据链路层：点对点往返时间稳定，重传时间易设定；</li>
 <li>运输层：端到端往返时间不确定，重传时间设定难度较高。</li>
 </ul>
 </li>
 </ul>
-<h3 id="3-分组编号（避免重复）"><a href="#3-分组编号（避免重复）" class="headerlink" title="3. 分组编号（避免重复）"></a>3. 分组编号（避免重复）</h3><ul>
+<h3 id="3-分组编号（避免重复）">3. 分组编号（避免重复）</h3>
+<ul>
 <li><strong>数据分组编号</strong>：由于协议 “停等” 特性，只需 1 个比特编号（0 和 1）即可区分新分组与重复分组（确保每次新分组编号与上一次不同）。</li>
 <li><strong>ACK 分组编号</strong>：理论上需与数据分组编号比特数一致（帮助发送方判断<code>ACK</code>是否重复），但数据链路层极少出现<code>ACK</code>迟到场景，因此可省略<code>ACK</code>编号。</li>
 </ul>
-<h3 id="4-异常场景处理"><a href="#4-异常场景处理" class="headerlink" title="4. 异常场景处理"></a>4. 异常场景处理</h3><p>文档明确了 4 种典型异常场景的协议行为，具体如下表：</p>
-<div class="table-container">
+<h3 id="4-异常场景处理">4. 异常场景处理</h3>
+<p>文档明确了 4 种典型异常场景的协议行为，具体如下表：</p>
 <table>
 <thead>
 <tr>
@@ -370,18 +372,24 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="二、停止-等待协议的信道利用率"><a href="#二、停止-等待协议的信道利用率" class="headerlink" title="二、停止 - 等待协议的信道利用率"></a>二、停止 - 等待协议的信道利用率</h2><h3 id="1-利用率公式"><a href="#1-利用率公式" class="headerlink" title="1. 利用率公式"></a>1. 利用率公式</h3><p>信道利用率（$U$）表示有效传输时间占总周期时间的比例，公式如下：</p>
-<script type="math/tex; mode=display">U \approx \frac{T_D}{RTT + T_D + T_A}</script><p>其中：</p>
+<h2 id="二、停止-等待协议的信道利用率">二、停止 - 等待协议的信道利用率</h2>
+<h3 id="1-利用率公式">1. 利用率公式</h3>
+<p>信道利用率（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>U</mi></mrow><annotation encoding="application/x-tex">U</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span></span></span></span>）表示有效传输时间占总周期时间的比例，公式如下：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>≈</mo><mfrac><msub><mi>T</mi><mi>D</mi></msub><mrow><mi>R</mi><mi>T</mi><mi>T</mi><mo>+</mo><msub><mi>T</mi><mi>D</mi></msub><mo>+</mo><msub><mi>T</mi><mi>A</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">U \approx \frac{T_D}{RTT + T_D + T_A}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.836em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>其中：</p>
 <ul>
-<li>$T_D$：数据分组发送时延（发送分组所需时间）</li>
-<li>$RTT$：往返时间（分组从发送到接收ACK的总时间）</li>
-<li>$T_A$：ACK分组发送时延（通常远小于$T_D$，可忽略）</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：数据分组发送时延（发送分组所需时间）</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>T</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">RTT</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span></span></span></span>：往返时间（分组从发送到接收ACK的总时间）</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>A</mi></msub></mrow><annotation encoding="application/x-tex">T_A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>：ACK分组发送时延（通常远小于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，可忽略）</li>
 </ul>
 <p>简化公式为：</p>
-<script type="math/tex; mode=display">U \approx \frac{T_D}{RTT + T_D}</script><h3 id="2-核心缺陷"><a href="#2-核心缺陷" class="headerlink" title="2. 核心缺陷"></a>2. 核心缺陷</h3><p>当$RTT$远大于$T_D$（如卫星链路）时，信道利用率极低；若出现重传，利用率会进一步下降 —— 这也是 GBN 和 SR 协议产生的核心原因（弥补 SW 利用率低的缺陷）。</p>
-<h2 id="三、相关协议对比（GBN-与-SR）"><a href="#三、相关协议对比（GBN-与-SR）" class="headerlink" title="三、相关协议对比（GBN 与 SR）"></a>三、相关协议对比（GBN 与 SR）</h2><p>文档虽未详细展开 GBN 和 SR 协议，但明确其设计目标是 “解决 SW 信道利用率低的问题”，三者核心差异如下：</p>
-<div class="table-container">
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>U</mi><mo>≈</mo><mfrac><msub><mi>T</mi><mi>D</mi></msub><mrow><mi>R</mi><mi>T</mi><mi>T</mi><mo>+</mo><msub><mi>T</mi><mi>D</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">U \approx \frac{T_D}{RTT + T_D}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">U</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.1963em;vertical-align:-0.836em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3603em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.836em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<h3 id="2-核心缺陷">2. 核心缺陷</h3>
+<p>当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>T</mi><mi>T</mi></mrow><annotation encoding="application/x-tex">RTT</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">RTT</span></span></span></span>远大于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">T_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>（如卫星链路）时，信道利用率极低；若出现重传，利用率会进一步下降 —— 这也是 GBN 和 SR 协议产生的核心原因（弥补 SW 利用率低的缺陷）。</p>
+<h2 id="三、相关协议对比（GBN-与-SR）">三、相关协议对比（GBN 与 SR）</h2>
+<p>文档虽未详细展开 GBN 和 SR 协议，但明确其设计目标是 “解决 SW 信道利用率低的问题”，三者核心差异如下：</p>
 <table>
 <thead>
 <tr>
@@ -416,8 +424,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h2><p>停止 - 等待协议是可靠传输的 “基础模型”，通过 “停等确认 + 超时重传 + 分组编号” 实现数据可靠交付，优点是逻辑简单、易于实现，缺点是信道利用率极低（尤其长时延链路）。GBN 和 SR 协议在此基础上优化，通过 “连续发送 + 选择性重传” 提升利用率，但复杂度相应增加。三者共同构成了计算机网络各层可靠传输的核心技术框架，需结合场景选择适用协议</p>
+<h2 id="四、总结">四、总结</h2>
+<p>停止 - 等待协议是可靠传输的 “基础模型”，通过 “停等确认 + 超时重传 + 分组编号” 实现数据可靠交付，优点是逻辑简单、易于实现，缺点是信道利用率极低（尤其长时延链路）。GBN 和 SR 协议在此基础上优化，通过 “连续发送 + 选择性重传” 提升利用率，但复杂度相应增加。三者共同构成了计算机网络各层可靠传输的核心技术框架，需结合场景选择适用协议</p>
 
                 
               </div>

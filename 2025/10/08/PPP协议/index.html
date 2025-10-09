@@ -19,12 +19,12 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="一、协议基础与定位 核心定位：PPP是目前使用最广泛的点对点数据链路层协议，主要用于解决用户设备与ISP（互联网服务提供商，如中国电信、中国联通、中国移动）之间的网络接入问题，是用户接入因特网的关键数据链路层技术，常与PPPoE（PPP over Ethernet）协议配合使用。 发展与标准：由因特网工程任务组（IETF）于1992年制定，经1993-1994年修订后成为因特网正式标准，核心标准文">
+    <meta name="description" content="一、协议基础与定位  核心定位：PPP是目前使用最广泛的点对点数据链路层协议，主要用于解决用户设备与ISP（互联网服务提供商，如中国电信、中国联通、中国移动）之间的网络接入问题，是用户接入因特网的关键数据链路层技术，常与PPPoE（PPP over Ethernet）协议配合使用。 发展与标准：由因特网工程任务组（IETF）于1992年制定，经1993-1994年修订后成为因特网正式标准，核心标准">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PPP协议">
 <meta property="og:url" content="https://hellowydwyd.github.io/2025/10/08/PPP%E5%8D%8F%E8%AE%AE/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="一、协议基础与定位 核心定位：PPP是目前使用最广泛的点对点数据链路层协议，主要用于解决用户设备与ISP（互联网服务提供商，如中国电信、中国联通、中国移动）之间的网络接入问题，是用户接入因特网的关键数据链路层技术，常与PPPoE（PPP over Ethernet）协议配合使用。 发展与标准：由因特网工程任务组（IETF）于1992年制定，经1993-1994年修订后成为因特网正式标准，核心标准文">
+<meta property="og:description" content="一、协议基础与定位  核心定位：PPP是目前使用最广泛的点对点数据链路层协议，主要用于解决用户设备与ISP（互联网服务提供商，如中国电信、中国联通、中国移动）之间的网络接入问题，是用户接入因特网的关键数据链路层技术，常与PPPoE（PPP over Ethernet）协议配合使用。 发展与标准：由因特网工程任务组（IETF）于1992年制定，经1993-1994年修订后成为因特网正式标准，核心标准">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-10-08T05:52:13.000Z">
 <meta property="article:modified_time" content="2025-10-08T05:52:39.355Z">
@@ -98,11 +98,7 @@
 
 
   
-<!-- hexo injector head_end start -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
 </head>
 
 
@@ -310,12 +306,13 @@
             
               <div class="markdown-body">
                 
-                <h2 id="一、协议基础与定位"><a href="#一、协议基础与定位" class="headerlink" title="一、协议基础与定位"></a>一、协议基础与定位</h2><ol>
+                <h2 id="一、协议基础与定位">一、协议基础与定位</h2>
+<ol>
 <li><strong>核心定位</strong>：PPP是目前使用最广泛的<strong>点对点数据链路层协议</strong>，主要用于解决用户设备与ISP（互联网服务提供商，如中国电信、中国联通、中国移动）之间的网络接入问题，是用户接入因特网的关键数据链路层技术，常与PPPoE（PPP over Ethernet）协议配合使用。</li>
 <li><strong>发展与标准</strong>：由因特网工程任务组（IETF）于1992年制定，经1993-1994年修订后成为因特网正式标准，核心标准文档为<strong>RFC1661</strong>（《The Point-to-Point Protocol (PPP)》）和<strong>RFC1662</strong>（《PPP in HDLC-like Framing》），此外还有多个扩展标准（如RFC1598定义PPP在X.25中的应用、RFC1618定义PPP over ISDN等）。</li>
 </ol>
-<h2 id="二、协议核心构成"><a href="#二、协议核心构成" class="headerlink" title="二、协议核心构成"></a>二、协议核心构成</h2><p>PPP协议通过三部分协同工作，实现点对点链路的高效数据传输，具体如下：</p>
-<div class="table-container">
+<h2 id="二、协议核心构成">二、协议核心构成</h2>
+<p>PPP协议通过三部分协同工作，实现点对点链路的高效数据传输，具体如下：</p>
 <table>
 <thead>
 <tr>
@@ -342,9 +339,9 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="三、PPP帧格式"><a href="#三、PPP帧格式" class="headerlink" title="三、PPP帧格式"></a>三、PPP帧格式</h2><p>PPP帧分为首部、数据部分和尾部，各字段功能与规格明确，具体结构如下：</p>
-<h3 id="1-帧结构总览"><a href="#1-帧结构总览" class="headerlink" title="1. 帧结构总览"></a>1. 帧结构总览</h3><div class="table-container">
+<h2 id="三、PPP帧格式">三、PPP帧格式</h2>
+<p>PPP帧分为首部、数据部分和尾部，各字段功能与规格明确，具体结构如下：</p>
+<h3 id="1-帧结构总览">1. 帧结构总览</h3>
 <table>
 <thead>
 <tr>
@@ -381,8 +378,7 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h3 id="2-协议（P）字段关键取值"><a href="#2-协议（P）字段关键取值" class="headerlink" title="2. 协议（P）字段关键取值"></a>2. 协议（P）字段关键取值</h3><div class="table-container">
+<h3 id="2-协议（P）字段关键取值">2. 协议（P）字段关键取值</h3>
 <table>
 <thead>
 <tr>
@@ -409,10 +405,12 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="四、透明传输机制"><a href="#四、透明传输机制" class="headerlink" title="四、透明传输机制"></a>四、透明传输机制</h2><p>透明传输是指确保帧内数据部分中的<code>0x7E</code>（帧定界符）、控制字符等不被误识别为帧边界，PPP针对不同链路类型采用两种方法：</p>
-<h3 id="1-面向字节的异步链路：字节填充法（插入转义字符）"><a href="#1-面向字节的异步链路：字节填充法（插入转义字符）" class="headerlink" title="1. 面向字节的异步链路：字节填充法（插入转义字符）"></a>1. 面向字节的异步链路：字节填充法（插入转义字符）</h3><ul>
-<li><strong>发送方处理规则</strong>：<ol>
+<h2 id="四、透明传输机制">四、透明传输机制</h2>
+<p>透明传输是指确保帧内数据部分中的<code>0x7E</code>（帧定界符）、控制字符等不被误识别为帧边界，PPP针对不同链路类型采用两种方法：</p>
+<h3 id="1-面向字节的异步链路：字节填充法（插入转义字符）">1. 面向字节的异步链路：字节填充法（插入转义字符）</h3>
+<ul>
+<li><strong>发送方处理规则</strong>：
+<ol>
 <li>若数据中出现<code>0x7E</code>（定界符），替换为<code>0x7D</code>（转义字符）+<code>0x5E</code>；</li>
 <li>若数据中出现<code>0x7D</code>（转义字符），替换为<code>0x7D</code>+<code>0x5D</code>；</li>
 <li>若数据中出现ASCII控制字符（数值＜<code>0x20</code>），在该字符前插入<code>0x7D</code>，并将字符编码+<code>0x20</code>。</li>
@@ -420,36 +418,43 @@
 </li>
 <li><strong>接收方处理规则</strong>：执行反向变换，恢复原始数据（如<code>0x7D+0x5E</code>还原为<code>0x7E</code>，<code>0x7D+0x5D</code>还原为<code>0x7D</code>）。</li>
 </ul>
-<h3 id="2-面向比特的同步链路：比特填充法（插入比特0）"><a href="#2-面向比特的同步链路：比特填充法（插入比特0）" class="headerlink" title="2. 面向比特的同步链路：比特填充法（插入比特0）"></a>2. 面向比特的同步链路：比特填充法（插入比特0）</h3><ul>
+<h3 id="2-面向比特的同步链路：比特填充法（插入比特0）">2. 面向比特的同步链路：比特填充法（插入比特0）</h3>
+<ul>
 <li><strong>发送方处理规则</strong>：扫描数据部分的比特流，每发现5个连续的“1”，立即插入1个“0”（例：<code>0111110</code>→<code>01111100</code>）；</li>
 <li><strong>接收方处理规则</strong>：扫描数据部分的比特流，每发现5个连续的“1”，删除其后的1个“0”，恢复原始比特流。</li>
 </ul>
-<h2 id="五、差错检测机制"><a href="#五、差错检测机制" class="headerlink" title="五、差错检测机制"></a>五、差错检测机制</h2><p>PPP采用<strong>帧检验序列（FCS）</strong> 实现差错检测，具体流程：</p>
+<h2 id="五、差错检测机制">五、差错检测机制</h2>
+<p>PPP采用<strong>帧检验序列（FCS）</strong> 实现差错检测，具体流程：</p>
 <ol>
 <li>发送方：基于CRC-CCITT算法，对“地址（A）+控制（C）+协议（P）+数据部分”计算FCS值，封装到FCS字段；</li>
 <li>接收方：收到帧后，对相同字段重新计算FCS，与帧中FCS字段对比——若一致则接收帧，若不一致则丢弃帧；</li>
 <li>注意：PPP数据链路层<strong>不提供可靠传输服务</strong>（无重传机制），可靠性需由上层协议（如TCP）保障。</li>
 </ol>
-<h2 id="六、工作状态与链路建立流程"><a href="#六、工作状态与链路建立流程" class="headerlink" title="六、工作状态与链路建立流程"></a>六、工作状态与链路建立流程</h2><p>PPP链路建立需经历“物理层连接→LCP配置→鉴别→NCP配置→数据通信→链路终止”六个阶段，具体流程如下：</p>
+<h2 id="六、工作状态与链路建立流程">六、工作状态与链路建立流程</h2>
+<p>PPP链路建立需经历“物理层连接→LCP配置→鉴别→NCP配置→数据通信→链路终止”六个阶段，具体流程如下：</p>
 <ol>
 <li><strong>静止状态</strong>：链路未建立，无物理层连接；</li>
 <li><strong>物理层连接建立</strong>：检测到载波信号，物理层链路接通；</li>
-<li><strong>LCP配置协商</strong>：<ul>
+<li><strong>LCP配置协商</strong>：
+<ul>
 <li>双方交换LCP分组，协商链路参数（如最大帧长、是否启用鉴别）；</li>
 <li>协商成功进入下一阶段，失败则终止链路；</li>
 </ul>
 </li>
-<li><strong>鉴别阶段</strong>：<ul>
+<li><strong>鉴别阶段</strong>：
+<ul>
 <li>可选流程，支持三种方式：无需鉴别、口令鉴别协议（PAP）、挑战握手鉴别协议（CHAP）；</li>
 <li>鉴别成功进入NCP配置，失败则终止链路；</li>
 </ul>
 </li>
-<li><strong>NCP配置阶段</strong>：<ul>
+<li><strong>NCP配置阶段</strong>：
+<ul>
 <li>双方交换网络层特定的NCP分组（如IP场景下的IPCP），配置网络层参数（如分配IP地址）；</li>
 <li>配置完成后，链路进入“网络打开”状态，可进行数据通信；</li>
 </ul>
 </li>
-<li><strong>链路终止</strong>：<ul>
+<li><strong>链路终止</strong>：
+<ul>
 <li>触发条件：载波停止、出现故障、收到终止请求；</li>
 <li>终止后返回“静止状态”。</li>
 </ul>

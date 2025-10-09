@@ -19,12 +19,12 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="《Video Understanding with Large Language Models: A Survey》PDF总结一、研究背景与意义 视频内容增长需求：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。 LLM的赋能潜力：大型语言模型（LLMs">
+    <meta name="description" content="《Video Understanding with Large Language Models: A Survey》PDF总结 一、研究背景与意义  视频内容增长需求：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。 LLM的赋能潜力：大型语言模型（LL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Video Understanding with Large Language Models: A Survey">
 <meta property="og:url" content="https://hellowydwyd.github.io/2025/09/09/Video-Understanding-with-Large-Language-Models-A-Survey/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="《Video Understanding with Large Language Models: A Survey》PDF总结一、研究背景与意义 视频内容增长需求：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。 LLM的赋能潜力：大型语言模型（LLMs">
+<meta property="og:description" content="《Video Understanding with Large Language Models: A Survey》PDF总结 一、研究背景与意义  视频内容增长需求：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。 LLM的赋能潜力：大型语言模型（LL">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-09-09T12:47:39.000Z">
 <meta property="article:modified_time" content="2025-09-09T12:47:39.549Z">
@@ -98,11 +98,7 @@
 
 
   
-<!-- hexo injector head_end start -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
 </head>
 
 
@@ -310,12 +306,14 @@
             
               <div class="markdown-body">
                 
-                <h1 id="《Video-Understanding-with-Large-Language-Models-A-Survey》PDF总结"><a href="#《Video-Understanding-with-Large-Language-Models-A-Survey》PDF总结" class="headerlink" title="《Video Understanding with Large Language Models: A Survey》PDF总结"></a>《Video Understanding with Large Language Models: A Survey》PDF总结</h1><h2 id="一、研究背景与意义"><a href="#一、研究背景与意义" class="headerlink" title="一、研究背景与意义"></a>一、研究背景与意义</h2><ol>
+                <h1>《Video Understanding with Large Language Models: A Survey》PDF总结</h1>
+<h2 id="一、研究背景与意义">一、研究背景与意义</h2>
+<ol>
 <li><strong>视频内容增长需求</strong>：在线视频平台快速扩张，监控、娱乐、自动驾驶等领域摄像头普及，视频成为主流媒体形式，每日新增数百万条视频。人工处理此类海量内容耗时费力，亟需高效的视频理解工具自动识别、分析视频内容，降低人力成本。</li>
 <li><strong>LLM的赋能潜力</strong>：大型语言模型（LLMs）在语言及多模态任务中表现出色，将其应用于视频理解（形成Vid-LLMs），可实现开放式多粒度（抽象、时间、时空）推理与常识结合，为视频理解提供新方向。</li>
 </ol>
-<h2 id="二、视频理解方法发展历程"><a href="#二、视频理解方法发展历程" class="headerlink" title="二、视频理解方法发展历程"></a>二、视频理解方法发展历程</h2><p>视频理解方法演进分为四个阶段，任务解决能力逐步提升，具体如下：</p>
-<div class="table-container">
+<h2 id="二、视频理解方法发展历程">二、视频理解方法发展历程</h2>
+<p>视频理解方法演进分为四个阶段，任务解决能力逐步提升，具体如下：</p>
 <table>
 <thead>
 <tr>
@@ -357,51 +355,62 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="三、基础概念与任务分类"><a href="#三、基础概念与任务分类" class="headerlink" title="三、基础概念与任务分类"></a>三、基础概念与任务分类</h2><h3 id="（一）视频理解核心任务"><a href="#（一）视频理解核心任务" class="headerlink" title="（一）视频理解核心任务"></a>（一）视频理解核心任务</h3><p>按理解粒度与语言参与度，任务分为三类：</p>
+<h2 id="三、基础概念与任务分类">三、基础概念与任务分类</h2>
+<h3 id="（一）视频理解核心任务">（一）视频理解核心任务</h3>
+<p>按理解粒度与语言参与度，任务分为三类：</p>
 <ol>
-<li><strong>抽象理解任务</strong>：侧重整体语义理解，无需精细时空定位<ul>
+<li><strong>抽象理解任务</strong>：侧重整体语义理解，无需精细时空定位
+<ul>
 <li>视频分类与动作识别：按类别标签分类视频/动作，数据集如UCF-101、Kinetics-400，指标为Top-K准确率。</li>
 <li>文本-视频检索：根据文本描述匹配视频片段，数据集如MSRVTT、DiDeMo，指标为Recall@K。</li>
 <li>视频文本摘要/字幕生成：生成视频 concise 摘要或连贯描述，数据集如VideoInstruct-100K、MSVD，指标为BLEU、METEOR、CIDEr。</li>
 <li>视频问答（VQA）：基于视频回答文本问题，数据集如TVQA、NExT-QA，指标为Top-1/Top-K准确率。</li>
 </ul>
 </li>
-<li><strong>时间理解任务</strong>：关注视频时序维度的事件定位与提取<ul>
+<li><strong>时间理解任务</strong>：关注视频时序维度的事件定位与提取
+<ul>
 <li>视频摘要/精彩片段检测：浓缩长视频或提取关键片段，数据集如SumMe、TVSum，指标为F1-score。</li>
 <li>时序动作定位/提案生成：识别动作发生的时间区间或生成候选区间，数据集如THUMOS’14、ActivityNet，指标为tIoU、Recall@K。</li>
 <li>视频时序接地：根据文本查询定位视频特定时刻，数据集如Charades-STA，指标为R1@0.5/R1@0.7。</li>
 </ul>
 </li>
-<li><strong>时空理解任务</strong>：结合空间与时间维度的精细理解<ul>
+<li><strong>时空理解任务</strong>：结合空间与时间维度的精细理解
+<ul>
 <li>目标跟踪/重识别：持续追踪目标或跨帧/视角匹配目标，数据集如OTB、Market-1501，指标为精度、成功率。</li>
 <li>视频显著性检测/目标分割：识别视觉重点区域或分割目标，数据集如DHF1K、YouTube-VOS，指标为AUC-J、mAP。</li>
 <li>时空接地：根据查询定位视频中目标的时空位置，数据集如Vid-STG、Ego4D-MQ。</li>
 </ul>
 </li>
 </ol>
-<h3 id="（二）LLM基础背景"><a href="#（二）LLM基础背景" class="headerlink" title="（二）LLM基础背景"></a>（二）LLM基础背景</h3><ol>
-<li><strong>核心公式</strong>：LLM学习文本序列的联合概率分布，通过自回归范式生成下一个token：<ul>
-<li>联合分布：(p(x<em>{1: L})=\prod</em>{i=1}^{L} p(x<em>{i} | x</em>{1: i-1}))（(L)为序列长度）</li>
-<li>自回归生成：(\mathcal{M}(x<em>{1: i-1})=p(x</em>{i} | x_{1: i-1}))（(\mathcal{M})为LLM）</li>
+<h3 id="（二）LLM基础背景">（二）LLM基础背景</h3>
+<ol>
+<li><strong>核心公式</strong>：LLM学习文本序列的联合概率分布，通过自回归范式生成下一个token：
+<ul>
+<li>联合分布：(p(x_{1: L})=\prod_{i=1}^{L} p(x_{i} | x_{1: i-1}))（(L)为序列长度）</li>
+<li>自回归生成：(\mathcal{M}(x_{1: i-1})=p(x_{i} | x_{1: i-1}))（(\mathcal{M})为LLM）</li>
 </ul>
 </li>
 <li><strong>解码策略</strong>：包括贪心解码（选概率最高token）、采样策略（随机选token以保证多样性）。</li>
-<li><strong>关键特性</strong>：<ul>
+<li><strong>关键特性</strong>：
+<ul>
 <li>缩放定律：模型参数、训练数据量、计算资源扩展时，性能呈规律性增长。</li>
 <li>涌现能力：参数与数据超阈值后，出现上下文学习、链式推理（CoT）、指令跟随等能力。</li>
 <li>多模态扩展：多模态LLM（MLLMs）通过模态编码器、跨模态对齐器与LLM核心结合，处理视觉-语言交互。</li>
 </ul>
 </li>
 </ol>
-<h2 id="四、Vid-LLMs分类与训练策略"><a href="#四、Vid-LLMs分类与训练策略" class="headerlink" title="四、Vid-LLMs分类与训练策略"></a>四、Vid-LLMs分类与训练策略</h2><h3 id="（一）分类体系"><a href="#（一）分类体系" class="headerlink" title="（一）分类体系"></a>（一）分类体系</h3><p>基于视频输入处理方式，Vid-LLMs分为三类，每类按LLM功能进一步细分：</p>
+<h2 id="四、Vid-LLMs分类与训练策略">四、Vid-LLMs分类与训练策略</h2>
+<h3 id="（一）分类体系">（一）分类体系</h3>
+<p>基于视频输入处理方式，Vid-LLMs分为三类，每类按LLM功能进一步细分：</p>
 <ol>
-<li><strong>Video Analyzer × LLM</strong>：视频分析器将视频转为文本（如字幕、目标跟踪结果），输入LLM<ul>
+<li><strong>Video Analyzer × LLM</strong>：视频分析器将视频转为文本（如字幕、目标跟踪结果），输入LLM
+<ul>
 <li>LLM作为总结器（Summarizer）：对分析文本总结，信息单向流动，如LaViLa、VLog。</li>
 <li>LLM作为管理器（Manager）：协调调用多个分析器，支持多轮交互，如ViperGPT、HuggingGPT。</li>
 </ul>
 </li>
-<li><strong>Video Embedder × LLM</strong>：视频嵌入器将视频转为向量表示（嵌入），通过适配器映射到LLM语义空间<ul>
+<li><strong>Video Embedder × LLM</strong>：视频嵌入器将视频转为向量表示（嵌入），通过适配器映射到LLM语义空间
+<ul>
 <li>LLM作为文本解码器（Text Decoder）：将嵌入解码为文本（如问答、字幕），如Video-LLaMA、Video-ChatGPT。</li>
 <li>LLM作为回归器（Regressor）：预测连续值（如时间戳、边界框坐标），如VTimeLLM、SeViLA。</li>
 <li>LLM作为隐藏层（Hidden Layer）：连接任务特定头完成回归，不直接输出文本，如GPT4Video、VTG-LLM。</li>
@@ -409,9 +418,11 @@
 </li>
 <li><strong>(Analyzer + Embedder) × LLM</strong>：混合使用分析器（文本）与嵌入器（向量），输入LLM，如Vid2Seq、VideoChat，LLM功能可灵活为上述五种类型。</li>
 </ol>
-<h3 id="（二）训练策略"><a href="#（二）训练策略" class="headerlink" title="（二）训练策略"></a>（二）训练策略</h3><ol>
+<h3 id="（二）训练策略">（二）训练策略</h3>
+<ol>
 <li><strong>无训练（Training-free）</strong>：基于LLM的零样本、上下文学习能力，无需微调参数，多为Video Analyzer × LLM类，如SlowFast-LLaVA。</li>
-<li><strong>微调（Fine-tuning）</strong>：主要用于Video Embedder × LLM类，按适配器类型分为四种：<ul>
+<li><strong>微调（Fine-tuning）</strong>：主要用于Video Embedder × LLM类，按适配器类型分为四种：
+<ul>
 <li>全量微调：更新LLM所有参数，性能优但计算成本高，如AV-LLM。</li>
 <li>连接型适配器微调：冻结LLM与嵌入器，仅更新模态对齐适配器（如MLP、Q-former）。</li>
 <li>插入型适配器微调：在LLM内部插入适配器（如LoRA），改变LLM行为，适用于回归任务。</li>
@@ -419,8 +430,9 @@
 </ul>
 </li>
 </ol>
-<h2 id="五、基准测试与评估方法"><a href="#五、基准测试与评估方法" class="headerlink" title="五、基准测试与评估方法"></a>五、基准测试与评估方法</h2><h3 id="（一）主要基准数据集"><a href="#（一）主要基准数据集" class="headerlink" title="（一）主要基准数据集"></a>（一）主要基准数据集</h3><p>涵盖不同任务与场景，关键信息如下：</p>
-<div class="table-container">
+<h2 id="五、基准测试与评估方法">五、基准测试与评估方法</h2>
+<h3 id="（一）主要基准数据集">（一）主要基准数据集</h3>
+<p>涵盖不同任务与场景，关键信息如下：</p>
 <table>
 <thead>
 <tr>
@@ -476,31 +488,37 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h3 id="（二）评估方法"><a href="#（二）评估方法" class="headerlink" title="（二）评估方法"></a>（二）评估方法</h3><ol>
+<h3 id="（二）评估方法">（二）评估方法</h3>
+<ol>
 <li><strong>闭卷评估</strong>：预定义答案/格式，如选择题（准确率）、结构化输出（CIDEr、ROUGE），适用于基础任务。</li>
 <li><strong>开卷评估</strong>：无预定义选项，用GPT-3.5/4对比预测与参考答案，适用于复杂推理（如MovieChat-1K、NExT-QA），但存在版本依赖、提示敏感性问题。</li>
-<li><strong>其他评估</strong>：<ul>
+<li><strong>其他评估</strong>：
+<ul>
 <li>时空精细评估：密集字幕（BLEU）、时序接地（tIoU）、目标跟踪（精度）。</li>
 <li>定性评估：错误分析、注意力可视化、模型自解释、人工评估。</li>
 </ul>
 </li>
 </ol>
-<h3 id="（三）性能分析"><a href="#（三）性能分析" class="headerlink" title="（三）性能分析"></a>（三）性能分析</h3><ol>
+<h3 id="（三）性能分析">（三）性能分析</h3>
+<ol>
 <li><strong>关键影响因素</strong>：大参数LLM（如34B的IG-VLM）、强视觉嵌入器（EVA-CLIP、ViT-G）、多帧采样（100+帧）、复杂适配器（Q-former、跨注意力）提升性能。</li>
-<li><strong>代表性结果</strong>：<ul>
+<li><strong>代表性结果</strong>：
+<ul>
 <li>密集字幕任务：Streaming GIT在ActivityNet Captions上CIDEr达41.2，超传统模型。</li>
 <li>开卷VQA：IG-VLM在MSVD-QA、MSRVTT-QA、ActivityNet-QA上准确率分别为76.7%、62.7%、57.3%，居前列。</li>
 </ul>
 </li>
 </ol>
-<h2 id="六、应用场景与未来方向"><a href="#六、应用场景与未来方向" class="headerlink" title="六、应用场景与未来方向"></a>六、应用场景与未来方向</h2><h3 id="（一）核心应用领域"><a href="#（一）核心应用领域" class="headerlink" title="（一）核心应用领域"></a>（一）核心应用领域</h3><ol>
+<h2 id="六、应用场景与未来方向">六、应用场景与未来方向</h2>
+<h3 id="（一）核心应用领域">（一）核心应用领域</h3>
+<ol>
 <li><strong>媒体娱乐</strong>：视频平台搜索推荐、自动字幕生成、视频编辑（如广告剪辑）。</li>
 <li><strong>交互与用户系统</strong>：虚拟教育（智能 tutors）、手语翻译、游戏动态剧情生成、AR/VR叙事。</li>
 <li><strong>医疗与安全</strong>：医疗视频诊断辅助、 surveillance 异常行为检测、自动驾驶路况理解。</li>
 <li><strong>其他</strong>：视频生成模型评估、边缘计算部署、联邦学习隐私保护。</li>
 </ol>
-<h3 id="（二）挑战与未来方向"><a href="#（二）挑战与未来方向" class="headerlink" title="（二）挑战与未来方向"></a>（二）挑战与未来方向</h3><ol>
+<h3 id="（二）挑战与未来方向">（二）挑战与未来方向</h3>
+<ol>
 <li><strong>精细粒度理解</strong>：缺乏数据集，帧级分析计算成本高，需提升语义深度（如情感、场景动态）。</li>
 <li><strong>长视频理解</strong>：难以捕捉长时间跨度事件，需优化关键事件检测与注意力机制。</li>
 <li><strong>多模态融合</strong>：视觉、音频、文本的时空对齐难，缺乏高质量多模态数据集。</li>
@@ -508,8 +526,9 @@
 <li><strong>工业部署</strong>：需通过模型压缩、token合并、模块化设计，平衡效率与性能。</li>
 <li><strong>伦理问题</strong>：隐私泄露（视频敏感信息）、内容滥用（误导性生成）、数据偏见，需加强数据治理与伦理规范。</li>
 </ol>
-<h2 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h2><p>该综述系统梳理了Vid-LLMs的发展背景、分类体系、训练策略、评估基准与应用方向，指出其通过LLM赋能，实现了从传统视频理解到多粒度、类人推理的突破。当前Vid-LLMs在抽象与时间理解任务中表现突出，但在长视频、多模态融合、幻觉抑制等方面仍需突破，未来需结合高效训练、数据集扩展与伦理规范，推动其在实际场景中的规模化应用。</p>
-<p>此外，作者提供了GitHub仓库（<a target="_blank" rel="noopener" href="https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。">https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。</a></p>
+<h2 id="七、总结">七、总结</h2>
+<p>该综述系统梳理了Vid-LLMs的发展背景、分类体系、训练策略、评估基准与应用方向，指出其通过LLM赋能，实现了从传统视频理解到多粒度、类人推理的突破。当前Vid-LLMs在抽象与时间理解任务中表现突出，但在长视频、多模态融合、幻觉抑制等方面仍需突破，未来需结合高效训练、数据集扩展与伦理规范，推动其在实际场景中的规模化应用。</p>
+<p>此外，作者提供了GitHub仓库（<a target="_blank" rel="noopener" href="https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding%EF%BC%89%EF%BC%8C%E6%B1%87%E6%80%BBVid-LLMs%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90%EF%BC%8C%E4%BE%BF%E4%BA%8E%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%A0%94%E7%A9%B6%E3%80%82">https://github.com/yunlong10/Awesome-LLMs-forVideo-Understanding），汇总Vid-LLMs相关资源，便于进一步研究。</a></p>
 
                 
               </div>
