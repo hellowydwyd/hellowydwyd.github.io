@@ -6,7 +6,7 @@
   <link href="https://hellowydwyd.github.io/atom.xml" rel="self"/>
   
   <link href="https://hellowydwyd.github.io/"/>
-  <updated>2025-10-09T06:29:28.451Z</updated>
+  <updated>2025-10-09T07:04:12.860Z</updated>
   <id>https://hellowydwyd.github.io/</id>
   
   <author>
@@ -15,6 +15,23 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>评估方法</title>
+    <link href="https://hellowydwyd.github.io/2025/10/09/%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/"/>
+    <id>https://hellowydwyd.github.io/2025/10/09/%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/</id>
+    <published>2025-10-09T07:03:29.000Z</published>
+    <updated>2025-10-09T07:04:12.860Z</updated>
+    
+    
+    
+    
+    <category term="机器学习" scheme="https://hellowydwyd.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+    <category term="机器学习" scheme="https://hellowydwyd.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>经验误差与过拟合</title>
@@ -521,9 +538,9 @@
     <category term="论文阅读" scheme="https://hellowydwyd.github.io/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/"/>
     
     
-    <category term="论文阅读" scheme="https://hellowydwyd.github.io/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/"/>
-    
     <category term="视频理解" scheme="https://hellowydwyd.github.io/tags/%E8%A7%86%E9%A2%91%E7%90%86%E8%A7%A3/"/>
+    
+    <category term="论文阅读" scheme="https://hellowydwyd.github.io/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/"/>
     
   </entry>
   
@@ -550,38 +567,9 @@
     <category term="论文阅读" scheme="https://hellowydwyd.github.io/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/"/>
     
     
+    <category term="视频理解" scheme="https://hellowydwyd.github.io/tags/%E8%A7%86%E9%A2%91%E7%90%86%E8%A7%A3/"/>
+    
     <category term="论文阅读" scheme="https://hellowydwyd.github.io/tags/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/"/>
-    
-    <category term="视频理解" scheme="https://hellowydwyd.github.io/tags/%E8%A7%86%E9%A2%91%E7%90%86%E8%A7%A3/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>looongLLaVA</title>
-    <link href="https://hellowydwyd.github.io/2025/09/03/looongLLaVA/"/>
-    <id>https://hellowydwyd.github.io/2025/09/03/looongLLaVA/</id>
-    <published>2025-09-03T01:16:57.000Z</published>
-    <updated>2025-09-08T11:38:54.252Z</updated>
-    
-    <content type="html"><![CDATA[<h1>LongLLaVA 论文详细总结</h1><h2 id="一、研究背景与核心挑战">一、研究背景与核心挑战</h2><h3 id="1-1-多模态大语言模型（MLLMs）的发展瓶颈">1.1 多模态大语言模型（MLLMs）的发展瓶颈</h3><p>现有MLLMs在单图像任务上已能媲美闭源模型（如GPT-4V、Gemini-1.5），但在<strong>多图像场景</strong>（长视频理解、高分辨率图像分析、多模态智能体决策）中存在两大核心痛点：</p><ul><li><strong>性能退化</strong>：随着图像数量增加（如视频帧、高分辨率图像子图），模型对时间关联（如视频帧时序逻辑）、语义关联（如多图推理）任务的处理能力显著下降，开源模型与闭源模型差距悬殊。</li><li><strong>计算与内存压力</strong>：以CLIP视觉编码器为例，单张336像素图像生成576个tokens，3分钟1FPS视频需103,680个tokens；Transformer架构计算复杂度随序列长度呈二次增长，KV-Cache存储进一步加剧内存负担，单张80GB GPU（Int8量化）下多数开源模型最多处理384张图像（如图1所示，LongVA-7B、Qwen-VL-7B等均低于384张）。</li></ul><h3 id="1-2-现有解决方案的不足">1.2 现有解决方案的不足</h3><ul><li><strong>性能优化方向</strong>：部分研究通过构建长上下文训练数据（如MileBench）、改进训练策略（如环注意力）缓解性能退化，但未解决计算效率问题。</li><li><strong>效率优化方向</strong>：纯Mamba架构虽将计算复杂度降至线性，却不支持多图像场景下的上下文学习（ICL）；多节点优化（如减少通信成本）仅降低分布式开销，未解决单卡计算压力。</li></ul><h2 id="二、核心解决方案：LongLLaVA-设计体系">二、核心解决方案：LongLLaVA 设计体系</h2><p>LongLLaVA是首个<strong>混合架构MLLM</strong>，通过“多模态架构优化、数据处理协议设计、渐进式训练策略”三维度协同，平衡多图像长上下文场景的效率与效果，核心目标是在单张80GB GPU上高效处理近千张图像。</p><h3 id="2-1-混合多模态架构">2.1 混合多模态架构</h3><p>架构围绕“视觉编码器-投影器-混合LLM”三大组件设计，关键创新在于<strong>视觉token压缩</strong>与<strong>Transformer+Mamba混合LLM</strong>：</p><table><thead><tr><th>组件</th><th>设计细节</th><th>核心作用</th></tr></thead><tbody><tr><td>视觉编码器</td><td>采用CLIP-ViT-Base，引入<strong>双线性2D池化</strong>（2×2 patch聚合）</td><td>将单图像tokens从576压缩至144，保留空间关系，性能损失＜2.2%，优于1D池化（精度提升0.1~1.5%）</td></tr><tr><td>投影器</td><td>两层MLP网络</td><td>将视觉特征映射至LLM文本嵌入空间，确保跨模态语义对齐</td></tr><tr><td>混合LLM</td><td>1. 架构比例：7:1集成Transformer与Mamba层<br>2. 辅助优化：MoE（每两层16个专家，选Top-2）、GQA、SwiGLU激活、省略位置嵌入<br>3. 参数规模：总参数53B，推理时激活参数13B</td><td>1. 兼顾Transformer的ICL能力与Mamba的线性计算复杂度<br>2. 降低内存占用，提升长序列处理吞吐量</td></tr></tbody></table><h3 id="2-2-数据处理协议：区分图像时空依赖">2.2 数据处理协议：区分图像时空依赖</h3><p>针对不同多图像场景，设计特殊标记格式，让模型精准识别时间/空间关联，具体如下：</p><table><thead><tr><th>任务类型</th><th>格式示例</th><th>核心标记功能</th></tr></thead><tbody><tr><td>单图像</td><td><code>&lt;Image&gt;\n What is this?</code>（<code>&lt;Image&gt;</code>=<code>&lt;img&gt;[图像tokens]&lt;/img&gt;</code>）</td><td>用<code>&lt;img&gt;&lt;/img&gt;</code>包裹图像tokens，明确区分图文边界</td></tr><tr><td>多图像（语义关联）</td><td><code>&lt;Image&gt;\n This is a cat. &lt;Image&gt;\n This is a:</code></td><td>连续<code>&lt;Image&gt;</code>标记，处理多图语义推理（如物体关联）</td></tr><tr><td>视频（时间关联）</td><td><code>&lt;vid&gt;&lt;Image&gt;&lt;t&gt;&lt;Image&gt;...&lt;/vid&gt;\n What are they?</code></td><td><code>&lt;vid&gt;&lt;/vid&gt;</code>包裹视频帧，<code>&lt;t&gt;</code>分隔帧时序，体现时间依赖</td></tr><tr><td>高分辨率图像（空间关联）</td><td><code>&lt;Image&gt;\n&lt;Image&gt;\n...&lt;Image&gt;\n What are they?</code></td><td><code>\n</code>分隔子图，按“左上→右下”排列，保留子图空间位置</td></tr></tbody></table><h3 id="2-3-渐进式训练策略：四阶段能力递进">2.3 渐进式训练策略：四阶段能力递进</h3><p>从纯文本到多图像，分阶段适配模型，避免能力退化，确保复用性，各阶段数据与目标如下：</p><ol><li><strong>纯文本指令微调</strong>：用278K条数据（Evol-instruct-GPT4、WildChat、LongAlign）增强模型对长文本指令的遵循能力，仅训练LLM。</li><li><strong>单图像对齐（Stage I）</strong>：600K图像-字幕对（ALLaVA-Caption、ShareGPT4V），仅训练投影器，冻结视觉编码器与LLM，实现视觉-文本特征对齐。</li><li><strong>单图像指令微调（Stage II）</strong>：932K图像-问答对（LLaVA-1.5、Mantis-Single），冻结视觉编码器，训练投影器与LLM，得到“LongLLaVA（单图像）”，具备单图像指令遵循能力。</li><li><strong>多图像指令微调（Stage III）</strong>：<br> - 核心数据：200K（Mantis多图像）+200K（VideoChat2视频）+50K（ShareGPT4Video视频）<br> - 复用数据：200K单图像数据+50K纯文本数据（Replay组件），避免单图像/文本能力退化<br> - 子图数据：50K高分辨率图像分割子图（336×336），增强高分辨率理解<br> - 输出：最终版LongLLaVA</li></ol><h3 id="2-4-训练配置">2.4 训练配置</h3><ul><li><strong>硬件环境</strong>：3个节点，每节点8张A800 GPU，采用DeepSpeed Zero-3分布式策略。</li><li><strong>训练参数</strong>：序列长度40,960（<code>&lt;eos&gt;</code>分隔数据），余弦学习率1e-5，预热率0.03，训练轮次1。</li><li><strong>评估配置</strong>：Int8量化，温度=0，确保结果一致性。</li></ul><h2 id="三、实验结果：性能与效率双突破">三、实验结果：性能与效率双突破</h2><h3 id="3-1-核心性能指标：开源模型领先">3.1 核心性能指标：开源模型领先</h3><h4 id="3-1-1-多图像长上下文能力（MileBench、Video-MME、MVBench）">3.1.1 多图像长上下文能力（MileBench、Video-MME、MVBench）</h4><table><thead><tr><th>模型类型</th><th>代表模型</th><th>MileBench（IR任务）</th><th>Video-MME（无字幕，平均分）</th><th>MVBench</th><th>处理128张图像PFLOPs</th></tr></thead><tbody><tr><td>闭源模型</td><td>GPT-4o</td><td>56.2</td><td>63.1</td><td>64.7</td><td>-</td></tr><tr><td>闭源模型</td><td>Claude3-Opus</td><td>37.4</td><td>57.4</td><td>59.7</td><td>-</td></tr><tr><td>开源模型</td><td>Video-LLaMA2</td><td>-</td><td>45.4</td><td>34.1</td><td>3.71</td></tr><tr><td>开源模型</td><td>LongVILA-7B</td><td>-</td><td>49.7</td><td>-</td><td>3.90</td></tr><tr><td>开源模型</td><td>LongLLaVA（13B）</td><td>52.7（开源第一）</td><td>51.6（开源第一）</td><td>54.6（开源第一）</td><td>0.22（远低于竞品）</td></tr></tbody></table><ul><li><strong>关键结论</strong>：LongLLaVA在MileBench信息检索（IR）任务上超越Claude3-Opus，视频基准（中长视频）优于传统视频模型，且计算量仅为Video-LLaMA2的1/16。</li></ul><h4 id="3-1-2-原子能力诊断（VNBench：检索、排序、计数）">3.1.2 原子能力诊断（VNBench：检索、排序、计数）</h4><p>VNBench是合成视频基准，测试模型长上下文核心能力，LongLLaVA在开源模型中表现碾压，部分指标接近闭源模型：</p><table><thead><tr><th>模型</th><th>检索（E）</th><th>排序（I-1）</th><th>计数（E-1）</th><th>平均分</th></tr></thead><tbody><tr><td>Gemini-1.5</td><td>100.0</td><td>95.3</td><td>60.7</td><td>66.7</td></tr><tr><td>GPT-4o</td><td>100.0</td><td>86.6</td><td>36.8</td><td>64.4</td></tr><tr><td>VideoChat2</td><td>43.4</td><td>0.0</td><td>4.4</td><td>12.4</td></tr><tr><td>LongLLaVA</td><td>100.0</td><td>35.3</td><td>36.0</td><td>52.1（开源第一）</td></tr></tbody></table><h4 id="3-1-3-单图像能力（LongLLaVA（单图像））">3.1.3 单图像能力（LongLLaVA（单图像））</h4><p>在单图像基准（MMMU、SQA I、SEED-Bench）上，LongLLaVA（单图像）优于LLaVA-1.5/1.6，且计算成本更低：</p><table><thead><tr><th>模型</th><th>MMMU</th><th>SQA I</th><th>SEED-Bench</th><th>处理1张图像TFLOPs</th></tr></thead><tbody><tr><td>LLaVA-1.6-13B</td><td>36.2</td><td>73.6</td><td>71.4</td><td>11.86</td></tr><tr><td>LongLLaVA（单图像）</td><td>42.1</td><td>75.9</td><td>68.9</td><td>1.52（仅为LLaVA-1.6的12.8%）</td></tr></tbody></table><ul><li><strong>注意</strong>：多图像训练后，LongLLaVA单图像性能略有下降（如SEED-Bench从68.9降至65.3），需后续优化单图像数据占比。</li></ul><h3 id="3-2-效率优势：单卡处理近千张图像">3.2 效率优势：单卡处理近千张图像</h3><h4 id="3-2-1-单GPU图像处理能力（Int8量化）">3.2.1 单GPU图像处理能力（Int8量化）</h4><table><thead><tr><th>模型</th><th>单张80GB GPU最大处理图像数</th><th>对比优势</th></tr></thead><tbody><tr><td>LongVA-7B</td><td>324</td><td>-</td></tr><tr><td>Qwen-VL-7B</td><td>321</td><td>-</td></tr><tr><td>LLaVA-1.5-7B</td><td>135</td><td>-</td></tr><tr><td>LongLLaVA-13B</td><td>933</td><td>是LongVA-7B的2.9倍，开源模型第一</td></tr></tbody></table><h4 id="3-2-2-架构效率对比（100K-token场景）">3.2.2 架构效率对比（100K token场景）</h4><table><thead><tr><th>架构类型</th><th>代表模型</th><th>激活参数</th><th>ICL能力（VL-ICL 5-shot）</th><th>预填充时间（s）</th><th>吞吐量（tokens/s）</th><th>内存占用（GB）</th></tr></thead><tbody><tr><td>Mamba</td><td>Cobra-3B</td><td>3B</td><td>51.5（弱）</td><td>10.2</td><td>42.7</td><td>29.9</td></tr><tr><td>Transformer</td><td>LLaVA-1.6-13B</td><td>13B</td><td>58.9（强）</td><td>34.0</td><td>14.7</td><td>79.4</td></tr><tr><td>混合架构</td><td>LongLLaVA-13B</td><td>13B</td><td>61.3（强）</td><td>25.5（LLaVA-1.6的75%）</td><td>37.6（LLaVA-1.6的2.5倍）</td><td>79.1</td></tr></tbody></table><h3 id="3-3-消融实验：验证关键设计有效性">3.3 消融实验：验证关键设计有效性</h3><table><thead><tr><th>优化策略</th><th>MMMU</th><th>SQA I</th><th>SEED-Bench</th><th>MileBench平均分</th><th>结论</th></tr></thead><tbody><tr><td>LLaVA-1.5-13B（基线）</td><td>34.4</td><td>71.6</td><td>68.2</td><td>27.6</td><td>-</td></tr><tr><td>+Jamba混合架构</td><td>41.4</td><td>75.4</td><td>69.8</td><td>38.2</td><td>混合架构显著提升长上下文能力</td></tr><tr><td>+1D池化（tokens=144）</td><td>42.0</td><td>73.9</td><td>66.3</td><td>36.2</td><td>1D池化压缩token但损失精度</td></tr><tr><td>+2D池化（tokens=144）</td><td>42.1</td><td>75.2</td><td>67.4</td><td>37.7</td><td>2D池化优于1D，保留空间信息</td></tr><tr><td>+单图像数据</td><td>42.1</td><td>75.9</td><td>68.9</td><td>50.0</td><td>单图像数据提升基础视觉能力</td></tr><tr><td>+多图像数据</td><td>39.2</td><td>73.4</td><td>65.3</td><td>57.4</td><td>多图像数据进一步强化长上下文</td></tr></tbody></table><h3 id="3-4-图像数量缩放规律">3.4 图像数量缩放规律</h3><ul><li><strong>高分辨率子图</strong>：子图数量从48（336×336）增至97（224×224）时，V*Bench性能从45.2升至73.0；但增至163（168×168）时，性能降至67.1，说明过多子图会干扰局部细节理解。</li><li><strong>视频帧</strong>：Video-MME性能随帧数量增加持续提升，256帧时达峰值60.9，证明模型能有效利用多帧时序信息。</li></ul><h3 id="3-5-1000图像检索测试（V-NIAH）">3.5 1000图像检索测试（V-NIAH）</h3><p>将图像tokens从144压缩至36后，LongLLaVA在单张80GB GPU上处理1000张图像时，检索准确率接近100%；超过1000张后准确率下降，需后续将训练序列长度扩展至140K tokens。</p><h2 id="四、研究贡献与未来方向">四、研究贡献与未来方向</h2><h3 id="4-1-核心贡献">4.1 核心贡献</h3><ol><li><strong>架构创新</strong>：提出首个Transformer+Mamba混合架构MLLM，平衡ICL能力与线性计算复杂度，解决长上下文效率问题。</li><li><strong>数据与训练</strong>：设计区分时空依赖的数据协议与渐进式训练策略，实现多图像能力平滑提升，避免单模态能力退化。</li><li><strong>开源价值</strong>：开源模型、代码与数据集（<a href="https://github.com/FreedomIntelligence/LongLLaVA%EF%BC%89%EF%BC%8C%E4%B8%BA%E9%95%BF%E4%B8%8A%E4%B8%8B%E6%96%87MLLM%E7%A0%94%E7%A9%B6%E6%8F%90%E4%BE%9B%E5%9F%BA%E5%87%86%E3%80%82">https://github.com/FreedomIntelligence/LongLLaVA），为长上下文MLLM研究提供基准。</a></li><li><strong>应用突破</strong>：单张80GB GPU处理933张图像，支持长视频分析（医疗3D视频异常检测）、高分辨率图像理解（病理切片）、多模态智能体（老年辅助）等场景。</li></ol><h3 id="4-2-未来方向">4.2 未来方向</h3><ol><li><strong>扩展序列长度</strong>：将训练序列长度从40K提升至140K tokens，支持超1000张图像处理。</li><li><strong>优化单图像性能</strong>：在多图像训练阶段增加单图像数据占比，缓解多图像训练导致的单图像能力退化。</li><li><strong>多模态扩展</strong>：融合音频、文本等更多模态，提升复杂场景（如视频对话）的理解能力。</li></ol><h2 id="五、关键数据速览（LongLLaVA-13B-vs-开源竞品）">五、关键数据速览（LongLLaVA-13B vs 开源竞品）</h2><table><thead><tr><th>指标</th><th>LongLLaVA-13B</th><th>主流开源模型（Video-LLaMA2、LongVILA-7B等）</th></tr></thead><tbody><tr><td>单80GB GPU最大图像数（Int8）</td><td>933张</td><td>324~384张</td></tr><tr><td>处理128张图像PFLOPs</td><td>0.22</td><td>0.24~3.90</td></tr><tr><td>1000张图像检索准确率（V-NIAH）</td><td>近100%</td><td>未达此水平</td></tr><tr><td>视觉token压缩比</td><td>576→144（75%压缩）</td><td>无或低压缩比（如576→576）</td></tr><tr><td>VNBench平均分</td><td>52.1</td><td>4.5~12.4</td></tr></tbody></table>]]></content>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h1&gt;LongLLaVA 论文详细总结&lt;/h1&gt;
-&lt;h2 id=&quot;一、研究背景与核心挑战&quot;&gt;一、研究背景与核心挑战&lt;/h2&gt;
-&lt;h3 id=&quot;1-1-多模态大语言模型（MLLMs）的发展瓶颈&quot;&gt;1.1</summary>
-        
-      
-    
-    
-    
-    <category term="论文阅读" scheme="https://hellowydwyd.github.io/categories/%E8%AE%BA%E6%96%87%E9%98%85%E8%AF%BB/"/>
-    
-    
-    <category term="视频理解" scheme="https://hellowydwyd.github.io/tags/%E8%A7%86%E9%A2%91%E7%90%86%E8%A7%A3/"/>
     
   </entry>
   
