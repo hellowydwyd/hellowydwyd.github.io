@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>前趋图和程序执行</title>
+    <link href="/2025/10/16/%E5%89%8D%E8%B6%8B%E5%9B%BE%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C/"/>
+    <url>/2025/10/16/%E5%89%8D%E8%B6%8B%E5%9B%BE%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C/</url>
+    
+    <content type="html"><![CDATA[<h2 id="一、前趋图（Precedence-Graph）">一、前趋图（Precedence Graph）</h2><h3 id="1-定义与本质">1. 定义与本质</h3><p>前趋图是一种<strong>有向无循环图（DAG, Directed Acyclic Graph）</strong>，核心作用是描述进程、程序段或语句之间的<strong>执行先后顺序</strong>，清晰呈现“谁必须在谁之前执行”的偏序（Partial Order）或前趋关系。</p><h3 id="2-组成要素">2. 组成要素</h3><ul><li><strong>结点</strong>：可代表一个进程、一个程序段或一条语句，是执行的基本单元。</li><li><strong>有向边</strong>：表示两个结点间的前趋关系，例如若存在边 <code>A→B</code>，则意味着A执行完成后，B才能开始执行。</li></ul><h3 id="3-关键特性">3. 关键特性</h3><ul><li>必须<strong>无循环</strong>：若存在循环（如 <code>A→B→A</code>），会导致执行顺序矛盾，无法正常调度，因此含循环的图（如文档中“具有循环的前趋图”）不具备实际执行意义。</li><li>可直观展示顺序与并发边界：通过边的连接，能快速判断哪些单元必须顺序执行（有直接或间接边连接），哪些可并发执行（无任何边连接）。</li></ul><h2 id="二、程序的顺序执行">二、程序的顺序执行</h2><h3 id="1-定义">1. 定义</h3><p>程序执行时遵循“<strong>严格先后次序</strong>”，即一个应用程序的若干程序段（或一条语句的若干操作）中，仅当前一个程序段（或操作）完全执行完毕，后一个才允许开始。例如文档中：</p><ul><li>程序段的顺序关系：<code>Ii（输入）→ Ci（计算）→ Pi（输出）</code>，输入完成后才能计算，计算完成后才能输出。</li><li>语句的顺序关系：<code>S1: a := x+y → S2: b := a-5 → S3: c := b+1</code>，S1的结果是S2的输入，S2的结果是S3的输入，必须依次执行。</li></ul><h3 id="2-典型执行场景">2. 典型执行场景</h3><p>早期<strong>未配置OS的系统</strong>和<strong>单道批处理系统</strong>中，内存仅装入一道用户程序，该程序独占CPU、内存等所有系统资源，直到执行完成才释放资源，装入下一个程序。</p><h3 id="3-核心特征">3. 核心特征</h3><table><thead><tr><th>特征</th><th>具体说明</th></tr></thead><tbody><tr><td><strong>顺序性</strong></td><td>程序执行路径唯一，每个操作的开始和结束时间完全确定，无“暂停-恢复”的间断。</td></tr><tr><td><strong>封闭性</strong></td><td>程序运行在“独占资源”的封闭环境中，资源状态仅由当前程序修改，不受外界（其他程序）影响。</td></tr><tr><td><strong>可再现性</strong></td><td>只要执行环境（如硬件配置）和初始条件（如输入数据）相同，无论执行多少次，最终结果完全一致。</td></tr></tbody></table><h2 id="三、程序的并发执行">三、程序的并发执行</h2><h3 id="1-定义-2">1. 定义</h3><p>多个程序段（或语句）在<strong>时间上重叠执行</strong>，即一个程序段尚未执行完成，另一个程序段便可开始执行，但前提是二者<strong>不存在前趋关系</strong>（无直接或间接依赖）。例如文档中：</p><ul><li>语句组 <code>S1: a=x+2</code>、<code>S2: b=y+4</code>、<code>S3: c=a+b</code>、<code>S4: d=c+b</code> 中，S1和S2无依赖（分别依赖x、y，互不影响），可并发执行；但S3必须等待S1、S2都完成，S4必须等待S3完成。</li></ul><h3 id="2-典型执行场景-2">2. 典型执行场景</h3><p><strong>多道批处理系统</strong>和<strong>分时系统</strong>中，内存可装入多道程序，OS通过调度让多道程序交替使用CPU，实现并发执行，以提高资源利用率（如CPU不再空闲等待I/O）和系统吞吐量。</p><h3 id="3-核心特征（与顺序执行完全相反）">3. 核心特征（与顺序执行完全相反）</h3><table><thead><tr><th>特征</th><th>具体说明</th><th>示例（文档中N值问题）</th></tr></thead><tbody><tr><td><strong>间断性</strong></td><td>程序执行过程中会因“等待资源”（如等待CPU、等待I/O完成）而频繁“执行-暂停-执行”，执行路径不连续。</td><td>-</td></tr><tr><td><strong>失去封闭性</strong></td><td>多程序共享系统资源（如共享变量、打印机），一个程序对资源状态的修改会影响其他程序的执行，环境不再封闭。</td><td>程序A（<code>N:=N+1</code>）与另两个程序（<code>Print(N)</code>、<code>N:=0</code>）共享变量N，A的执行顺序会改变N的最终值。</td></tr><tr><td><strong>不可再现性</strong></td><td>即使初始条件相同，因并发执行时资源竞争的顺序不同，最终结果可能不一致。</td><td>1. A在<code>Print(N)</code>和<code>N:=0</code>前执行：N值为<code>n+1</code>、<code>n+1</code>、0；<br>2. A在<code>Print(N)</code>和<code>N:=0</code>后执行：N值为<code>n</code>、0、1；<br>3. A在<code>Print(N)</code>和<code>N:=0</code>间执行：N值为<code>n</code>、<code>n+1</code>、0。</td></tr></tbody></table><h2 id="四、核心对比与关键结论">四、核心对比与关键结论</h2><table><thead><tr><th>维度</th><th>程序顺序执行</th><th>程序并发执行</th></tr></thead><tbody><tr><td>执行方式</td><td>单道程序独占资源，严格先后</td><td>多道程序共享资源，时间重叠</td></tr><tr><td>资源利用率</td><td>低（CPU、I/O设备易空闲）</td><td>高（CPU与I/O可并行工作）</td></tr><tr><td>执行稳定性</td><td>稳定（封闭、可再现）</td><td>不稳定（需同步机制协调）</td></tr><tr><td>适用场景</td><td>早期简单系统（无OS、单道批处理）</td><td>现代OS（多道批处理、分时、实时）</td></tr></tbody></table><h3 id="关键结论">关键结论</h3><p>程序并发执行虽能提升系统效率，但会因“失去封闭性和可再现性”导致执行结果不可控，因此必须配置<strong>进程同步机制</strong>（如后续章节的信号量、管程），协调多程序对共享资源的访问，确保执行结果可预期。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>操作系统</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>操作系统</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>评估方法</title>
     <link href="/2025/10/09/%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/"/>
     <url>/2025/10/09/%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/</url>

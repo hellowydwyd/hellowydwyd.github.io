@@ -1,0 +1,837 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="YuDong Wang">
+  <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
+  
+    <meta name="description" content="一、前趋图（Precedence Graph） 1. 定义与本质 前趋图是一种有向无循环图（DAG, Directed Acyclic Graph），核心作用是描述进程、程序段或语句之间的执行先后顺序，清晰呈现“谁必须在谁之前执行”的偏序（Partial Order）或前趋关系。 2. 组成要素  结点：可代表一个进程、一个程序段或一条语句，是执行的基本单元。 有向边：表示两个结点间的前趋关系，例">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前趋图和程序执行">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/10/16/%E5%89%8D%E8%B6%8B%E5%9B%BE%E5%92%8C%E7%A8%8B%E5%BA%8F%E6%89%A7%E8%A1%8C/index.html">
+<meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
+<meta property="og:description" content="一、前趋图（Precedence Graph） 1. 定义与本质 前趋图是一种有向无循环图（DAG, Directed Acyclic Graph），核心作用是描述进程、程序段或语句之间的执行先后顺序，清晰呈现“谁必须在谁之前执行”的偏序（Partial Order）或前趋关系。 2. 组成要素  结点：可代表一个进程、一个程序段或一条语句，是执行的基本单元。 有向边：表示两个结点间的前趋关系，例">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-16T05:26:34.000Z">
+<meta property="article:modified_time" content="2025-10-16T05:29:24.319Z">
+<meta property="article:author" content="YuDong Wang">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>前趋图和程序执行 - Wydcoder&#39;s Tech Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"hellowydwyd.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wydcoder&#39;s Tech Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/about-bg.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="前趋图和程序执行"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        YuDong Wang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-10-16 13:26" pubdate>
+          星期四, 十月 16日 2025, 1:26 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">前趋图和程序执行</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025年10月16日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="一、前趋图（Precedence-Graph）">一、前趋图（Precedence Graph）</h2>
+<h3 id="1-定义与本质">1. 定义与本质</h3>
+<p>前趋图是一种<strong>有向无循环图（DAG, Directed Acyclic Graph）</strong>，核心作用是描述进程、程序段或语句之间的<strong>执行先后顺序</strong>，清晰呈现“谁必须在谁之前执行”的偏序（Partial Order）或前趋关系。</p>
+<h3 id="2-组成要素">2. 组成要素</h3>
+<ul>
+<li><strong>结点</strong>：可代表一个进程、一个程序段或一条语句，是执行的基本单元。</li>
+<li><strong>有向边</strong>：表示两个结点间的前趋关系，例如若存在边 <code>A→B</code>，则意味着A执行完成后，B才能开始执行。</li>
+</ul>
+<h3 id="3-关键特性">3. 关键特性</h3>
+<ul>
+<li>必须<strong>无循环</strong>：若存在循环（如 <code>A→B→A</code>），会导致执行顺序矛盾，无法正常调度，因此含循环的图（如文档中“具有循环的前趋图”）不具备实际执行意义。</li>
+<li>可直观展示顺序与并发边界：通过边的连接，能快速判断哪些单元必须顺序执行（有直接或间接边连接），哪些可并发执行（无任何边连接）。</li>
+</ul>
+<h2 id="二、程序的顺序执行">二、程序的顺序执行</h2>
+<h3 id="1-定义">1. 定义</h3>
+<p>程序执行时遵循“<strong>严格先后次序</strong>”，即一个应用程序的若干程序段（或一条语句的若干操作）中，仅当前一个程序段（或操作）完全执行完毕，后一个才允许开始。例如文档中：</p>
+<ul>
+<li>程序段的顺序关系：<code>Ii（输入）→ Ci（计算）→ Pi（输出）</code>，输入完成后才能计算，计算完成后才能输出。</li>
+<li>语句的顺序关系：<code>S1: a := x+y → S2: b := a-5 → S3: c := b+1</code>，S1的结果是S2的输入，S2的结果是S3的输入，必须依次执行。</li>
+</ul>
+<h3 id="2-典型执行场景">2. 典型执行场景</h3>
+<p>早期<strong>未配置OS的系统</strong>和<strong>单道批处理系统</strong>中，内存仅装入一道用户程序，该程序独占CPU、内存等所有系统资源，直到执行完成才释放资源，装入下一个程序。</p>
+<h3 id="3-核心特征">3. 核心特征</h3>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>具体说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>顺序性</strong></td>
+<td>程序执行路径唯一，每个操作的开始和结束时间完全确定，无“暂停-恢复”的间断。</td>
+</tr>
+<tr>
+<td><strong>封闭性</strong></td>
+<td>程序运行在“独占资源”的封闭环境中，资源状态仅由当前程序修改，不受外界（其他程序）影响。</td>
+</tr>
+<tr>
+<td><strong>可再现性</strong></td>
+<td>只要执行环境（如硬件配置）和初始条件（如输入数据）相同，无论执行多少次，最终结果完全一致。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="三、程序的并发执行">三、程序的并发执行</h2>
+<h3 id="1-定义-2">1. 定义</h3>
+<p>多个程序段（或语句）在<strong>时间上重叠执行</strong>，即一个程序段尚未执行完成，另一个程序段便可开始执行，但前提是二者<strong>不存在前趋关系</strong>（无直接或间接依赖）。例如文档中：</p>
+<ul>
+<li>语句组 <code>S1: a=x+2</code>、<code>S2: b=y+4</code>、<code>S3: c=a+b</code>、<code>S4: d=c+b</code> 中，S1和S2无依赖（分别依赖x、y，互不影响），可并发执行；但S3必须等待S1、S2都完成，S4必须等待S3完成。</li>
+</ul>
+<h3 id="2-典型执行场景-2">2. 典型执行场景</h3>
+<p><strong>多道批处理系统</strong>和<strong>分时系统</strong>中，内存可装入多道程序，OS通过调度让多道程序交替使用CPU，实现并发执行，以提高资源利用率（如CPU不再空闲等待I/O）和系统吞吐量。</p>
+<h3 id="3-核心特征（与顺序执行完全相反）">3. 核心特征（与顺序执行完全相反）</h3>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>具体说明</th>
+<th>示例（文档中N值问题）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>间断性</strong></td>
+<td>程序执行过程中会因“等待资源”（如等待CPU、等待I/O完成）而频繁“执行-暂停-执行”，执行路径不连续。</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>失去封闭性</strong></td>
+<td>多程序共享系统资源（如共享变量、打印机），一个程序对资源状态的修改会影响其他程序的执行，环境不再封闭。</td>
+<td>程序A（<code>N:=N+1</code>）与另两个程序（<code>Print(N)</code>、<code>N:=0</code>）共享变量N，A的执行顺序会改变N的最终值。</td>
+</tr>
+<tr>
+<td><strong>不可再现性</strong></td>
+<td>即使初始条件相同，因并发执行时资源竞争的顺序不同，最终结果可能不一致。</td>
+<td>1. A在<code>Print(N)</code>和<code>N:=0</code>前执行：N值为<code>n+1</code>、<code>n+1</code>、0；<br>2. A在<code>Print(N)</code>和<code>N:=0</code>后执行：N值为<code>n</code>、0、1；<br>3. A在<code>Print(N)</code>和<code>N:=0</code>间执行：N值为<code>n</code>、<code>n+1</code>、0。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="四、核心对比与关键结论">四、核心对比与关键结论</h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>程序顺序执行</th>
+<th>程序并发执行</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>执行方式</td>
+<td>单道程序独占资源，严格先后</td>
+<td>多道程序共享资源，时间重叠</td>
+</tr>
+<tr>
+<td>资源利用率</td>
+<td>低（CPU、I/O设备易空闲）</td>
+<td>高（CPU与I/O可并行工作）</td>
+</tr>
+<tr>
+<td>执行稳定性</td>
+<td>稳定（封闭、可再现）</td>
+<td>不稳定（需同步机制协调）</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>早期简单系统（无OS、单道批处理）</td>
+<td>现代OS（多道批处理、分时、实时）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="关键结论">关键结论</h3>
+<p>程序并发执行虽能提升系统效率，但会因“失去封闭性和可再现性”导致执行结果不可控，因此必须配置<strong>进程同步机制</strong>（如后续章节的信号量、管程），协调多程序对共享资源的访问，确保执行结果可预期。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">操作系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>前趋图和程序执行</div>
+      <div>https://hellowydwyd.github.io/2025/10/16/前趋图和程序执行/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>YuDong Wang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/09/%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95/" title="评估方法">
+                        <span class="hidden-mobile">评估方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'hellowydwyd/hellowydwyd.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
