@@ -3246,7 +3246,7 @@
       </tags>
   </entry>
   <entry>
-    <title>模式与模式识别</title>
+    <title>1.1 模式与模式识别</title>
     <url>/2025/10/21/%E6%A8%A1%E5%BC%8F%E4%B8%8E%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB/</url>
     <content><![CDATA[<ol>
 <li><strong>模式与模式识别的定义</strong>：人类认识外界事物的能力涉及对事物的分类和识别，这一过程依赖于对事物整体性质和特点的认识。模式识别就是指依据这种对事物类别的认识，对具体对象进行分类和识别的过程。例如，看到一幅风景照片，人们能识别出其中的各种元素，并判断出这是中国江南水乡的景色 ，这一认知过程包含了对多个模式的识别。</li>
@@ -3263,7 +3263,6 @@
       <categories>
         <category>模式识别与机器学习</category>
         <category>第一章 概论</category>
-        <category>1.1 模式与模式识别</category>
       </categories>
       <tags>
         <tag>机器学习</tag>
