@@ -5284,7 +5284,7 @@ M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
       </tags>
   </entry>
   <entry>
-    <title>模式识别系统的典型构成</title>
+    <title>1.4 模式识别系统的典型构成</title>
     <url>/2025/10/21/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%85%B8%E5%9E%8B%E6%9E%84%E6%88%90/</url>
     <content><![CDATA[<p>模式识别系统虽因应用场景（如语音识别、图像目标检测、基因数据分析等）不同而存在细节差异，但核心流程具有共性，均围绕“数据处理→特征优化→决策/分析→结果验证”四个核心环节展开。根据是否依赖“类别已知的训练样本”，可分为<strong>监督模式识别系统</strong>与<strong>非监督模式识别系统</strong>，二者在具体流程上有所区别，具体如下：</p>
 <h2 id="一、模式识别系统的核心共性模块">一、模式识别系统的核心共性模块</h2>
@@ -5427,7 +5427,7 @@ M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
 <p>无论是监督还是非监督模式识别，<strong>特征提取与选择</strong>“分类器/聚类算法设计”“结果评估”是系统的核心共性环节，也是模式识别与机器学习学科的重点研究内容。</p>
 ]]></content>
       <categories>
-        <category>1.4 模式识别与机器学习</category>
+        <category>模式识别与机器学习</category>
         <category>第一章 概论</category>
       </categories>
       <tags>
