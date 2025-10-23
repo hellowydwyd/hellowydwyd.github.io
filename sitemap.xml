@@ -2,7 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://hellowydwyd.github.io/2025/10/23/3-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%84%E8%8C%83%E5%8C%96/</loc>
+    <loc>https://hellowydwyd.github.io/2025/10/09/%E7%BB%8F%E9%AA%8C%E8%AF%AF%E5%B7%AE%E4%B8%8E%E8%BF%87%E6%8B%9F%E5%90%88/</loc>
+    
+    <lastmod>2025-10-23</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://hellowydwyd.github.io/2025/10/23/4-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E8%A1%A8/</loc>
+    
+    <lastmod>2025-10-23</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://hellowydwyd.github.io/2025/10/23/1-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%AE%BA/</loc>
     
     <lastmod>2025-10-23</lastmod>
     
@@ -20,9 +38,9 @@
   </url>
   
   <url>
-    <loc>https://hellowydwyd.github.io/2025/10/23/1-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%AE%BA/</loc>
+    <loc>https://hellowydwyd.github.io/2025/10/23/3-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%84%E8%8C%83%E5%8C%96/</loc>
     
-    <lastmod>2025-10-22</lastmod>
+    <lastmod>2025-10-23</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -192,15 +210,6 @@
   
   <url>
     <loc>https://hellowydwyd.github.io/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%9B%9E%E9%80%80N%E5%B8%A7%E5%8D%8F%E8%AE%AE/</loc>
-    
-    <lastmod>2025-10-09</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://hellowydwyd.github.io/2025/10/09/%E7%BB%8F%E9%AA%8C%E8%AF%AF%E5%B7%AE%E4%B8%8E%E8%BF%87%E6%8B%9F%E5%90%88/</loc>
     
     <lastmod>2025-10-09</lastmod>
     
@@ -383,7 +392,7 @@
   </url>
   
   <url>
-    <loc>https://hellowydwyd.github.io/tags/MySql/</loc>
+    <loc>https://hellowydwyd.github.io/tags/MySQL/</loc>
     <lastmod>2025-10-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -469,14 +478,14 @@
   </url>
   
   <url>
-    <loc>https://hellowydwyd.github.io/categories/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%AC%AC%E4%B8%80%E7%AB%A0-%E6%A6%82%E8%AE%BA/</loc>
+    <loc>https://hellowydwyd.github.io/categories/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E7%BB%9F%E8%AE%A1%E5%86%B3%E7%AD%96%E6%96%B9%E6%B3%95/</loc>
     <lastmod>2025-10-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://hellowydwyd.github.io/categories/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E7%BB%9F%E8%AE%A1%E5%86%B3%E7%AD%96%E6%96%B9%E6%B3%95/</loc>
+    <loc>https://hellowydwyd.github.io/categories/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/%E7%AC%AC%E4%B8%80%E7%AB%A0-%E6%A6%82%E8%AE%BA/</loc>
     <lastmod>2025-10-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

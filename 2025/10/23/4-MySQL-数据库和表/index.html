@@ -1,0 +1,1070 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="YuDong Wang">
+  <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
+  
+    <meta name="description" content="《第4章 MySQL数据库和表》文档总结 一、MySQL数据库简介 1. 查看已有数据库 使用SHOW DATABASES;命令查看MySQL服务器中的所有数据库。 1SHOW DATABASES; 默认包含4个系统数据库，删除这些系统数据库会导致MySQL无法正常工作。 2. 系统数据库作用    数据库名称 主要作用     mysql 描述用户访问权限，记录用户账号、密码及权限分配等信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4 MySQL 数据库和表">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/10/23/4-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E8%A1%A8/index.html">
+<meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
+<meta property="og:description" content="《第4章 MySQL数据库和表》文档总结 一、MySQL数据库简介 1. 查看已有数据库 使用SHOW DATABASES;命令查看MySQL服务器中的所有数据库。 1SHOW DATABASES; 默认包含4个系统数据库，删除这些系统数据库会导致MySQL无法正常工作。 2. 系统数据库作用    数据库名称 主要作用     mysql 描述用户访问权限，记录用户账号、密码及权限分配等信息">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-23T02:54:37.000Z">
+<meta property="article:modified_time" content="2025-10-23T02:59:03.116Z">
+<meta property="article:author" content="YuDong Wang">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>4 MySQL 数据库和表 - Wydcoder&#39;s Tech Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"hellowydwyd.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Wydcoder's Tech Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wydcoder&#39;s Tech Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/about-bg.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="4 MySQL 数据库和表"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        YuDong Wang
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-10-23 10:54" pubdate>
+          星期四, 十月 23日 2025, 10:54 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          1.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          11 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">4 MySQL 数据库和表</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    <!-- compatible with older versions-->
+                    本文最后更新于：2025年10月23日 上午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1>《第4章 MySQL数据库和表》文档总结</h1>
+<h2 id="一、MySQL数据库简介">一、MySQL数据库简介</h2>
+<h3 id="1-查看已有数据库">1. 查看已有数据库</h3>
+<p>使用<code>SHOW DATABASES;</code>命令查看MySQL服务器中的所有数据库。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SHOW</span> DATABASES;<br></code></pre></td></tr></table></figure>
+<p>默认包含4个系统数据库，删除这些系统数据库会导致MySQL无法正常工作。</p>
+<h3 id="2-系统数据库作用">2. 系统数据库作用</h3>
+<table>
+<thead>
+<tr>
+<th>数据库名称</th>
+<th>主要作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>mysql</strong></td>
+<td>描述用户访问权限，记录用户账号、密码及权限分配等信息</td>
+</tr>
+<tr>
+<td><strong>information_schema</strong></td>
+<td>保存MySQL服务器维护的所有其他数据库信息（元数据字典）</td>
+</tr>
+<tr>
+<td><strong>performance_schema</strong></td>
+<td>收集数据库服务器性能参数，监控数据库运行状态</td>
+</tr>
+<tr>
+<td><strong>sys</strong></td>
+<td>包含存储过程、自定义函数和视图，简化数据库管理操作</td>
+</tr>
+</tbody>
+</table>
+<h2 id="二、定义数据库（核心操作与语法）">二、定义数据库（核心操作与语法）</h2>
+<h3 id="（一）创建数据库">（一）创建数据库</h3>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> &#123;DATABASE <span class="hljs-operator">|</span> SCHEMA&#125; [IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span>] db_name <br>[[<span class="hljs-keyword">DEFAULT</span>] <span class="hljs-keyword">CHARACTER SET</span> charset_name] <br>[[<span class="hljs-keyword">DEFAULT</span>] <span class="hljs-keyword">COLLATE</span> collation_name];<br></code></pre></td></tr></table></figure>
+<p><strong>关键参数说明：</strong></p>
+<ul>
+<li><code>&#123;DATABASE | SCHEMA&#125;</code>：功能相同，二选一</li>
+<li><code>IF NOT EXISTS</code>：避免重复创建时报错</li>
+<li><code>CHARACTER SET</code>：指定数据库默认字符集</li>
+<li><code>COLLATE</code>：指定字符集的校对规则</li>
+</ul>
+<p><strong>示例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 创建学生信息数据库</span><br><span class="hljs-keyword">CREATE</span> DATABASE stusys;<br><br><span class="hljs-comment">-- 创建数据库时指定字符集</span><br><span class="hljs-keyword">CREATE</span> DATABASE stusys <br><span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">CHARACTER SET</span> utf8mb4 <br><span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">COLLATE</span> utf8mb4_0900_ai_ci;<br></code></pre></td></tr></table></figure>
+<h3 id="（二）选择数据库">（二）选择数据库</h3>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">USE db_name;<br></code></pre></td></tr></table></figure>
+<p><strong>示例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">USE stusys;<br></code></pre></td></tr></table></figure>
+<h3 id="（三）修改数据库">（三）修改数据库</h3>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">ALTER</span> &#123;DATABASE <span class="hljs-operator">|</span> SCHEMA&#125; [db_name] <br>[<span class="hljs-keyword">DEFAULT</span>] <span class="hljs-keyword">CHARACTER SET</span> charset_name <br>[<span class="hljs-keyword">DEFAULT</span>] <span class="hljs-keyword">COLLATE</span> collation_name;<br></code></pre></td></tr></table></figure>
+<p><strong>示例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 修改数据库字符集和校对规则</span><br><span class="hljs-keyword">ALTER</span> DATABASE stusys <br><span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">CHARACTER SET</span> gb2312 <br><span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">COLLATE</span> gb2312_chinese_ci;<br></code></pre></td></tr></table></figure>
+<h3 id="（四）删除数据库">（四）删除数据库</h3>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DROP</span> &#123;DATABASE <span class="hljs-operator">|</span> SCHEMA&#125; [IF <span class="hljs-keyword">EXISTS</span>] db_name;<br></code></pre></td></tr></table></figure>
+<p><strong>示例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DROP</span> DATABASE stusys;<br></code></pre></td></tr></table></figure>
+<p><strong>⚠️ 注意：</strong> 删除操作不可逆，需谨慎执行。</p>
+<h2 id="三、表的基本概念">三、表的基本概念</h2>
+<h3 id="核心术语">核心术语</h3>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>定义</th>
+<th>示例（学生表student）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>表</strong></td>
+<td>数据库中存储数据的对象，由行和列组成</td>
+<td>包含6行6列的数据表</td>
+</tr>
+<tr>
+<td><strong>表结构</strong></td>
+<td>表的固定属性（列数量、数据类型、长度等）</td>
+<td>sno列数据类型为char(6)、NOT NULL</td>
+</tr>
+<tr>
+<td><strong>记录</strong></td>
+<td>表中的一行数据，代表一个具体实例</td>
+<td>学号191001、姓名刘清泉等组成的一行</td>
+</tr>
+<tr>
+<td><strong>字段</strong></td>
+<td>表中的一列，代表数据的一个属性</td>
+<td>学号（sno）、姓名（sname）等列</td>
+</tr>
+<tr>
+<td><strong>空值（Null）</strong></td>
+<td>表示未知、不可用或待添加的数据</td>
+<td>专业未填写时speciality列为Null</td>
+</tr>
+<tr>
+<td><strong>关键字</strong></td>
+<td>唯一标识记录的字段或字段组合</td>
+<td>主键为&quot;学号（sno）&quot;</td>
+</tr>
+<tr>
+<td><strong>默认值</strong></td>
+<td>插入数据时未指定列值的自动填充值</td>
+<td>ssex列默认值为&quot;男&quot;</td>
+</tr>
+</tbody>
+</table>
+<h3 id="表结构设计示例（学生表student）">表结构设计示例（学生表student）</h3>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE TABLE</span> student (<br>    sno <span class="hljs-type">char</span>(<span class="hljs-number">6</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">PRIMARY KEY</span>,      <span class="hljs-comment">-- 学号，主键</span><br>    sname <span class="hljs-type">char</span>(<span class="hljs-number">8</span>) <span class="hljs-keyword">NOT NULL</span>,                <span class="hljs-comment">-- 姓名</span><br>    ssex <span class="hljs-type">char</span>(<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;男&#x27;</span>,    <span class="hljs-comment">-- 性别，默认&#x27;男&#x27;</span><br>    sbirthday <span class="hljs-type">date</span> <span class="hljs-keyword">NOT NULL</span>,               <span class="hljs-comment">-- 出生日期</span><br>    speciality <span class="hljs-type">char</span>(<span class="hljs-number">12</span>) <span class="hljs-keyword">NULL</span>,              <span class="hljs-comment">-- 专业，允许空</span><br>    tc tinyint <span class="hljs-keyword">NULL</span>                        <span class="hljs-comment">-- 总学分，允许空</span><br>);<br></code></pre></td></tr></table></figure>
+<h2 id="四、MySQL数据类型">四、MySQL数据类型</h2>
+<h3 id="（一）数值类型">（一）数值类型</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>字节数</th>
+<th>无符号取值范围</th>
+<th>有符号取值范围</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tinyint</code></td>
+<td>1</td>
+<td>0~255</td>
+<td>-128~127</td>
+<td>小范围整数（如总学分）</td>
+</tr>
+<tr>
+<td><code>smallint</code></td>
+<td>2</td>
+<td>0~65535</td>
+<td>-32768~32767</td>
+<td>中等范围整数</td>
+</tr>
+<tr>
+<td><code>int</code></td>
+<td>4</td>
+<td>0~4294967295</td>
+<td>-2147483648~2147483647</td>
+<td>常用整数类型</td>
+</tr>
+<tr>
+<td><code>bigint</code></td>
+<td>8</td>
+<td>0~1.84×10¹⁹</td>
+<td>±9.22×10¹⁸</td>
+<td>大范围整数</td>
+</tr>
+<tr>
+<td><code>decimal(m,d)</code></td>
+<td>可变</td>
+<td>/</td>
+<td>/</td>
+<td>定点数，精确计算</td>
+</tr>
+<tr>
+<td><code>float(m,d)</code></td>
+<td>4</td>
+<td>/</td>
+<td>/</td>
+<td>单精度浮点数</td>
+</tr>
+<tr>
+<td><code>double(m,d)</code></td>
+<td>8</td>
+<td>/</td>
+<td>/</td>
+<td>双精度浮点数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="（二）字符串类型">（二）字符串类型</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>取值范围</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>char(n)</code></td>
+<td>0~255个字符</td>
+<td>固定长度，尾部空格截断</td>
+</tr>
+<tr>
+<td><code>varchar(n)</code></td>
+<td>0~65535个字符</td>
+<td>可变长度，不截断空格</td>
+</tr>
+<tr>
+<td><code>tinytext</code></td>
+<td>0~255个字符</td>
+<td>短文本，可变长度</td>
+</tr>
+<tr>
+<td><code>text</code></td>
+<td>0~65535个字符</td>
+<td>长文本，可变长度</td>
+</tr>
+</tbody>
+</table>
+<h3 id="（三）日期和时间类型">（三）日期和时间类型</h3>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>取值范围</th>
+<th>格式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>date</code></td>
+<td>1000-01-01~9999-12-03</td>
+<td>YYYY-MM-DD</td>
+<td>仅存储日期</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td>-838:58:59~835:59:59</td>
+<td>HH:MM:SS</td>
+<td>仅存储时间</td>
+</tr>
+<tr>
+<td><code>datetime</code></td>
+<td>1000-01-01 00:00:00~9999-12-31 23:59:59</td>
+<td>YYYY-MM-DD HH:MM:SS</td>
+<td>日期+时间</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>1970-01-01 00:00:00~2037年</td>
+<td>YYYY-MM-DD HH:MM:SS</td>
+<td>受时区影响</td>
+</tr>
+</tbody>
+</table>
+<h3 id="（四）其他类型">（四）其他类型</h3>
+<ul>
+<li><strong>二进制类型</strong>：<code>binary</code>、<code>varbinary</code>、<code>blob</code>系列</li>
+<li><strong>枚举类型</strong>：<code>enum('成员1','成员2',...)</code></li>
+<li><strong>集合类型</strong>：<code>set('成员1','成员2',...)</code></li>
+</ul>
+<h2 id="五、定义表（核心操作与语法）">五、定义表（核心操作与语法）</h2>
+<h3 id="（一）创建表">（一）创建表</h3>
+<h4 id="1-创建新表">1. 创建新表</h4>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> [TEMPORARY] <span class="hljs-keyword">TABLE</span> [IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span>] table_name <br>[ ( [column_definition],... [index_definition] ) ] <br>[table_option] [SELECT_statement];<br></code></pre></td></tr></table></figure>
+<p><strong>示例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE TABLE</span> student (<br>    sno <span class="hljs-type">char</span>(<span class="hljs-number">6</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">PRIMARY KEY</span>,<br>    sname <span class="hljs-type">char</span>(<span class="hljs-number">8</span>) <span class="hljs-keyword">NOT NULL</span>,<br>    ssex <span class="hljs-type">char</span>(<span class="hljs-number">2</span>) <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;男&#x27;</span>,<br>    sbirthday <span class="hljs-type">date</span> <span class="hljs-keyword">NOT NULL</span>,<br>    speciality <span class="hljs-type">char</span>(<span class="hljs-number">12</span>) <span class="hljs-keyword">NULL</span>,<br>    tc tinyint <span class="hljs-keyword">NULL</span><br>) ENGINE<span class="hljs-operator">=</span>InnoDB <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8mb4;<br></code></pre></td></tr></table></figure>
+<h4 id="2-复制已有表">2. 复制已有表</h4>
+<p><strong>方式一：复制表结构（不含数据）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE TABLE</span> student1 <span class="hljs-keyword">LIKE</span> student;<br></code></pre></td></tr></table></figure>
+<p><strong>方式二：复制表结构和数据（不含索引）</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE TABLE</span> student2 <span class="hljs-keyword">AS</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> student;<br></code></pre></td></tr></table></figure>
+<h3 id="（二）查看表">（二）查看表</h3>
+<h4 id="1-查看表名称">1. 查看表名称</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SHOW</span> TABLES <span class="hljs-keyword">FROM</span> stusys;<br></code></pre></td></tr></table></figure>
+<h4 id="2-查看表基本结构">2. 查看表基本结构</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 方式一</span><br><span class="hljs-keyword">SHOW</span> COLUMNS <span class="hljs-keyword">FROM</span> student;<br><br><span class="hljs-comment">-- 方式二</span><br><span class="hljs-keyword">DESC</span> student;<br><span class="hljs-keyword">DESCRIBE</span> student;<br></code></pre></td></tr></table></figure>
+<h4 id="3-查看表详细结构">3. 查看表详细结构</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SHOW</span> <span class="hljs-keyword">CREATE TABLE</span> student\G;<br></code></pre></td></tr></table></figure>
+<h3 id="（三）修改表">（三）修改表</h3>
+<h4 id="1-添加列">1. 添加列</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 在第一列添加自增ID</span><br><span class="hljs-keyword">ALTER TABLE</span> student <br><span class="hljs-keyword">ADD</span> <span class="hljs-keyword">COLUMN</span> sid <span class="hljs-type">int</span> <span class="hljs-keyword">NOT NULL</span> <span class="hljs-keyword">UNIQUE</span> AUTO_INCREMENT <span class="hljs-keyword">FIRST</span>;<br></code></pre></td></tr></table></figure>
+<h4 id="2-修改列">2. 修改列</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 修改默认值</span><br><span class="hljs-keyword">ALTER TABLE</span> student <br><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">COLUMN</span> ssex <span class="hljs-keyword">SET</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;女&#x27;</span>;<br><br><span class="hljs-comment">-- 修改列名和类型</span><br><span class="hljs-keyword">ALTER TABLE</span> student1 <br>CHANGE <span class="hljs-keyword">COLUMN</span> sbirthday sage tinyint <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">18</span>;<br></code></pre></td></tr></table></figure>
+<h4 id="3-删除列">3. 删除列</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">ALTER TABLE</span> student <span class="hljs-keyword">DROP</span> <span class="hljs-keyword">COLUMN</span> sid;<br></code></pre></td></tr></table></figure>
+<h4 id="4-重命名表">4. 重命名表</h4>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">-- 方式一</span><br><span class="hljs-keyword">ALTER TABLE</span> student1 RENAME <span class="hljs-keyword">TO</span> student2;<br><br><span class="hljs-comment">-- 方式二</span><br>RENAME <span class="hljs-keyword">TABLE</span> student2 <span class="hljs-keyword">TO</span> student3;<br></code></pre></td></tr></table></figure>
+<h3 id="（四）删除表">（四）删除表</h3>
+<p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DROP</span> [TEMPORARY] <span class="hljs-keyword">TABLE</span> [IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span>] table_name [, table_name]...;<br></code></pre></td></tr></table></figure>
+<p><strong>示例：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> student3;<br></code></pre></td></tr></table></figure>
+<h2 id="六、存储引擎">六、存储引擎</h2>
+<h3 id="查看存储引擎">查看存储引擎</h3>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SHOW</span> ENGINES;<br></code></pre></td></tr></table></figure>
+<h3 id="MySQL-8-0主要存储引擎比较">MySQL 8.0主要存储引擎比较</h3>
+<table>
+<thead>
+<tr>
+<th>存储引擎</th>
+<th>事务支持</th>
+<th>外键支持</th>
+<th>锁级别</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>InnoDB</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>行级锁</td>
+<td>默认引擎，需要事务保障</td>
+</tr>
+<tr>
+<td><strong>MyISAM</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>表级锁</td>
+<td>只读或读写少的场景</td>
+</tr>
+<tr>
+<td><strong>MEMORY</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>表级锁</td>
+<td>临时数据，内存存储</td>
+</tr>
+<tr>
+<td><strong>CSV</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>表级锁</td>
+<td>数据交换</td>
+</tr>
+<tr>
+<td><strong>ARCHIVE</strong></td>
+<td>❌</td>
+<td>❌</td>
+<td>行级锁</td>
+<td>归档数据</td>
+</tr>
+</tbody>
+</table>
+<h3 id="存储引擎选择原则">存储引擎选择原则</h3>
+<ul>
+<li>需要事务支持：选择 <strong>InnoDB</strong></li>
+<li>只读或读多写少：选择 <strong>MyISAM</strong></li>
+<li>临时数据存储：选择 <strong>MEMORY</strong></li>
+<li>数据归档：选择 <strong>ARCHIVE</strong></li>
+</ul>
+<p><strong>推荐：</strong> 大多数场景下使用默认的 <strong>InnoDB</strong> 存储引擎。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="print-no-link">#数据库</a>
+      
+        <a href="/tags/MySQL/" class="print-no-link">#MySQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>4 MySQL 数据库和表</div>
+      <div>https://hellowydwyd.github.io/2025/10/23/4-MySQL-数据库和表/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>YuDong Wang</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年10月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/10/23/3-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%84%E8%8C%83%E5%8C%96/" title="3 关系数据库规范化">
+                        <span class="hidden-mobile">3 关系数据库规范化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'hellowydwyd/hellowydwyd.github.io');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
