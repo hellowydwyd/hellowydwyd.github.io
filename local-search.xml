@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>3 关系数据库规范化</title>
+    <link href="/2025/10/23/3-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%84%E8%8C%83%E5%8C%96/"/>
+    <url>/2025/10/23/3-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%84%E8%8C%83%E5%8C%96/</url>
+    
+    <content type="html"><![CDATA[<h2 id="一、数据依赖核心概念">一、数据依赖核心概念</h2><p>数据依赖是关系模式中属性间的关联，共3种，核心为<strong>函数依赖（FD）</strong>，此外还有多值依赖（MVD）和连接依赖（JD）。</p><h3 id="1-函数依赖定义">1. 函数依赖定义</h3><ul><li>若关系模式R中，属性/属性组X的每个具体值，都对应属性Y的唯一具体值，则称<strong>Y函数依赖于X</strong>，记为<code>X→Y</code>。</li><li>本质：X的值可唯一确定Y的值，例如“学号→姓名”（一个学号对应唯一姓名）。</li></ul><h3 id="2-3种特定函数依赖">2. 3种特定函数依赖</h3><table><thead><tr><th>类型</th><th>定义</th><th>示例</th></tr></thead><tbody><tr><td>平凡/非平凡依赖</td><td>若<code>X→Y</code>且<code>Y⊆X</code>，为平凡依赖；若<code>Y⊄X</code>，为非平凡依赖</td><td>在“学生号，课程号，成绩”中：<br>- <code>(学生号,课程号)→成绩</code>（非平凡，成绩不在X中）<br>- <code>(学生号,课程号)→课程号</code>（平凡，课程号在X中）</td></tr><tr><td>完全/部分依赖</td><td>若<code>X→Y</code>，且X的任一真子集Z都不能推出Y，为完全依赖；若存在Z⊂X能推出Y，为部分依赖</td><td>在“学号，课程号，姓名，成绩”中：<br>- <code>(学号,课程号)→成绩</code>（完全，单独学号/课程号推不出成绩）<br>- <code>(学号,课程号)→姓名</code>（部分，学号 alone 可推出姓名）</td></tr><tr><td>传递依赖</td><td>若<code>X→Y</code>且<code>Y→Z</code>（Y不依赖于Z，Z⊄Y），则<code>X→Z</code>为传递依赖</td><td>在“学号，系名，系主任”中：<br>- <code>学号→系名</code>，<code>系名→系主任</code>，故<code>学号→系主任</code>（传递依赖）</td></tr></tbody></table><h3 id="3-码的函数依赖定义">3. 码的函数依赖定义</h3><ul><li>候选码：属性/属性组K，若<code>K→U</code>（U为关系所有属性），则K为候选码；选定一个候选码作为<strong>主码</strong>。</li></ul><h2 id="二、关系规范化的目的">二、关系规范化的目的</h2><h3 id="1-问题根源">1. 问题根源</h3><p>关系模式中<strong>不合适的数据依赖</strong>会导致4类异常，以“学生信息表（学号，姓名，系别，系主任，课程号，成绩）”为例：</p><table><thead><tr><th>异常类型</th><th>表现</th><th>示例</th></tr></thead><tbody><tr><td>数据冗余</td><td>重复存储无关数据</td><td>系主任姓名随该系每个学生重复出现</td></tr><tr><td>更新异常</td><td>修改需同步多处，易出错</td><td>更换系主任时，需修改该系所有学生的记录</td></tr><tr><td>插入异常</td><td>必要数据无法插入</td><td>新系无学生时，系和系主任信息无法存入</td></tr><tr><td>删除异常</td><td>删除目标数据时误删关联数据</td><td>删除某系所有学生记录时，系和系主任信息也被删</td></tr></tbody></table><h3 id="2-规范化目标">2. 规范化目标</h3><p>通过<strong>分解关系模式</strong>，消除不合适的数据依赖，解决上述4类异常，提升数据完整性和存储效率。</p><h2 id="三、范式与规范化过程">三、范式与规范化过程</h2><p>范式（Normal Form）是衡量关系模式规范化程度的标准，满足最低要求的是1NF，逐级提升至5NF，关系为<code>1NF⊃2NF⊃3NF⊃BCNF⊃4NF⊃5NF</code>，实际应用中<strong>规范化到3NF即可</strong>。</p><h3 id="1-各范式定义与判定">1. 各范式定义与判定</h3><table><thead><tr><th>范式</th><th>定义</th><th>关键要求</th><th>示例（不满足→满足的分解）</th></tr></thead><tbody><tr><td>1NF（最低）</td><td>关系中每个属性的值域为“不可分的原子数据”</td><td>属性不可再分</td><td>原“职工表”含“工资”（分基本工资/工龄工资）→ 分解为“职工号，姓名，基本工资，工龄工资”</td></tr><tr><td>2NF</td><td>在1NF基础上，<strong>非主属性完全函数依赖于主码</strong>（无部分依赖）</td><td>消除非主属性对主码的部分依赖</td><td>原“学生（学号，姓名，课程，学分）”（<code>学号→姓名</code>，部分依赖）→ 分解为：<br>- S1（学号，姓名）<br>- S2（学号，课程，学分）</td></tr><tr><td>3NF</td><td>在2NF基础上，<strong>非主属性不传递依赖于主码</strong></td><td>消除非主属性对主码的传递依赖</td><td>原“学生（学号，姓名，系名，系主任）”（<code>学号→系主任</code>，传递依赖）→ 分解为：<br>- 学生（学号，姓名，系名）<br>- 系（系名，系主任）</td></tr></tbody></table><h3 id="2-规范化核心步骤（以1NF→3NF为例）">2. 规范化核心步骤（以1NF→3NF为例）</h3><p>以“学生（学号，姓名，系名，系主任，课程号，课程名，成绩）”为例：</p><ol><li><strong>判定1NF</strong>：所有属性不可再分，满足1NF；</li><li><strong>分解为2NF</strong>：消除非主属性对主码（学号+课程号）的部分依赖，分解为3个关系：<ul><li>学生（学号，姓名，系名，系主任）</li><li>课程（课程号，课程名）</li><li>成绩（学号，课程号，成绩）</li></ul></li><li><strong>分解为3NF</strong>：消除学生表中“系主任”对“学号”的传递依赖，再分解为：<ul><li>学生（学号，姓名，系名）</li><li>系（系名，系主任）</li></ul></li><li><strong>最终3NF关系</strong>：学生、系、课程、成绩（共4个表）。</li></ol><h3 id="3-规范化的优缺点">3. 规范化的优缺点</h3><table><thead><tr><th>维度</th><th>说明</th></tr></thead><tbody><tr><td>优点</td><td>减少数据冗余，避免插入/删除/更新异常，保持数据一致性</td></tr><tr><td>缺点</td><td>数据分散在多表中，查询时需多表连接，增加操作复杂度，降低效率</td></tr></tbody></table><h2 id="四、核心要点总结">四、核心要点总结</h2><ol><li><strong>关键概念</strong>：需掌握函数依赖（平凡/非平凡、完全/部分、传递）、候选码、1NF/2NF/3NF的定义；</li><li><strong>核心目标</strong>：通过分解关系模式，消除不合适的数据依赖，解决数据冗余与操作异常；</li><li><strong>实操重点</strong>：规范化到3NF的步骤——先消除部分依赖（1NF→2NF），再消除传递依赖（2NF→3NF）。</li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>数据库</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>数据库</tag>
+      
+      <tag>MySql</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>2 关系数据库</title>
     <link href="/2025/10/23/2-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     <url>/2025/10/23/2-%E5%85%B3%E7%B3%BB%E6%95%B0%E6%8D%AE%E5%BA%93/</url>
