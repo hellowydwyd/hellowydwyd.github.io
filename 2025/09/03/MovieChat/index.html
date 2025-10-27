@@ -349,7 +349,7 @@
 <h3 id="1-整体架构">1. 整体架构</h3>
 <p>MovieChat由四大核心组件构成，架构如图2所示：</p>
 <ul>
-<li><strong>帧级视觉特征提取器</strong>：采用图像预训练模型（EVA-CLIP的ViT-G/14、BLIP-2的Q-Former），避免依赖文本对齐弱的视频基础模型，通过滑动窗口提取帧特征，公式为(B_{n}=\left{x_{i}=\mathcal{V}\left(v_{i}\right) | \forall i=1, …, C\right})（(B_n)为第n个滑动窗口的视频片段特征，C为窗口帧数量）。</li>
+<li><strong>帧级视觉特征提取器</strong>：采用图像预训练模型（EVA-CLIP的ViT-G/14、BLIP-2的Q-Former），避免依赖文本对齐弱的视频基础模型，通过滑动窗口提取帧特征，公式为(B_{n}=\left{x_{i}=\mathcal{V}\left(v_{i}\right) | \forall i=1, ..., C\right})（(B_n)为第n个滑动窗口的视频片段特征，C为窗口帧数量）。</li>
 <li><strong>短期内存（S）</strong>：固定长度FIFO队列缓冲区，存储未处理的帧令牌，容量(K=C×G)（G为滑动次数），满容量时将早期令牌传入内存整合模块，清空后用整合结果重新初始化，实现滑动窗口间信息传递。</li>
 <li><strong>长期内存（L）</strong>：通过内存整合算法（Algorithm 1）合并相似相邻帧，解决“灾难性遗忘”与内存冗余问题。计算相邻帧余弦相似度(s=\frac{1}{N} \sum <em>{j=1}^{N}\left[ cos \left(x</em>{i}^{j},x_{i+1}^{j}\right) \right])（N为令牌数），贪心合并至预设帧数(R_L)，并采用分层分解位置编码将长度扩展至(n^2)，适配长序列需求。</li>
 <li><strong>视频投影层与LLM</strong>：将视频特征（短期/长期内存+当前帧，依推理模式选择）通过Q-Former与线性投影层映射至文本空间，输入LLM（如LLaMA）生成交互回答，公式为(A={\mathcal {O}}(Q,{\mathcal {P}}(V)))（A为回答，Q为问题，P为投影函数）。</li>
