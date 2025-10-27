@@ -19,22 +19,22 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="4.1 存储器的层次结构总结 一、核心框架：多级存储器结构 计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：    存储层级 典型组件 速度 容量 核心作用     最高速层 CPU寄存器 极快（纳秒级） 极小（几十个到几百个） 暂存CPU当前执行的指令、操作数，避免频繁访问内存   高速缓冲层 高速缓存（Cache） 较快（接近CPU速">
+    <meta name="description" content="一、核心流程：用户源程序到可执行进程的三步转化 用户源程序需经过编译→链接→装入三个核心步骤，才能转化为内存中可执行的进程，三者的逻辑关系与执行顺序如下：   第一步：编译（Compile）  执行主体：编译程序。 核心操作：将用户编写的高级语言（如C、Java）源代码，翻译成由机器指令构成的若干个目标模块（每个模块对应源代码中的一个逻辑单元，如函数、类），目标模块地址通常从“0”开始（相对地址）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="4.1 存储器的层次结构">
-<meta property="og:url" content="https://hellowydwyd.github.io/2025/10/27/4-1-%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:title" content="4.2 程序的装入和链接">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/10/27/4-2-%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%A3%85%E5%85%A5%E5%92%8C%E9%93%BE%E6%8E%A5/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="4.1 存储器的层次结构总结 一、核心框架：多级存储器结构 计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：    存储层级 典型组件 速度 容量 核心作用     最高速层 CPU寄存器 极快（纳秒级） 极小（几十个到几百个） 暂存CPU当前执行的指令、操作数，避免频繁访问内存   高速缓冲层 高速缓存（Cache） 较快（接近CPU速">
+<meta property="og:description" content="一、核心流程：用户源程序到可执行进程的三步转化 用户源程序需经过编译→链接→装入三个核心步骤，才能转化为内存中可执行的进程，三者的逻辑关系与执行顺序如下：   第一步：编译（Compile）  执行主体：编译程序。 核心操作：将用户编写的高级语言（如C、Java）源代码，翻译成由机器指令构成的若干个目标模块（每个模块对应源代码中的一个逻辑单元，如函数、类），目标模块地址通常从“0”开始（相对地址）">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-10-27T00:54:40.000Z">
-<meta property="article:modified_time" content="2025-10-27T00:55:27.676Z">
+<meta property="article:published_time" content="2025-10-27T01:07:18.000Z">
+<meta property="article:modified_time" content="2025-10-27T01:07:58.838Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="操作系统">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>4.1 存储器的层次结构 - Wydcoder&#39;s Tech Blog</title>
+  <title>4.2 程序的装入和链接 - Wydcoder&#39;s Tech Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -216,7 +216,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="4.1 存储器的层次结构"></span>
+            <span id="subtitle" data-typed-text="4.2 程序的装入和链接"></span>
           
         </div>
 
@@ -232,8 +232,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-10-27 08:54" pubdate>
-          星期一, 十月 27日 2025, 8:54 早上
+        <time datetime="2025-10-27 09:07" pubdate>
+          星期一, 十月 27日 2025, 9:07 上午
         </time>
       </span>
     
@@ -245,7 +245,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          916 字
+          2.3k 字
         
       </span>
     
@@ -257,7 +257,7 @@
         
         
           <!-- compatible with older versions-->
-          8 分钟
+          19 分钟
         
       </span>
     
@@ -294,13 +294,13 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">4.1 存储器的层次结构</h1>
+            <h1 id="seo-header">4.2 程序的装入和链接</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2025年10月27日 早上
+                    本文最后更新于：2025年10月27日 上午
                   
                 
               </p>
@@ -308,80 +308,180 @@
             
               <div class="markdown-body">
                 
-                <h1>4.1 存储器的层次结构总结</h1>
-<h2 id="一、核心框架：多级存储器结构">一、核心框架：多级存储器结构</h2>
-<p>计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：</p>
+                <h2 id="一、核心流程：用户源程序到可执行进程的三步转化">一、核心流程：用户源程序到可执行进程的三步转化</h2>
+<p>用户源程序需经过<strong>编译→链接→装入</strong>三个核心步骤，才能转化为内存中可执行的进程，三者的逻辑关系与执行顺序如下：</p>
+<ol>
+<li>
+<p><strong>第一步：编译（Compile）</strong></p>
+<ul>
+<li>执行主体：编译程序。</li>
+<li>核心操作：将用户编写的高级语言（如C、Java）源代码，翻译成由机器指令构成的<strong>若干个目标模块</strong>（每个模块对应源代码中的一个逻辑单元，如函数、类），目标模块地址通常从“0”开始（相对地址），且可能依赖外部库函数（如printf、math函数）。</li>
+</ul>
+</li>
+<li>
+<p><strong>第二步：链接（Link）</strong></p>
+<ul>
+<li>执行主体：链接程序。</li>
+<li>核心操作：将编译生成的所有目标模块，以及程序运行所需的库函数模块（如系统库、第三方库），合并为一个<strong>完整的装入模块</strong>（可执行文件的前身）。</li>
+<li>关键任务：
+<ul>
+<li>修正相对地址：将各目标模块的“局部相对地址”统一转换为装入模块的“全局相对地址”，确保模块间地址连续。</li>
+<li>解析外部符号：处理模块间的函数调用、变量引用（如模块A调用模块B的函数），将“符号名”替换为实际的地址偏移量，避免运行时“找不到符号”错误。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>第三步：装入（Load）</strong></p>
+<ul>
+<li>执行主体：装入程序。</li>
+<li>核心操作：将链接生成的装入模块加载到内存的指定物理地址空间，同时为进程创建<strong>进程控制块（PCB）</strong> ，记录进程的内存地址、状态等信息，最终形成可调度执行的进程。</li>
+</ul>
+</li>
+</ol>
+<h2 id="二、程序的装入方式：三种地址变换策略">二、程序的装入方式：三种地址变换策略</h2>
+<p>装入的核心是“将装入模块的相对地址转换为内存物理地址”，根据地址变换的时机不同，分为三种装入方式：</p>
+<h3 id="1-绝对装入方式（Absolute-Loading-Mode）">1. 绝对装入方式（Absolute Loading Mode）</h3>
+<ul>
+<li><strong>适用场景</strong>：单用户、单任务操作系统（如早期DOS），内存地址固定且唯一。</li>
+<li><strong>核心逻辑</strong>：编译阶段直接生成“绝对物理地址”的目标代码（无需链接阶段调整地址），装入程序直接将目标模块加载到编译时指定的物理地址。</li>
+<li><strong>特点</strong>：地址固定，无法适应多道程序环境（多个程序可能争抢同一物理地址），灵活性极差。</li>
+</ul>
+<h3 id="2-可重定位装入方式（Relocation-Loading-Mode）">2. 可重定位装入方式（Relocation Loading Mode）</h3>
+<ul>
+<li><strong>适用场景</strong>：多道程序环境（多个进程共享内存），目标模块起始地址从“0”开始（相对地址）。</li>
+<li><strong>核心逻辑</strong>：装入时一次性完成地址变换——根据内存空闲区的实际物理地址，将装入模块中所有相对地址（如指令中的“2500”）统一加上“空闲区起始地址”（如10000），转换为物理地址（如12500），后续运行过程中地址不再改变。</li>
+<li><strong>示例</strong>：若装入模块起始地址为0，某指令“LOAD 1,2500”（相对地址2500），装入到物理地址10000开始的区域后，指令变为“LOAD 1,12500”（10000+2500）。</li>
+<li><strong>特点</strong>：解决多道程序地址冲突问题，但地址变换仅在装入时执行，进程运行期间无法移动内存位置（若内存碎片需整理，进程需重新装入）。</li>
+</ul>
+<h3 id="3-动态运行时装入方式（Dynamic-Run-time-Loading-Mode）">3. 动态运行时装入方式（Dynamic Run-time Loading Mode）</h3>
+<ul>
+<li><strong>适用场景</strong>：需支持进程在运行中动态移动内存位置的场景（如内存紧缩、进程对换）。</li>
+<li><strong>核心逻辑</strong>：装入时不进行地址变换，装入模块仍保留相对地址；进程运行过程中，每次访问指令或数据时，由<strong>硬件地址变换机构（如重定位寄存器）</strong> 实时将相对地址转换为物理地址（物理地址=相对地址+重定位寄存器中的进程基址）。</li>
+<li><strong>示例</strong>：重定位寄存器存放进程基址10000，指令“LOAD 1,2500”运行时，实时计算物理地址10000+2500=12500，若进程移动到基址15000，只需更新重定位寄存器值，无需修改指令地址。</li>
+<li><strong>特点</strong>：地址变换动态执行，进程可灵活移动内存位置，支持内存碎片整理和进程对换，是现代操作系统的核心装入方式，但依赖硬件支持。</li>
+</ul>
+<h2 id="三、程序的链接方式：三种模块合并时机">三、程序的链接方式：三种模块合并时机</h2>
+<p>链接的核心是“合并模块并处理地址与符号”，根据链接时机不同，分为三种方式：</p>
+<h3 id="1-静态链接（Static-Linking）">1. 静态链接（Static Linking）</h3>
+<ul>
+<li><strong>执行时机</strong>：程序运行前（编译、装入前）。</li>
+<li><strong>核心逻辑</strong>：链接程序将所有目标模块、库函数模块一次性合并为一个<strong>完整的可执行文件（装入模块）</strong> ，后续不再拆分；可执行文件中包含程序运行所需的全部指令和数据，地址已完全确定。</li>
+<li><strong>关键操作</strong>：
+<ul>
+<li>调整相对地址：将各模块的局部地址统一为可执行文件的全局地址（如模块A占0~1000，模块B占1001~2000）。</li>
+<li>解析外部符号：将“调用模块B函数”的符号引用，替换为模块B在可执行文件中的实际地址（如1500）。</li>
+</ul>
+</li>
+<li><strong>优点</strong>：运行时无需依赖外部模块，启动速度快。</li>
+<li><strong>缺点</strong>：
+<ul>
+<li>可执行文件体积大（包含所有库函数代码），浪费磁盘和内存空间。</li>
+<li>若库函数更新（如修复漏洞），需重新编译链接生成新的可执行文件，维护成本高。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-装入时动态链接（Load-time-Dynamic-Linking）">2. 装入时动态链接（Load-time Dynamic Linking）</h3>
+<ul>
+<li><strong>执行时机</strong>：程序装入内存的过程中（边装入边链接）。</li>
+<li><strong>核心逻辑</strong>：编译仅生成“未链接的目标模块集合”，装入程序加载目标模块时，按需链接所需的库函数模块（如用到printf时才链接标准输入输出库），链接完成后再将整体装入内存。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>便于模块修改和更新：库函数更新后，无需重新编译用户程序，只需替换库文件即可（装入时会链接新库）。</li>
+<li>支持模块共享：多个进程可共享同一库模块（如多个程序共用标准库），节省内存空间。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：装入过程需同步执行链接，延长程序启动时间；若依赖的库文件缺失，装入会失败。</li>
+</ul>
+<h3 id="3-运行时动态链接（Run-time-Dynamic-Linking）">3. 运行时动态链接（Run-time Dynamic Linking）</h3>
+<ul>
+<li><strong>执行时机</strong>：程序运行过程中（需调用某模块时才链接）。</li>
+<li><strong>核心逻辑</strong>：程序装入时仅加载主模块和已确定需立即使用的模块，其他模块（如条件分支中的函数、不常用的库）暂不装入；当程序执行到需调用某未链接模块时，由<strong>动态链接器</strong>实时加载该模块并完成链接，链接后继续执行。</li>
+<li><strong>示例</strong>：程序主模块装入后，执行到“if(debug) 调用日志模块”时，若debug为真，才加载并链接日志模块；若debug为假，日志模块始终不装入内存。</li>
+<li><strong>优点</strong>：
+<ul>
+<li>加快程序装入速度（仅加载必要模块）。</li>
+<li>节省内存空间（未用到的模块不装入），尤其适合包含大量可选功能的程序（如大型软件的插件）。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>：运行时可能因模块缺失或链接错误导致程序崩溃；首次调用未链接模块时，存在短暂的链接延迟。</li>
+</ul>
+<h2 id="四、核心对比：装入方式与链接方式的关键差异">四、核心对比：装入方式与链接方式的关键差异</h2>
+<h3 id="1-装入方式对比">1. 装入方式对比</h3>
 <table>
 <thead>
 <tr>
-<th>存储层级</th>
-<th>典型组件</th>
-<th>速度</th>
-<th>容量</th>
-<th>核心作用</th>
+<th>装入方式</th>
+<th>地址变换时机</th>
+<th>硬件依赖</th>
+<th>灵活性（进程移动）</th>
+<th>适用场景</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>最高速层</td>
-<td>CPU寄存器</td>
-<td>极快（纳秒级）</td>
-<td>极小（几十个到几百个）</td>
-<td>暂存CPU当前执行的指令、操作数，避免频繁访问内存</td>
+<td>绝对装入</td>
+<td>编译时</td>
+<td>无</td>
+<td>无</td>
+<td>单用户、单任务系统</td>
 </tr>
 <tr>
-<td>高速缓冲层</td>
-<td>高速缓存（Cache）</td>
-<td>较快（接近CPU速度）</td>
-<td>较小（几MB到几十MB）</td>
-<td>存放主存中“高频访问数据”，减少CPU访问主存的次数，提升程序执行速度</td>
+<td>可重定位装入</td>
+<td>装入时（一次性）</td>
+<td>无</td>
+<td>低（需重新装入）</td>
+<td>早期多道程序系统</td>
 </tr>
 <tr>
-<td>主存层</td>
-<td>主存储器（内存）</td>
-<td>中等（微秒级）</td>
-<td>中等（GB级）</td>
-<td>直接与CPU交互，存放当前运行的进程、程序指令和数据</td>
-</tr>
-<tr>
-<td>磁盘缓存层</td>
-<td>磁盘缓存（利用主存空间）</td>
-<td>与主存一致</td>
-<td>动态分配（基于主存空闲空间）</td>
-<td>暂存磁盘中“频繁使用的数据/信息”，减少对低速磁盘的I/O访问，缓解磁盘与主存的速度差</td>
-</tr>
-<tr>
-<td>辅存层</td>
-<td>磁盘、可移动存储介质（U盘、光盘等）</td>
-<td>极慢（毫秒级）</td>
-<td>极大（TB级及以上）</td>
-<td>长期存储系统软件、用户数据、未运行的程序，作为主存的“后备仓库”</td>
+<td>动态运行时装入</td>
+<td>运行时（实时）</td>
+<td>有（重定位寄存器）</td>
+<td>高（支持动态移动）</td>
+<td>现代多道程序操作系统</td>
 </tr>
 </tbody>
 </table>
-<h2 id="二、关键层级详解">二、关键层级详解</h2>
-<h3 id="1-主存储器与寄存器">1. 主存储器与寄存器</h3>
-<ul>
-<li><strong>交互规则</strong>：CPU的控制部件无法直接访问辅存，只能从主存储器中获取指令和数据，主存是CPU与外部存储的“桥梁”。</li>
-<li><strong>核心矛盾</strong>：主存的访问速度（约几十到几百微秒）远低于CPU的指令执行速度（纳秒级），若CPU直接频繁访问主存，会因“等待主存数据”产生大量空闲时间，降低系统效率。</li>
-</ul>
-<h3 id="2-高速缓存（Cache）">2. 高速缓存（Cache）</h3>
-<ul>
-<li><strong>设计依据</strong>：基于程序“局部性原理”（即程序执行时，短期内会反复访问某一区域的数据/指令）。</li>
-<li><strong>工作机制</strong>：系统会自动将主存中“近期高频访问的信息块”复制到高速缓存中。当CPU需要数据时，先查询高速缓存：若存在（“命中”），直接读取（速度接近CPU）；若不存在（“未命中”），再访问主存，并将对应信息块载入高速缓存，供后续使用。</li>
-</ul>
-<h3 id="3-磁盘缓存">3. 磁盘缓存</h3>
-<ul>
-<li><strong>设计背景</strong>：磁盘的I/O速度（约几毫秒）远低于主存访问速度，磁盘I/O是系统性能的常见瓶颈。</li>
-<li><strong>实现方式</strong>：利用主存中的一部分空闲空间作为“磁盘缓存”，暂存磁盘上“频繁读写的数据”（如操作系统常用文件、用户高频访问的文档等）。</li>
-<li><strong>效果</strong>：当需要访问这些数据时，直接从磁盘缓存读取（速度等同于主存），无需等待磁盘转动和磁头定位，大幅减少磁盘I/O次数，提升系统响应速度。</li>
-</ul>
-<h2 id="三、层次结构的核心价值">三、层次结构的核心价值</h2>
-<p>通过多级存储协作，计算机系统实现了“速度接近CPU、容量接近辅存”的综合效果：</p>
+<h3 id="2-链接方式对比">2. 链接方式对比</h3>
+<table>
+<thead>
+<tr>
+<th>链接方式</th>
+<th>链接时机</th>
+<th>可执行文件体积</th>
+<th>模块共享能力</th>
+<th>维护成本（库更新）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>静态链接</td>
+<td>运行前</td>
+<td>大</td>
+<td>无</td>
+<td>高（需重新编译）</td>
+</tr>
+<tr>
+<td>装入时动态链接</td>
+<td>装入时</td>
+<td>中</td>
+<td>有</td>
+<td>低（替换库文件）</td>
+</tr>
+<tr>
+<td>运行时动态链接</td>
+<td>运行时（按需）</td>
+<td>小</td>
+<td>有</td>
+<td>低（替换库文件）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="五、核心总结">五、核心总结</h2>
 <ol>
-<li><strong>性能保障</strong>：高速缓存和寄存器解决了“CPU速度与主存速度不匹配”的问题，避免CPU闲置；</li>
-<li><strong>成本平衡</strong>：主存（成本较高）负责“实时运行数据”，辅存（成本低）负责“长期存储”，兼顾性能与存储容量需求；</li>
-<li><strong>效率优化</strong>：磁盘缓存缓解了“主存与磁盘速度不匹配”的瓶颈，减少I/O延迟，提升整体系统吞吐量。</li>
+<li><strong>流程关系</strong>：编译生成目标模块，链接合并为装入模块，装入加载为进程，三者依次执行，共同完成“源代码→可执行进程”的转化。</li>
+<li><strong>装入核心</strong>：地址变换时机决定灵活性，动态运行时装入因支持实时地址转换，成为现代OS的首选。</li>
+<li><strong>链接核心</strong>：链接时机决定资源利用率，运行时动态链接因按需加载模块，大幅节省内存和磁盘空间，是现代大型程序的主流链接方式。</li>
 </ol>
 
                 
@@ -435,8 +535,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>4.1 存储器的层次结构</div>
-      <div>https://hellowydwyd.github.io/2025/10/27/4-1-存储器的层次结构/</div>
+      <div>4.2 程序的装入和链接</div>
+      <div>https://hellowydwyd.github.io/2025/10/27/4-2-程序的装入和链接/</div>
     </div>
     <div class="license-meta">
       
@@ -480,18 +580,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/10/27/4-2-%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%A3%85%E5%85%A5%E5%92%8C%E9%93%BE%E6%8E%A5/" title="4.2 程序的装入和链接">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">4.2 程序的装入和链接</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/10/23/4-MySQL-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%92%8C%E8%A1%A8/" title="4 MySQL 数据库和表">
-                        <span class="hidden-mobile">4 MySQL 数据库和表</span>
+                      <a href="/2025/10/27/4-1-%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84/" title="4.1 存储器的层次结构">
+                        <span class="hidden-mobile">4.1 存储器的层次结构</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
