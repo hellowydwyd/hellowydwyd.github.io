@@ -2794,10 +2794,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 </ol>
 ]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4387,10 +4387,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 <p>停止 - 等待协议是可靠传输的 “基础模型”，通过 “停等确认 + 超时重传 + 分组编号” 实现数据可靠交付，优点是逻辑简单、易于实现，缺点是信道利用率极低（尤其长时延链路）。GBN 和 SR 协议在此基础上优化，通过 “连续发送 + 选择性重传” 提升利用率，但复杂度相应增加。三者共同构成了计算机网络各层可靠传输的核心技术框架，需结合场景选择适用协议</p>
 ]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4519,10 +4519,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 </table>
 ]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4596,10 +4596,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 <p>而<strong>无线领域</strong>因 “无线信道的广播天性”，无法采用点对点交换架构，仍需使用共享媒体技术（如随机接入）。</p>
 ]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4713,10 +4713,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 <h2 id="附：SR协议伪代码示例">附：SR协议伪代码示例</h2>
 <figure class="highlight python"><table><tr><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SelectiveRepeatProtocol</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, window_size</span>):<br>        <span class="hljs-variable language_">self</span>.window_size = window_size<br>        <span class="hljs-variable language_">self</span>.send_window = []<br>        <span class="hljs-variable language_">self</span>.recv_window = []<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_packet</span>(<span class="hljs-params">self, packet</span>):<br>        <span class="hljs-comment"># 发送数据包逻辑</span><br>        <span class="hljs-keyword">pass</span><br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">receive_packet</span>(<span class="hljs-params">self, packet</span>):<br>        <span class="hljs-comment"># 接收数据包逻辑</span><br>        <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4881,10 +4881,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 </table>
 ]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -4965,10 +4965,10 @@ R(\alpha_2 | x) &amp;= \lambda_{21} P(\omega_1 | x) = 1 \times 0.818 = 0.818
 </ol>
 ]]></content>
       <categories>
-        <category>计算机与网络</category>
+        <category>计算机网络</category>
       </categories>
       <tags>
-        <tag>计算机与网络</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -7540,6 +7540,18 @@ M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
       </categories>
       <tags>
         <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>4.1 网络层概述</title>
+    <url>/2025/11/10/4-1-%E7%BD%91%E7%BB%9C%E5%B1%82%E6%A6%82%E8%BF%B0/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>计算机网络</category>
+        <category>第四章</category>
+      </categories>
+      <tags>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
 </search>

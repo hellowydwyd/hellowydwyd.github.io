@@ -19,22 +19,22 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="一、差错检测技术 接收方数据链路层可通过差错检测技术（典型技术为循环冗余校验 CRC），检测帧在传输过程中是否产生误码（比特错误），核心是借助帧尾的FCS 字段（检错码） 实现检测。 二、数据链路层的两种服务类型    服务类型 核心特点 适用场景逻辑     不可靠传输服务 仅丢弃存在误码的帧，不额外处理 适用于误码率低的场景，可减少开销   可靠传输服务 确保 “发送端发送什么，接收端就收到什">
+    <meta name="description" content="专注于编程技术、开发经验分享和技术思考的个人博客">
 <meta property="og:type" content="article">
-<meta property="og:title" content="可靠传输的基本概念">
-<meta property="og:url" content="https://hellowydwyd.github.io/2025/10/07/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/index.html">
+<meta property="og:title" content="4.1 网络层概述">
+<meta property="og:url" content="https://hellowydwyd.github.io/2025/11/10/4-1-%E7%BD%91%E7%BB%9C%E5%B1%82%E6%A6%82%E8%BF%B0/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="一、差错检测技术 接收方数据链路层可通过差错检测技术（典型技术为循环冗余校验 CRC），检测帧在传输过程中是否产生误码（比特错误），核心是借助帧尾的FCS 字段（检错码） 实现检测。 二、数据链路层的两种服务类型    服务类型 核心特点 适用场景逻辑     不可靠传输服务 仅丢弃存在误码的帧，不额外处理 适用于误码率低的场景，可减少开销   可靠传输服务 确保 “发送端发送什么，接收端就收到什">
+<meta property="og:description" content="专注于编程技术、开发经验分享和技术思考的个人博客">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2025-10-07T13:32:56.000Z">
-<meta property="article:modified_time" content="2025-11-10T05:47:49.338Z">
+<meta property="article:published_time" content="2025-11-10T05:46:15.000Z">
+<meta property="article:modified_time" content="2025-11-10T05:54:59.544Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>可靠传输的基本概念 - Wydcoder&#39;s Tech Blog</title>
+  <title>4.1 网络层概述 - Wydcoder&#39;s Tech Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -210,13 +210,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/images/post-bg.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/images/about-bg.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="可靠传输的基本概念"></span>
+            <span id="subtitle" data-typed-text="4.1 网络层概述"></span>
           
         </div>
 
@@ -232,8 +232,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-10-07 21:32" pubdate>
-          星期二, 十月 7日 2025, 9:32 晚上
+        <time datetime="2025-11-10 13:46" pubdate>
+          星期一, 十一月 10日 2025, 1:46 下午
         </time>
       </span>
     
@@ -245,7 +245,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          627 字
+          0 字
         
       </span>
     
@@ -257,7 +257,7 @@
         
         
           <!-- compatible with older versions-->
-          6 分钟
+          1 分钟
         
       </span>
     
@@ -294,7 +294,7 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">可靠传输的基本概念</h1>
+            <h1 id="seo-header">4.1 网络层概述</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
@@ -308,80 +308,7 @@
             
               <div class="markdown-body">
                 
-                <h2 id="一、差错检测技术">一、差错检测技术</h2>
-<p>接收方数据链路层可通过<strong>差错检测技术</strong>（典型技术为循环冗余校验 CRC），检测帧在传输过程中是否产生<strong>误码（比特错误）</strong>，核心是借助帧尾的<strong>FCS 字段（检错码）</strong> 实现检测。</p>
-<h2 id="二、数据链路层的两种服务类型">二、数据链路层的两种服务类型</h2>
-<table>
-<thead>
-<tr>
-<th>服务类型</th>
-<th>核心特点</th>
-<th>适用场景逻辑</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>不可靠传输服务</td>
-<td>仅丢弃存在误码的帧，不额外处理</td>
-<td>适用于误码率低的场景，可减少开销</td>
-</tr>
-<tr>
-<td>可靠传输服务</td>
-<td>确保 “发送端发送什么，接收端就收到什么”</td>
-<td>适用于误码率高的场景，需保障数据准确性</td>
-</tr>
-</tbody>
-</table>
-<h2 id="三、不同链路的服务需求差异">三、不同链路的服务需求差异</h2>
-<ol>
-<li><strong>有线链路</strong>：误码率较低，为减小开销，<strong>不要求</strong>数据链路层提供可靠传输服务；若出现误码，由上层协议处理可靠传输问题。</li>
-<li><strong>无线链路</strong>：易受干扰导致误码率较高，<strong>必须要求</strong>数据链路层向上层提供可靠传输服务。</li>
-</ol>
-<h2 id="四、传输差错的分类">四、传输差错的分类</h2>
-<p>比特差错只是传输差错的一种，从计算机网络体系结构整体来看，传输差错可分为四类，具体如下：</p>
-<table>
-<thead>
-<tr>
-<th>差错类型</th>
-<th>定义</th>
-<th>常见出现层级</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>比特差错</td>
-<td>数据传输中比特位发生错误（如 0 变 1、1 变 0）</td>
-<td>数据链路层</td>
-</tr>
-<tr>
-<td>分组丢失</td>
-<td>分组在传输中被丢弃（如路由器输入队列满时主动丢弃）</td>
-<td>多出现于上层（非数据链路层）</td>
-</tr>
-<tr>
-<td>分组失序</td>
-<td>分组到达接收端的顺序与发送顺序不一致</td>
-<td>多出现于上层（非数据链路层）</td>
-</tr>
-<tr>
-<td>分组重复</td>
-<td>同一分组被多次传输到接收端</td>
-<td>多出现于上层（非数据链路层）</td>
-</tr>
-</tbody>
-</table>
-<h2 id="五、可靠传输的层级范围与选择原则">五、可靠传输的层级范围与选择原则</h2>
-<ol>
-<li><strong>层级范围</strong>：可靠传输服务不局限于数据链路层，网络体系结构中<strong>其他各层均可选择实现</strong>。例如：
-<ul>
-<li>运输层：TCP 提供面向连接的可靠传输服务，UDP 提供无连接的不可靠传输服务。</li>
-<li>网际层：IP 提供无连接的不可靠传输服务。</li>
-<li>数据链路层：802.11 无线局域网要求实现可靠传输，以太网不要求。</li>
-</ul>
-</li>
-<li><strong>选择原则</strong>：可靠传输实现复杂、开销较大，<strong>是否使用取决于应用需求</strong>，需在 “可靠性” 与 “开销成本” 间权衡。</li>
-</ol>
-
+                
                 
               </div>
             
@@ -401,6 +328,13 @@
         
   <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="category-chain-item">计算机网络</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E7%AC%AC%E5%9B%9B%E7%AB%A0/" class="category-chain-item">第四章</a>
+  
+  
+
   
 
       </span>
@@ -426,8 +360,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>可靠传输的基本概念</div>
-      <div>https://hellowydwyd.github.io/2025/10/07/可靠传输的基本概念/</div>
+      <div>4.1 网络层概述</div>
+      <div>https://hellowydwyd.github.io/2025/11/10/4-1-网络层概述/</div>
     </div>
     <div class="license-meta">
       
@@ -439,7 +373,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2025年10月7日</div>
+          <div>2025年11月10日</div>
         </div>
       
       
@@ -471,18 +405,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/10/08/%E5%8F%AF%E9%9D%A0%E4%BC%A0%E8%BE%93-%E5%81%9C%E6%AD%A2%E7%AD%89%E5%BE%85%E5%8D%8F%E8%AE%AE/" title="可靠传输-停止等待协议">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">可靠传输-停止等待协议</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/10/07/%E5%B7%AE%E9%94%99%E6%A3%80%E6%B5%8B/" title="差错检测">
-                        <span class="hidden-mobile">差错检测</span>
+                      <a href="/2025/10/27/4-3-%E8%BF%9E%E7%BB%AD%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%E6%80%BB%E7%BB%93/" title="4.3 连续分配方式总结">
+                        <span class="hidden-mobile">4.3 连续分配方式总结</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
