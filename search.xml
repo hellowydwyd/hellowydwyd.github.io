@@ -367,6 +367,11 @@
 <h3 id="（一）概述">（一）概述</h3>
 <ol>
 <li><strong>定义</strong>：对现实世界数据特征的抽象，用于描述、组织数据及对数据操作，是数据库系统的核心与基础。现实世界数据需经“现实世界→信息世界（概念模型）→计算机世界（逻辑模型）”三阶段转换。</li>
+</ol>
+<div align="center">
+  <img src="/2025/10/23/1-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%A6%82%E8%AE%BA/%E5%9B%BE5.jpg" alt="数据模型" style="max-width: 80%; height: auto;">
+</div>
+<ol start="2">
 <li><strong>分类</strong>：按应用层次分概念模型、逻辑模型、物理模型。</li>
 <li><strong>组成要素</strong>：含数据结构、数据操作、数据完整性约束三部分。</li>
 </ol>
@@ -380,6 +385,11 @@
 <li>多对多（m:n）：如一个学生可选多门课，一门课可被多个学生选。</li>
 </ul>
 </li>
+</ol>
+<div align="center">
+  <img src="" alt="实体之间的三种联系" style="max-width: 80%; height: auto;">
+</div>
+<ol start="3">
 <li><strong>表示方法（E-R图）</strong>
 <ul>
 <li>实体：矩形框，框内标实体名。</li>
@@ -419,6 +429,15 @@
 </tr>
 </tbody>
 </table>
+<div align="center">
+  <img src="" alt="层次模型" style="max-width: 80%; height: auto;">
+</div>
+<div align="center">
+  <img src="" alt="网状模型" style="max-width: 80%; height: auto;">
+</div>
+<div align="center">
+  <img src="" alt="关系模型" style="max-width: 80%; height: auto;">
+</div>
 <h2 id="三、数据库系统结构">三、数据库系统结构</h2>
 <h3 id="（一）三级模式结构">（一）三级模式结构</h3>
 <ol>
