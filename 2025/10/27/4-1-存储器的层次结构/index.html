@@ -19,15 +19,15 @@
   <meta name="author" content="YuDong Wang">
   <meta name="keywords" content="编程,技术,开发,博客,JavaScript,Python,Web开发">
   
-    <meta name="description" content="4.1 存储器的层次结构总结 一、核心框架：多级存储器结构 计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：    存储层级 典型组件 速度 容量 核心作用     最高速层 CPU寄存器 极快（纳秒级） 极小（几十个到几百个） 暂存CPU当前执行的指令、操作数，避免频繁访问内存   高速缓冲层 高速缓存（Cache） 较快（接近CPU速">
+    <meta name="description" content="一、核心框架：多级存储器结构 计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：    存储层级 典型组件 速度 容量 核心作用     最高速层 CPU寄存器 极快（纳秒级） 极小（几十个到几百个） 暂存CPU当前执行的指令、操作数，避免频繁访问内存   高速缓冲层 高速缓存（Cache） 较快（接近CPU速度） 较小（几MB到几十MB）">
 <meta property="og:type" content="article">
 <meta property="og:title" content="4.1 存储器的层次结构">
 <meta property="og:url" content="https://hellowydwyd.github.io/2025/10/27/4-1-%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="Wydcoder&#39;s Tech Blog">
-<meta property="og:description" content="4.1 存储器的层次结构总结 一、核心框架：多级存储器结构 计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：    存储层级 典型组件 速度 容量 核心作用     最高速层 CPU寄存器 极快（纳秒级） 极小（几十个到几百个） 暂存CPU当前执行的指令、操作数，避免频繁访问内存   高速缓冲层 高速缓存（Cache） 较快（接近CPU速">
+<meta property="og:description" content="一、核心框架：多级存储器结构 计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：    存储层级 典型组件 速度 容量 核心作用     最高速层 CPU寄存器 极快（纳秒级） 极小（几十个到几百个） 暂存CPU当前执行的指令、操作数，避免频繁访问内存   高速缓冲层 高速缓存（Cache） 较快（接近CPU速度） 较小（几MB到几十MB）">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-10-27T00:54:40.000Z">
-<meta property="article:modified_time" content="2025-10-27T00:55:27.676Z">
+<meta property="article:modified_time" content="2025-11-25T07:36:20.958Z">
 <meta property="article:author" content="YuDong Wang">
 <meta property="article:tag" content="操作系统">
 <meta name="twitter:card" content="summary_large_image">
@@ -245,7 +245,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          916 字
+          928 字
         
       </span>
     
@@ -300,7 +300,7 @@
                 
                   
                     <!-- compatible with older versions-->
-                    本文最后更新于：2025年10月27日 早上
+                    本文最后更新于：2025年11月25日 下午
                   
                 
               </p>
@@ -308,8 +308,7 @@
             
               <div class="markdown-body">
                 
-                <h1>4.1 存储器的层次结构总结</h1>
-<h2 id="一、核心框架：多级存储器结构">一、核心框架：多级存储器结构</h2>
+                <h2 id="一、核心框架：多级存储器结构">一、核心框架：多级存储器结构</h2>
 <p>计算机系统通过“速度-容量”权衡，构建了从高速到低速、容量从小到大的多级存储体系，具体层级及特性如下表所示：</p>
 <table>
 <thead>
@@ -355,20 +354,20 @@
 <td>磁盘、可移动存储介质（U盘、光盘等）</td>
 <td>极慢（毫秒级）</td>
 <td>极大（TB级及以上）</td>
-<td>长期存储系统软件、用户数据、未运行的程序，作为主存的“后备仓库”</td>
+<td>长期存储系统软件、用户数据、未运行的程序，作为主存的&quot;后备仓库&quot;</td>
 </tr>
 </tbody>
 </table>
 <h2 id="二、关键层级详解">二、关键层级详解</h2>
 <h3 id="1-主存储器与寄存器">1. 主存储器与寄存器</h3>
 <ul>
-<li><strong>交互规则</strong>：CPU的控制部件无法直接访问辅存，只能从主存储器中获取指令和数据，主存是CPU与外部存储的“桥梁”。</li>
-<li><strong>核心矛盾</strong>：主存的访问速度（约几十到几百微秒）远低于CPU的指令执行速度（纳秒级），若CPU直接频繁访问主存，会因“等待主存数据”产生大量空闲时间，降低系统效率。</li>
+<li><strong>交互规则</strong>：CPU的控制部件无法直接访问辅存，只能从主存储器中获取指令和数据，主存是CPU与外部存储的&quot;桥梁&quot;。</li>
+<li><strong>核心矛盾</strong>：主存的访问速度（约几十到几百微秒）远低于CPU的指令执行速度（纳秒级），若CPU直接频繁访问主存，会因&quot;等待主存数据&quot;产生大量空闲时间，降低系统效率。</li>
 </ul>
 <h3 id="2-高速缓存（Cache）">2. 高速缓存（Cache）</h3>
 <ul>
-<li><strong>设计依据</strong>：基于程序“局部性原理”（即程序执行时，短期内会反复访问某一区域的数据/指令）。</li>
-<li><strong>工作机制</strong>：系统会自动将主存中“近期高频访问的信息块”复制到高速缓存中。当CPU需要数据时，先查询高速缓存：若存在（“命中”），直接读取（速度接近CPU）；若不存在（“未命中”），再访问主存，并将对应信息块载入高速缓存，供后续使用。</li>
+<li><strong>设计依据</strong>：基于程序&quot;局部性原理&quot;（即程序执行时，短期内会反复访问某一区域的数据/指令）。</li>
+<li><strong>工作机制</strong>：系统会自动将主存中&quot;近期高频访问的信息块&quot;复制到高速缓存中。当CPU需要数据时，先查询高速缓存：若存在（&quot;命中&quot;），直接读取（速度接近CPU）；若不存在（&quot;未命中&quot;），再访问主存，并将对应信息块载入高速缓存，供后续使用。</li>
 </ul>
 <h3 id="3-磁盘缓存">3. 磁盘缓存</h3>
 <ul>
@@ -377,11 +376,11 @@
 <li><strong>效果</strong>：当需要访问这些数据时，直接从磁盘缓存读取（速度等同于主存），无需等待磁盘转动和磁头定位，大幅减少磁盘I/O次数，提升系统响应速度。</li>
 </ul>
 <h2 id="三、层次结构的核心价值">三、层次结构的核心价值</h2>
-<p>通过多级存储协作，计算机系统实现了“速度接近CPU、容量接近辅存”的综合效果：</p>
+<p>通过多级存储协作，计算机系统实现了&quot;速度接近CPU、容量接近辅存&quot;的综合效果：</p>
 <ol>
-<li><strong>性能保障</strong>：高速缓存和寄存器解决了“CPU速度与主存速度不匹配”的问题，避免CPU闲置；</li>
-<li><strong>成本平衡</strong>：主存（成本较高）负责“实时运行数据”，辅存（成本低）负责“长期存储”，兼顾性能与存储容量需求；</li>
-<li><strong>效率优化</strong>：磁盘缓存缓解了“主存与磁盘速度不匹配”的瓶颈，减少I/O延迟，提升整体系统吞吐量。</li>
+<li><strong>性能保障</strong>：高速缓存和寄存器解决了&quot;CPU速度与主存速度不匹配&quot;的问题，避免CPU闲置；</li>
+<li><strong>成本平衡</strong>：主存（成本较高）负责&quot;实时运行数据&quot;，辅存（成本低）负责&quot;长期存储&quot;，兼顾性能与存储容量需求；</li>
+<li><strong>效率优化</strong>：磁盘缓存缓解了&quot;主存与磁盘速度不匹配&quot;的瓶颈，减少I/O延迟，提升整体系统吞吐量。</li>
 </ol>
 
                 
